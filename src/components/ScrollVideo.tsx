@@ -5,21 +5,95 @@ import { usePreload } from '../hooks/usePreload';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const SERVICES = [
-    { title: 'Gestione Pagine Social', description: 'Strategie editoriali per dominare il feed.' },
-    { title: 'Creazione Contenuti Personalizzati', description: 'Visual storytelling ad alto impatto.' },
-    { title: 'Creazione Applicativi Personalizzati', description: 'Software su misura per business scalabili.' },
-    { title: 'Shooting Video/Fotografici', description: 'Qualità cinematografica con attrezzatura Pro.' },
-    { title: 'Generazione Video AI', description: "L'avanguardia della produzione digitale." },
-    { title: 'Creazione Siti Web', description: 'Esperienze immersive e conversion-oriented.' },
+// Layout types for diverse service presentations
+type LayoutType = 'cards' | 'gallery' | 'testimonial' | 'stats' | 'video';
+
+interface ServiceContent {
+    image?: string;
+    title?: string;
+    description?: string;
+    value?: string; // For stats
+    suffix?: string; // For stats
+    author?: string; // For testimonial
+    videoUrl?: string; // For video
+}
+
+interface Service {
+    title: string;
+    description: string;
+    layoutType: LayoutType;
+    items?: ServiceContent[];
+}
+
+const SERVICES: Service[] = [
+    {
+        title: 'Gestione Pagine Social',
+        description: 'Strategie editoriali per dominare il feed.',
+        layoutType: 'cards',
+        items: [
+            { title: 'Pianificazione', description: 'Calendari editoriali strategici' },
+            { title: 'Engagement', description: 'Community management attivo' },
+            { title: 'Analytics', description: 'Report e ottimizzazione continua' },
+        ]
+    },
+    {
+        title: 'Creazione Contenuti Personalizzati',
+        description: 'Visual storytelling ad alto impatto.',
+        layoutType: 'stats',
+        items: [
+            { value: '10M+', suffix: 'Visualizzazioni', description: 'Raggiunte per i nostri clienti' },
+            { value: '500+', suffix: 'Progetti', description: 'Creativi completati con successo' },
+            { value: '100%', suffix: 'Originalità', description: 'Niente template, solo branding' },
+        ]
+    },
+    {
+        title: 'Creazione Applicativi Personalizzati',
+        description: 'Software su misura per business scalabili.',
+        layoutType: 'gallery',
+        items: [
+            { title: 'Dashboard UX', description: 'Interfacce intuitive' },
+            { title: 'Cloud Backend', description: 'Infrastrutture robuste' },
+            { title: 'Cross Platform', description: 'iOS & Android' },
+            { title: 'AI Integration', description: 'Automazione intelligente' },
+        ]
+    },
+    {
+        title: 'Shooting Video/Fotografici',
+        description: 'Qualità cinematografica con attrezzatura Pro.',
+        layoutType: 'testimonial',
+        items: [
+            {
+                description: '"La qualità delle riprese ha cambiato radicalmente la percezione del nostro brand."',
+                author: 'CEO di Luxury Group'
+            }
+        ]
+    },
+    {
+        title: 'Generazione Video AI',
+        description: "L'avanguardia della produzione digitale.",
+        layoutType: 'video',
+        items: [
+            { title: 'AI Rendering Core', description: 'Processo di generazione in real-time' }
+        ]
+    },
+    {
+        title: 'Creazione Siti Web',
+        description: 'Esperienze immersive e conversion-oriented.',
+        layoutType: 'cards',
+        items: [
+            { title: 'Landing Page', description: 'Conversion rate ottimizzato' },
+            { title: 'E-commerce', description: 'Shop online performanti' },
+            { title: 'Corporate', description: 'Vetrine aziendali premium' },
+        ]
+    },
 ];
 
 const FRAME_COUNT = 532;
 const FRAMES_PATH = '/frames/section-2';
 
 // Animation configuration
-const FAST_FRAME_ALLOCATION = 0.6; // 60% of frames for fast segments
-const SLOW_FRAME_ALLOCATION = 0.1; // 40% of frames for slow segments (background at 1/3 effective speed)
+const FAST_FRAME_ALLOCATION = 0.6;
+const SLOW_FRAME_ALLOCATION = 0.4;
 
 export const ScrollVideo: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -29,6 +103,9 @@ export const ScrollVideo: React.FC = () => {
 
     const [currentServiceIndex, setCurrentServiceIndex] = useState<number>(-1);
     const [serviceOpacity, setServiceOpacity] = useState<number>(0);
+    const [segmentProgress, setSegmentProgress] = useState<number>(0);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
     const { images, progress, isLoaded, preloadFrames } = usePreload();
 
     const drawFrame = useCallback((frameIndex: number) => {
@@ -44,7 +121,6 @@ export const ScrollVideo: React.FC = () => {
 
         ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-        // Zoom correttivo per i frame post-AI
         const correctiveZoom = frameIndex >= 341 ? 1.03 : 1.0;
         const scale = Math.max(canvasWidth / imgWidth, canvasHeight / imgHeight) * correctiveZoom;
         const scaledWidth = imgWidth * scale;
@@ -56,6 +132,7 @@ export const ScrollVideo: React.FC = () => {
     }, [images]);
 
     const handleResize = useCallback(() => {
+        setIsMobile(window.innerWidth < 768);
         const canvas = canvasRef.current;
         if (!canvas) return;
         const dpr = window.devicePixelRatio || 1;
@@ -83,28 +160,22 @@ export const ScrollVideo: React.FC = () => {
         if (isLoaded && images.length > 0) drawFrame(0);
     }, [isLoaded, images, drawFrame]);
 
-    // Main ScrollTrigger with Fast-Slow logic
+    // Main ScrollTrigger logic
     useEffect(() => {
         if (!isLoaded || images.length === 0 || !containerRef.current) return;
 
         const serviceCount = SERVICES.length;
         const totalFrames = images.length;
-
-        // Segment structure: FAST → SLOW1 → FAST → SLOW2 → ... → FAST
-        // Total segments: serviceCount slow + (serviceCount + 1) fast
         const fastSegments = serviceCount + 1;
         const slowSegments = serviceCount;
         const totalSegments = fastSegments + slowSegments;
 
-        // Each segment's scroll progress allocation
         const fastSegmentSize = 1 / totalSegments;
         const slowSegmentSize = 1 / totalSegments;
 
-        // Frame allocation per segment type
         const framesPerFastSegment = Math.floor((totalFrames * FAST_FRAME_ALLOCATION) / fastSegments);
         const framesPerSlowSegment = Math.floor((totalFrames * SLOW_FRAME_ALLOCATION) / slowSegments);
 
-        // Build segment boundaries
         interface Segment {
             type: 'fast' | 'slow';
             startProgress: number;
@@ -115,38 +186,36 @@ export const ScrollVideo: React.FC = () => {
         }
 
         const segments: Segment[] = [];
-        let currentProgress = 0;
-        let currentFrame = 0;
+        let currProgress = 0;
+        let currFrame = 0;
 
         for (let i = 0; i < totalSegments; i++) {
-            const isSlow = i % 2 === 1; // Odd indices are slow segments (after first fast)
-
+            const isSlow = i % 2 === 1;
             if (isSlow) {
                 const serviceIndex = Math.floor(i / 2);
                 segments.push({
                     type: 'slow',
-                    startProgress: currentProgress,
-                    endProgress: currentProgress + slowSegmentSize,
-                    startFrame: currentFrame,
-                    endFrame: currentFrame + framesPerSlowSegment,
+                    startProgress: currProgress,
+                    endProgress: currProgress + slowSegmentSize,
+                    startFrame: currFrame,
+                    endFrame: currFrame + framesPerSlowSegment,
                     serviceIndex,
                 });
-                currentProgress += slowSegmentSize;
-                currentFrame += framesPerSlowSegment;
+                currProgress += slowSegmentSize;
+                currFrame += framesPerSlowSegment;
             } else {
                 segments.push({
                     type: 'fast',
-                    startProgress: currentProgress,
-                    endProgress: currentProgress + fastSegmentSize,
-                    startFrame: currentFrame,
-                    endFrame: currentFrame + framesPerFastSegment,
+                    startProgress: currProgress,
+                    endProgress: currProgress + fastSegmentSize,
+                    startFrame: currFrame,
+                    endFrame: currFrame + framesPerFastSegment,
                 });
-                currentProgress += fastSegmentSize;
-                currentFrame += framesPerFastSegment;
+                currProgress += fastSegmentSize;
+                currFrame += framesPerFastSegment;
             }
         }
 
-        // Ensure last segment ends at total frames
         if (segments.length > 0) {
             segments[segments.length - 1].endFrame = totalFrames - 1;
             segments[segments.length - 1].endProgress = 1;
@@ -155,177 +224,252 @@ export const ScrollVideo: React.FC = () => {
         const scrollTrigger = ScrollTrigger.create({
             trigger: containerRef.current,
             start: 'top top',
-            end: '+=800%', // Extended for more scroll distance
+            end: '+=800%',
             pin: true,
-            scrub: 0.6,
+            scrub: 0.8,
             onUpdate: (self) => {
                 const scrollProgress = self.progress;
-
-                // Find current segment
                 const currentSegment = segments.find(
                     seg => scrollProgress >= seg.startProgress && scrollProgress < seg.endProgress
                 ) || segments[segments.length - 1];
 
-                // Calculate progress within current segment
-                const segmentProgress = (scrollProgress - currentSegment.startProgress) /
+                const segProg = (scrollProgress - currentSegment.startProgress) /
                     (currentSegment.endProgress - currentSegment.startProgress);
 
-                // Calculate frame index based on segment type
-                let frameIndex: number;
                 const frameRange = currentSegment.endFrame - currentSegment.startFrame;
-
-                if (currentSegment.type === 'slow') {
-                    // Slow segment: frames advance at 1/3 speed (but we evenly distribute the slow-allocated frames)
-                    frameIndex = Math.floor(
-                        currentSegment.startFrame + segmentProgress * frameRange
-                    );
-                } else {
-                    // Fast segment: normal speed
-                    frameIndex = Math.floor(
-                        currentSegment.startFrame + segmentProgress * frameRange
-                    );
-                }
-
-                frameIndex = Math.min(Math.max(0, frameIndex), totalFrames - 1);
+                const frameIndex = Math.min(Math.max(0, Math.floor(currentSegment.startFrame + segProg * frameRange)), totalFrames - 1);
 
                 if (frameIndex !== currentFrameRef.current) {
                     currentFrameRef.current = frameIndex;
                     drawFrame(frameIndex);
                 }
 
-                // Service overlay logic (only during slow segments)
                 if (currentSegment.type === 'slow' && currentSegment.serviceIndex !== undefined) {
-                    const fadeInEnd = 0.15;
-                    const fadeOutStart = 0.85;
-
+                    const fadeInEnd = 0.1;
+                    const fadeOutStart = 0.9;
                     let opacity = 1;
-                    if (segmentProgress < fadeInEnd) {
-                        opacity = segmentProgress / fadeInEnd;
-                    } else if (segmentProgress > fadeOutStart) {
-                        opacity = (1 - segmentProgress) / (1 - fadeOutStart);
-                    }
+                    if (segProg < fadeInEnd) opacity = segProg / fadeInEnd;
+                    else if (segProg > fadeOutStart) opacity = (1 - segProg) / (1 - fadeOutStart);
 
                     setCurrentServiceIndex(currentSegment.serviceIndex);
                     setServiceOpacity(opacity);
+                    setSegmentProgress(segProg);
                 } else {
                     setServiceOpacity(0);
                     setCurrentServiceIndex(-1);
+                    setSegmentProgress(0);
                 }
             },
         });
 
-        return () => {
-            scrollTrigger.kill();
-        };
+        return () => { scrollTrigger.kill(); };
     }, [isLoaded, images, drawFrame]);
 
     const currentService = currentServiceIndex >= 0 ? SERVICES[currentServiceIndex] : null;
 
+    // Helper to calculate visibility progress for individual elements
+    const getElementVisibility = useCallback((index: number, total: number, start = 0.15, end = 0.85) => {
+        const range = end - start;
+        const windowSize = range / total;
+        const elementStart = start + index * windowSize;
+        const elementEnd = elementStart + windowSize * 0.7; // 70% of window for animation
+
+        if (segmentProgress < elementStart) return 0;
+        if (segmentProgress > elementEnd) return 1;
+        return (segmentProgress - elementStart) / (elementEnd - elementStart);
+    }, [segmentProgress]);
+
+    // Layout Variant Renderers
+    const renderLayout = () => {
+        if (!currentService) return null;
+
+        const { layoutType, items = [] } = currentService;
+
+        switch (layoutType) {
+            case 'cards':
+                return (
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: isMobile ? 'column' : 'row',
+                        gap: isMobile ? '12px' : '20px',
+                        marginTop: isMobile ? '20px' : '40px',
+                        width: '100%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}>
+                        {items.map((item, i) => {
+                            const vis = getElementVisibility(i, items.length);
+                            return (
+                                <div key={i} style={{
+                                    width: isMobile ? '90%' : '260px',
+                                    padding: '20px',
+                                    backgroundColor: 'rgba(255,255,255,0.06)',
+                                    backdropFilter: 'blur(10px)',
+                                    borderRadius: '16px',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    opacity: vis,
+                                    transform: `translateY(${20 * (1 - vis)}px)`,
+                                    transition: 'transform 0.3s ease-out'
+                                }}>
+                                    <div style={{ width: '100%', height: '100px', backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: '8px', marginBottom: '12px' }} />
+                                    <h3 style={{ color: '#fff', fontSize: '1.1rem', marginBottom: '6px' }}>{item.title}</h3>
+                                    <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', fontWeight: 300 }}>{item.description}</p>
+                                </div>
+                            );
+                        })}
+                    </div>
+                );
+
+            case 'stats':
+                return (
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: isMobile ? 'column' : 'row',
+                        gap: isMobile ? '24px' : '60px',
+                        marginTop: isMobile ? '30px' : '60px',
+                    }}>
+                        {items.map((item, i) => {
+                            const vis = getElementVisibility(i, items.length);
+                            return (
+                                <div key={i} style={{ textAlign: 'center', opacity: vis, transform: `scale(${0.8 + 0.2 * vis})`, transition: 'transform 0.4s ease-out' }}>
+                                    <div style={{ color: '#fff', fontSize: isMobile ? '2.5rem' : '4rem', fontWeight: 800, lineHeight: 1 }}>{item.value}</div>
+                                    <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '4px' }}>{item.suffix}</div>
+                                    <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '1rem', marginTop: '10px', fontWeight: 300 }}>{item.description}</div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                );
+
+            case 'testimonial':
+                return (
+                    <div style={{ marginTop: '40px', maxWidth: '700px', textAlign: 'center' }}>
+                        {items.map((item, i) => {
+                            const vis = getElementVisibility(i, items.length);
+                            return (
+                                <div key={i} style={{ opacity: vis, transform: `translateY(${10 * (1 - vis)}px)`, transition: 'opacity 0.5s ease-out' }}>
+                                    <p style={{ color: '#fff', fontSize: isMobile ? '1.4rem' : '1.8rem', fontWeight: 300, fontStyle: 'italic', lineHeight: 1.4 }}>{item.description}</p>
+                                    <div style={{ marginTop: '20px', color: 'rgba(255,255,255,0.6)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.9rem' }}>— {item.author}</div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                );
+
+            case 'gallery':
+                return (
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+                        gap: '12px',
+                        marginTop: '30px',
+                        width: '100%',
+                        maxWidth: '1000px',
+                        padding: '0 10px'
+                    }}>
+                        {items.map((item, i) => {
+                            const vis = getElementVisibility(i, items.length);
+                            return (
+                                <div key={i} style={{
+                                    aspectRatio: '1',
+                                    background: 'rgba(255,255,255,0.05)',
+                                    borderRadius: '12px',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    padding: '10px',
+                                    opacity: vis,
+                                    transform: `scale(${0.9 + 0.1 * vis})`,
+                                    transition: 'all 0.3s ease-out'
+                                }}>
+                                    <div style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 600, textAlign: 'center' }}>{item.title}</div>
+                                    <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', textAlign: 'center', marginTop: '4px' }}>{item.description}</div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                );
+
+            case 'video':
+                return (
+                    <div style={{ marginTop: '30px', position: 'relative', width: isMobile ? '80%' : '500px', aspectRatio: '16/9', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                        <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: '3rem' }}>▶</div>
+                        <div style={{ position: 'absolute', bottom: '15px', left: '20px' }}>
+                            <div style={{ color: '#fff', fontWeight: 600 }}>{items[0].title}</div>
+                            <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem' }}>{items[0].description}</div>
+                        </div>
+                    </div>
+                );
+
+            default:
+                return null;
+        }
+    };
+
     return (
-        <section
-            ref={containerRef}
-            style={{
-                position: 'relative',
-                width: '100vw',
-                height: '100vh',
-                overflow: 'hidden',
-                backgroundColor: '#000',
-            }}
-        >
-            {/* Loading */}
+        <section ref={containerRef} style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden', backgroundColor: '#000' }}>
             {!isLoaded && (
+                <div style={{ position: 'absolute', inset: 0, zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#000', color: '#fff' }}>
+                    <div style={{ width: '200px', height: '2px', backgroundColor: 'rgba(255,255,255,0.1)', overflow: 'hidden' }}>
+                        <div style={{ width: `${progress}%`, height: '100%', backgroundColor: '#fff', transition: 'width 0.2s linear' }} />
+                    </div>
+                    <span style={{ marginTop: '20px', fontSize: '12px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)' }}>Loading Sequence {Math.round(progress)}%</span>
+                </div>
+            )}
+
+            <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100vw', height: '100vh', display: 'block', zIndex: 0 }} />
+
+            {isLoaded && currentService && (
                 <div style={{
                     position: 'absolute',
                     inset: 0,
-                    zIndex: 50,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    backgroundColor: '#000',
-                    color: '#fff',
+                    pointerEvents: 'none',
+                    zIndex: 20,
+                    opacity: serviceOpacity,
+                    transition: 'opacity 0.2s ease-out',
+                    padding: isMobile ? '10px 20px' : '40px',
+                    textAlign: 'center'
                 }}>
-                    <div style={{
-                        width: '200px',
-                        height: '2px',
-                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                        overflow: 'hidden',
-                    }}>
-                        <div style={{
-                            width: `${progress}%`,
-                            height: '100%',
-                            backgroundColor: '#fff',
-                            transition: 'width 0.1s ease-out',
-                        }} />
-                    </div>
-                    <span style={{
-                        marginTop: '16px',
-                        fontSize: '14px',
-                        letterSpacing: '0.1em',
-                        textTransform: 'uppercase',
-                    }}>
-                        Loading {progress}%
-                    </span>
-                </div>
-            )}
-
-            {/* Canvas */}
-            <canvas
-                ref={canvasRef}
-                style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100vw',
-                    height: '100vh',
-                    display: 'block',
-                    zIndex: 0,
-                }}
-            />
-
-            {/* Service Overlay */}
-            {isLoaded && currentService && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        inset: 0,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        pointerEvents: 'none',
-                        zIndex: 20,
-                        opacity: serviceOpacity,
-                        transition: 'opacity 0.2s ease-out',
-                        padding: '0 24px',
-                    }}
-                >
-                    <h2
-                        style={{
+                    <div style={{ transform: `translateY(${15 * (1 - serviceOpacity)}px)`, transition: 'transform 0.3s ease-out' }}>
+                        <h2 style={{
                             color: '#fff',
-                            fontSize: 'clamp(2rem, 6vw, 4rem)',
-                            fontWeight: 700,
-                            textAlign: 'center',
+                            fontSize: isMobile ? '1.8rem' : '3.5rem',
+                            fontWeight: 800,
+                            lineHeight: 1.1,
                             margin: 0,
-                            textShadow: '0 4px 30px rgba(0, 0, 0, 0.9)',
-                            letterSpacing: '-0.02em',
-                        }}
-                    >
-                        {currentService.title}
-                    </h2>
-                    <p
-                        style={{
-                            color: 'rgba(255, 255, 255, 0.9)',
-                            fontSize: 'clamp(1rem, 2.5vw, 1.5rem)',
+                            textShadow: '0 10px 40px rgba(0,0,0,0.5)',
+                            letterSpacing: '-0.03em'
+                        }}>
+                            {currentService.title}
+                        </h2>
+                        <div style={{
+                            height: '2px',
+                            width: '40px',
+                            background: '#fff',
+                            margin: isMobile ? '15px auto' : '20px auto',
+                            opacity: 0.5
+                        }} />
+                        <p style={{
+                            color: 'rgba(255,255,255,0.7)',
+                            fontSize: isMobile ? '0.9rem' : '1.2rem',
                             fontWeight: 300,
-                            textAlign: 'center',
-                            marginTop: '16px',
-                            textShadow: '0 2px 15px rgba(0, 0, 0, 0.8)',
                             maxWidth: '600px',
-                        }}
-                    >
-                        {currentService.description}
-                    </p>
+                            margin: '0 auto',
+                            lineHeight: 1.5
+                        }}>
+                            {currentService.description}
+                        </p>
+                    </div>
+
+                    <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                        {renderLayout()}
+                    </div>
                 </div>
             )}
         </section>
