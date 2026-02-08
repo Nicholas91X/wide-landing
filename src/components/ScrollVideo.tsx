@@ -291,8 +291,8 @@ export const ScrollVideo: React.FC = () => {
                     <div style={{
                         display: 'flex',
                         flexDirection: isMobile ? 'column' : 'row',
-                        gap: isMobile ? '12px' : '20px',
-                        marginTop: isMobile ? '20px' : '40px',
+                        gap: isMobile ? '10px' : '20px',
+                        marginTop: isMobile ? '15px' : '40px',
                         width: '100%',
                         justifyContent: 'center',
                         alignItems: 'center',
@@ -301,8 +301,8 @@ export const ScrollVideo: React.FC = () => {
                             const vis = getElementVisibility(i, items.length);
                             return (
                                 <div key={i} style={{
-                                    width: isMobile ? '90%' : '260px',
-                                    padding: '20px',
+                                    width: isMobile ? '85%' : '260px',
+                                    padding: isMobile ? '12px' : '20px',
                                     backgroundColor: 'rgba(255,255,255,0.06)',
                                     backdropFilter: 'blur(10px)',
                                     borderRadius: '16px',
@@ -311,9 +311,15 @@ export const ScrollVideo: React.FC = () => {
                                     transform: `translateY(${20 * (1 - vis)}px)`,
                                     transition: 'transform 0.3s ease-out'
                                 }}>
-                                    <div style={{ width: '100%', height: '100px', backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: '8px', marginBottom: '12px' }} />
-                                    <h3 style={{ color: '#fff', fontSize: '1.1rem', marginBottom: '6px' }}>{item.title}</h3>
-                                    <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', fontWeight: 300 }}>{item.description}</p>
+                                    <div style={{
+                                        width: '100%',
+                                        height: isMobile ? '60px' : '100px',
+                                        backgroundColor: 'rgba(255,255,255,0.08)',
+                                        borderRadius: '8px',
+                                        marginBottom: isMobile ? '8px' : '12px'
+                                    }} />
+                                    <h3 style={{ color: '#fff', fontSize: isMobile ? '0.95rem' : '1.1rem', marginBottom: '4px' }}>{item.title}</h3>
+                                    <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: isMobile ? '0.8rem' : '0.9rem', fontWeight: 300 }}>{item.description}</p>
                                 </div>
                             );
                         })}
@@ -325,16 +331,16 @@ export const ScrollVideo: React.FC = () => {
                     <div style={{
                         display: 'flex',
                         flexDirection: isMobile ? 'column' : 'row',
-                        gap: isMobile ? '24px' : '60px',
-                        marginTop: isMobile ? '30px' : '60px',
+                        gap: isMobile ? '15px' : '60px',
+                        marginTop: isMobile ? '20px' : '60px',
                     }}>
                         {items.map((item, i) => {
                             const vis = getElementVisibility(i, items.length);
                             return (
                                 <div key={i} style={{ textAlign: 'center', opacity: vis, transform: `scale(${0.8 + 0.2 * vis})`, transition: 'transform 0.4s ease-out' }}>
-                                    <div style={{ color: '#fff', fontSize: isMobile ? '2.5rem' : '4rem', fontWeight: 800, lineHeight: 1 }}>{item.value}</div>
-                                    <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '4px' }}>{item.suffix}</div>
-                                    <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '1rem', marginTop: '10px', fontWeight: 300 }}>{item.description}</div>
+                                    <div style={{ color: '#fff', fontSize: isMobile ? '2rem' : '4rem', fontWeight: 800, lineHeight: 1 }}>{item.value}</div>
+                                    <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: isMobile ? '0.7rem' : '0.9rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>{item.suffix}</div>
+                                    <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: isMobile ? '0.85rem' : '1rem', marginTop: i === 0 ? '5px' : '8px', fontWeight: 300 }}>{item.description}</div>
                                 </div>
                             );
                         })}
@@ -421,6 +427,17 @@ export const ScrollVideo: React.FC = () => {
 
             <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100vw', height: '100vh', display: 'block', zIndex: 0 }} />
 
+            {/* Contrast Overlay (Vignette) */}
+            <div style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'radial-gradient(circle at center, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.9) 50%, rgba(0,0,0,0.99) 100%)',
+                zIndex: 10,
+                opacity: serviceOpacity,
+                pointerEvents: 'none',
+                transition: 'opacity 0.3s ease-out'
+            }} />
+
             {isLoaded && currentService && (
                 <div style={{
                     position: 'absolute',
@@ -428,46 +445,57 @@ export const ScrollVideo: React.FC = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    justifyContent: 'center',
+                    justifyContent: isMobile ? 'flex-start' : 'center',
                     pointerEvents: 'none',
                     zIndex: 20,
                     opacity: serviceOpacity,
                     transition: 'opacity 0.2s ease-out',
-                    padding: isMobile ? '10px 20px' : '40px',
-                    textAlign: 'center'
+                    padding: isMobile ? '60px 20px' : '40px',
+                    textAlign: 'center',
+                    overflowY: isMobile ? 'auto' : 'hidden'
                 }}>
-                    <div style={{ transform: `translateY(${15 * (1 - serviceOpacity)}px)`, transition: 'transform 0.3s ease-out' }}>
+                    <div style={{
+                        transform: `translateY(${15 * (1 - serviceOpacity)}px)`,
+                        transition: 'transform 0.3s ease-out',
+                        marginBottom: isMobile ? '10px' : '0'
+                    }}>
                         <h2 style={{
                             color: '#fff',
-                            fontSize: isMobile ? '1.8rem' : '3.5rem',
+                            fontSize: isMobile ? '1.5rem' : '3.5rem',
                             fontWeight: 800,
                             lineHeight: 1.1,
                             margin: 0,
-                            textShadow: '0 10px 40px rgba(0,0,0,0.5)',
+                            textShadow: '0 10px 40px rgba(0,0,0,0.8)',
                             letterSpacing: '-0.03em'
                         }}>
                             {currentService.title}
                         </h2>
                         <div style={{
                             height: '2px',
-                            width: '40px',
+                            width: '30px',
                             background: '#fff',
-                            margin: isMobile ? '15px auto' : '20px auto',
+                            margin: isMobile ? '10px auto' : '20px auto',
                             opacity: 0.5
                         }} />
                         <p style={{
-                            color: 'rgba(255,255,255,0.7)',
-                            fontSize: isMobile ? '0.9rem' : '1.2rem',
+                            color: 'rgba(255,255,255,0.9)',
+                            fontSize: isMobile ? '0.85rem' : '1.2rem',
                             fontWeight: 300,
                             maxWidth: '600px',
                             margin: '0 auto',
-                            lineHeight: 1.5
+                            lineHeight: 1.4,
+                            textShadow: '0 2px 10px rgba(0,0,0,0.5)'
                         }}>
                             {currentService.description}
                         </p>
                     </div>
 
-                    <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                    <div style={{
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        marginTop: isMobile ? '15px' : '0'
+                    }}>
                         {renderLayout()}
                     </div>
                 </div>
