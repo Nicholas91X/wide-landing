@@ -88,7 +88,7 @@ const SERVICES: Service[] = [
     },
 ];
 
-const FRAME_COUNT = 532;
+const FRAME_COUNT = 908;
 const FRAMES_PATH = '/frames/section-2';
 
 // Animation configuration
