@@ -351,7 +351,7 @@ export const NavBubble: React.FC = () => {
                 ref={canvasRef}
                 style={{
                     position: 'fixed', inset: 0,
-                    zIndex: 999,
+                    zIndex: 2999,
                     pointerEvents: 'none',
                     opacity: isOpen ? 1 : 0,
                     transition: 'opacity 0.4s',
@@ -363,7 +363,7 @@ export const NavBubble: React.FC = () => {
                 ref={overlayRef}
                 onClick={closeMenu}
                 style={{
-                    position: 'fixed', inset: 0, zIndex: 998,
+                    position: 'fixed', inset: 0, zIndex: 2998,
                     opacity: 0,
                     pointerEvents: isOpen ? 'all' : 'none',
                     backgroundColor: 'rgba(0,0,0,0.45)',
@@ -376,7 +376,7 @@ export const NavBubble: React.FC = () => {
             <div style={{
                 position: 'fixed', top: MARGIN, left: MARGIN,
                 width: LOGO_SIZE, height: LOGO_SIZE,
-                zIndex: 1000,
+                zIndex: 3000,
                 overflow: 'hidden',
                 ...soap(),
                 padding: 0,
@@ -394,7 +394,7 @@ export const NavBubble: React.FC = () => {
                     position: 'fixed',
                     top: MARGIN, right: MARGIN,
                     width: BUBBLE_SIZE, height: BUBBLE_SIZE,
-                    zIndex: 1001,
+                    zIndex: 3001,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     transformOrigin: 'center center',
                     ...soap(),
