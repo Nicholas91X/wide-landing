@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useLayoutEffect, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { usePreload } from '../hooks/usePreload';
@@ -88,8 +88,14 @@ const SERVICES: Service[] = [
     },
 ];
 
-const FRAME_COUNT = 908;
-const FRAMES_PATH = '/frames/section-2';
+// Frame sets per device type
+const DESKTOP_FRAME_COUNT = 908;
+const DESKTOP_FRAMES_PATH = '/frames/section-2';
+const MOBILE_FRAME_COUNT = 889;
+const MOBILE_FRAMES_PATH = '/frames_9_16/section-2';
+
+// Mobile breakpoint for matchMedia checks
+const MOBILE_QUERY = '(max-width: 767px)';
 
 // Animation configuration
 const FAST_FRAME_ALLOCATION = 0.6;
@@ -104,7 +110,16 @@ export const ScrollVideo: React.FC = () => {
     const [currentServiceIndex, setCurrentServiceIndex] = useState<number>(-1);
     const [serviceOpacity, setServiceOpacity] = useState<number>(0);
     const [segmentProgress, setSegmentProgress] = useState<number>(0);
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    const [isMobile, setIsMobile] = useState<boolean | null>(null);
+
+    // Detect mobile before first paint. useLayoutEffect only runs in the browser.
+    useLayoutEffect(() => {
+        setIsMobile(window.matchMedia(MOBILE_QUERY).matches);
+    }, []);
+
+    // Derive the correct frame config from isMobile
+    const framesPath = isMobile ? MOBILE_FRAMES_PATH : DESKTOP_FRAMES_PATH;
+    const frameCount = isMobile ? MOBILE_FRAME_COUNT : DESKTOP_FRAME_COUNT;
 
     const { images, progress, isLoaded, preloadFrames } = usePreload();
 
@@ -114,14 +129,20 @@ export const ScrollVideo: React.FC = () => {
         const img = images[frameIndex];
         if (!canvas || !ctx || !img) return;
 
-        const canvasWidth = canvas.width;
-        const canvasHeight = canvas.height;
+        // canvas.width/height are in device pixels (innerWidth * dpr).
+        // After ctx.scale(dpr, dpr), all drawing coordinates are in CSS pixels.
+        // We must divide by dpr to get the CSS-pixel dimensions for correct scaling.
+        const dpr = window.devicePixelRatio || 1;
+        const canvasWidth = canvas.width / dpr;   // CSS pixels
+        const canvasHeight = canvas.height / dpr;  // CSS pixels
         const imgWidth = img.naturalWidth;
         const imgHeight = img.naturalHeight;
 
         ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-        const correctiveZoom = frameIndex >= 341 ? 1.03 : 1.0;
+        // The corrective zoom is calibrated for the 16:9 desktop frame sequence.
+        // For the 9:16 mobile frames there is no equivalent discontinuity.
+        const correctiveZoom = !isMobile && frameIndex >= 341 ? 1.03 : 1.0;
         const scale = Math.max(canvasWidth / imgWidth, canvasHeight / imgHeight) * correctiveZoom;
         const scaledWidth = imgWidth * scale;
         const scaledHeight = imgHeight * scale;
@@ -129,10 +150,9 @@ export const ScrollVideo: React.FC = () => {
         const y = (canvasHeight - scaledHeight) / 2;
 
         ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
-    }, [images]);
+    }, [images, isMobile]);
 
-    const handleResize = useCallback(() => {
-        setIsMobile(window.innerWidth < 768);
+    const handleCanvasResize = useCallback(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
         const dpr = window.devicePixelRatio || 1;
@@ -146,15 +166,30 @@ export const ScrollVideo: React.FC = () => {
         if (images.length > 0) drawFrame(currentFrameRef.current);
     }, [images, drawFrame]);
 
+    // Listen to the breakpoint crossing to decide which frame set to load.
+    // Using MediaQueryList is more reliable than innerWidth in DevTools emulation.
     useEffect(() => {
-        preloadFrames(FRAMES_PATH, FRAME_COUNT);
-    }, [preloadFrames]);
+        const mql = window.matchMedia(MOBILE_QUERY);
+        const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+        mql.addEventListener('change', handler);
+        return () => mql.removeEventListener('change', handler);
+    }, []);
 
+    // Re-load frames when the device category flips.
+    // Wait until isMobile is definitively detected (not null).
     useEffect(() => {
-        handleResize();
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, [handleResize]);
+        if (isMobile === null) return;
+        preloadFrames(framesPath, frameCount);
+    // framesPath/frameCount are derived from isMobile — re-run only when it changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [preloadFrames, isMobile]);
+
+    // Handle canvas pixel sizing on every resize.
+    useEffect(() => {
+        handleCanvasResize();
+        window.addEventListener('resize', handleCanvasResize);
+        return () => window.removeEventListener('resize', handleCanvasResize);
+    }, [handleCanvasResize]);
 
     useEffect(() => {
         if (isLoaded && images.length > 0) drawFrame(0);
