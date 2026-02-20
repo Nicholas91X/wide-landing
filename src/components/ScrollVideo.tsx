@@ -455,16 +455,32 @@ export const ScrollVideo: React.FC = () => {
 
     return (
         <section ref={containerRef} style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden', backgroundColor: '#000' }}>
-            {!isLoaded && (
-                <div style={{ position: 'absolute', inset: 0, zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#000', color: '#fff' }}>
-                    <div style={{ width: '200px', height: '2px', backgroundColor: 'rgba(255,255,255,0.1)', overflow: 'hidden' }}>
-                        <div style={{ width: `${progress}%`, height: '100%', backgroundColor: '#fff', transition: 'width 0.2s linear' }} />
-                    </div>
-                    <span style={{ marginTop: '20px', fontSize: '12px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)' }}>Loading Sequence {Math.round(progress)}%</span>
+            {/* Loading overlay — fades out smoothly when ready */}
+            <div style={{
+                position: 'absolute', inset: 0, zIndex: 100,
+                display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center',
+                backgroundColor: '#000', color: '#fff',
+                opacity: isLoaded ? 0 : 1,
+                transition: 'opacity 0.8s ease',
+                pointerEvents: isLoaded ? 'none' : 'all',
+            }}>
+                <div style={{ width: '200px', height: '2px', backgroundColor: 'rgba(255,255,255,0.1)', overflow: 'hidden' }}>
+                    <div style={{ width: `${progress}%`, height: '100%', backgroundColor: '#fff', transition: 'width 0.2s linear' }} />
                 </div>
-            )}
+                <span style={{ marginTop: '20px', fontSize: '12px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)' }}>
+                    Loading Sequence {Math.round(progress)}%
+                </span>
+            </div>
 
-            <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100vw', height: '100vh', display: 'block', zIndex: 0 }} />
+            {/* Canvas — fades in after loading completes */}
+            <canvas ref={canvasRef} style={{
+                position: 'absolute', inset: 0,
+                width: '100vw', height: '100vh',
+                display: 'block', zIndex: 0,
+                opacity: isLoaded ? 1 : 0,
+                transition: 'opacity 0.8s ease',
+            }} />
 
             {/* Contrast Overlay (Vignette) */}
             <div style={{
