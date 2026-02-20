@@ -262,6 +262,10 @@ export const ScrollVideo: React.FC = () => {
             },
         });
 
+        // After this section's pin spacer is created, notify all other
+        // ScrollTriggers (e.g. Portfolio) to recalculate their positions.
+        ScrollTrigger.refresh();
+
         return () => { scrollTrigger.kill(); };
     }, [isLoaded, images, drawFrame]);
 
