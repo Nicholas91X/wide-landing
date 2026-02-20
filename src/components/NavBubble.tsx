@@ -63,6 +63,8 @@ export const NavBubble: React.FC = () => {
     const [isOpen,         setIsOpen]         = useState(false);
     const [scrollPct,      setScrollPct]      = useState(0);
     const [activeSection,  setActiveSection]  = useState('home');
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const rafRef    = useRef<number>(0);
 
     // ── Scroll progress ───────────────────────────────────────────────────────
     useEffect(() => {
@@ -84,22 +86,157 @@ export const NavBubble: React.FC = () => {
         c.style.strokeDashoffset = `${circ * (1 - scrollPct)}`;
     }, [scrollPct]);
 
-    // ── Active section via scroll position (reliable even with GSAP pin) ────────
+    // ── Active section via scroll position ────────────────────────────────────
     useEffect(() => {
         const detectSection = () => {
             const midY = window.scrollY + window.innerHeight * 0.4;
             let active = NAV_ITEMS[0].sectionId;
-            // Iterate in order: last section whose offsetTop <= midY wins
             for (const item of NAV_ITEMS) {
                 const el = document.getElementById(item.sectionId);
                 if (el && el.offsetTop <= midY) active = item.sectionId;
             }
             setActiveSection(active);
         };
-        detectSection(); // run once on mount
+        detectSection();
         window.addEventListener('scroll', detectSection, { passive: true });
         return () => window.removeEventListener('scroll', detectSection);
     }, []);
+
+    // ── Floating bubble canvas ────────────────────────────────────────────
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        if (!isOpen) {
+            cancelAnimationFrame(rafRef.current);
+            const ctx = canvas.getContext('2d');
+            if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+            return;
+        }
+
+        // Resize canvas to full viewport
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        // ── Bubble physics ───────────────────────────────────────────────────
+        // Max ~10 bubbles at once for performance
+        const MAX_BUBBLES = 10;
+
+        interface Bubble {
+            x: number;      // current x
+            y: number;      // current y
+            r: number;      // radius
+            speed: number;  // px/frame rise speed
+            amp: number;    // horizontal drift amplitude
+            freq: number;   // horizontal drift frequency
+            phase: number;  // starting phase for sin
+            ticks: number;  // age counter
+            life: number;   // max life in ticks
+        }
+
+        const spawnBubble = (): Bubble => {
+            const r = 6 + Math.random() * 20;                // 6–26px
+            return {
+                x:     Math.random() * canvas.width,
+                y:     canvas.height + r + Math.random() * canvas.height * 0.3,
+                r,
+                // Larger bubbles rise slower (Stokes' law approximation)
+                speed: 0.4 + (1 - r / 26) * 1.2 + Math.random() * 0.4,
+                amp:   8 + Math.random() * 22,
+                freq:  0.008 + Math.random() * 0.012,
+                phase: Math.random() * Math.PI * 2,
+                ticks: 0,
+                life:  Math.round((canvas.height + r) / (0.4 + (1 - r / 26) * 1.2)),
+            };
+        };
+
+        // Pre-seed some bubbles at various heights so it doesn't start empty
+        const bubbles: Bubble[] = Array.from({ length: 6 }, () => {
+            const b = spawnBubble();
+            b.y = Math.random() * canvas.height;
+            b.ticks = Math.round(Math.random() * b.life * 0.4);
+            return b;
+        });
+
+        let spawnTimer = 0;
+        const SPAWN_INTERVAL = 28; // frames between new bubble
+
+        // ── Draw a single soap bubble on canvas ──────────────────────────────
+        const drawBubble = (b: Bubble) => {
+            const fadePct = b.ticks / b.life;
+            // Fade in first 10%, fade out last 20%
+            let alpha = 1;
+            if (fadePct < 0.1) alpha = fadePct / 0.1;
+            else if (fadePct > 0.8) alpha = (1 - fadePct) / 0.2;
+            alpha = Math.min(1, Math.max(0, alpha)) * 0.55;
+
+            ctx.save();
+            ctx.globalAlpha = alpha;
+
+            // Main circle — very transparent fill
+            ctx.beginPath();
+            ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+
+            // Iridescent gradient (soap film colours)
+            const grad = ctx.createRadialGradient(
+                b.x - b.r * 0.3, b.y - b.r * 0.3, b.r * 0.05,
+                b.x, b.y, b.r
+            );
+            grad.addColorStop(0,   'rgba(255,255,255,0.55)');
+            grad.addColorStop(0.3, 'rgba(180,214,255,0.15)');
+            grad.addColorStop(0.7, 'rgba(200,140,255,0.10)');
+            grad.addColorStop(1,   'rgba(140,255,200,0.05)');
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            // Border
+            ctx.strokeStyle = 'rgba(255,255,255,0.30)';
+            ctx.lineWidth   = 0.8;
+            ctx.stroke();
+
+            // Specular highlight
+            ctx.beginPath();
+            ctx.arc(b.x - b.r * 0.28, b.y - b.r * 0.28, b.r * 0.22, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,255,255,0.35)';
+            ctx.fill();
+
+            ctx.restore();
+        };
+
+        // ── Animation loop ───────────────────────────────────────────────────
+        const loop = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Spawn new bubbles
+            spawnTimer++;
+            if (spawnTimer >= SPAWN_INTERVAL && bubbles.length < MAX_BUBBLES) {
+                bubbles.push(spawnBubble());
+                spawnTimer = 0;
+            }
+
+            // Update & draw
+            for (let i = bubbles.length - 1; i >= 0; i--) {
+                const b = bubbles[i];
+                b.ticks++;
+                b.y -= b.speed;
+                // Sine-wave horizontal drift with slight deceleration
+                b.x += Math.sin(b.ticks * b.freq + b.phase) * (b.amp / 30);
+                drawBubble(b);
+                if (b.ticks >= b.life) {
+                    bubbles.splice(i, 1);
+                    spawnTimer = SPAWN_INTERVAL; // spawn immediately
+                }
+            }
+
+            rafRef.current = requestAnimationFrame(loop);
+        };
+
+        rafRef.current = requestAnimationFrame(loop);
+        return () => { cancelAnimationFrame(rafRef.current); };
+    }, [isOpen]);
+
 
     // ── Open ──────────────────────────────────────────────────────────────────
     const openMenu = useCallback(() => {
@@ -184,6 +321,18 @@ export const NavBubble: React.FC = () => {
 
     return (
         <>
+            {/* Floating bubble canvas — only active when menu open */}
+            <canvas
+                ref={canvasRef}
+                style={{
+                    position: 'fixed', inset: 0,
+                    zIndex: 999,
+                    pointerEvents: 'none',
+                    opacity: isOpen ? 1 : 0,
+                    transition: 'opacity 0.4s',
+                }}
+            />
+
             {/* Backdrop */}
             <div
                 ref={overlayRef}
