@@ -8,19 +8,25 @@ interface NavItem {
     angle: number; // degrees: 0=right, 90=bottom, 180=left, -90=top
 }
 
+// Pentagon arrangement (starting at top, clockwise, 72° apart)
 const NAV_ITEMS: NavItem[] = [
-    { label: 'Home',      sectionId: 'home',      angle: -90  }, // top
-    { label: 'Servizi',   sectionId: 'servizi',   angle: 0    }, // right
-    { label: 'Portfolio', sectionId: 'portfolio', angle: 90   }, // bottom
-    { label: 'Contatti',  sectionId: 'contatti',  angle: 180  }, // left
+    { label: 'Home',      sectionId: 'home',       angle: -90   }, // 12 o'clock
+    { label: 'Servizi',   sectionId: 'servizi',    angle: -18   }, // 1-2 o'clock
+    { label: 'Chi Siamo', sectionId: 'chi-siamo',  angle: 54    }, // 4-5 o'clock
+    { label: 'Portfolio', sectionId: 'portfolio',  angle: 126   }, // 7-8 o'clock
+    { label: 'Contatti',  sectionId: 'contatti',   angle: 198   }, // 9-10 o'clock
 ];
+
+// Sections that can be highlighted (Home is intentionally excluded)
+const HIGHLIGHTABLE = new Set(['servizi', 'chi-siamo', 'portfolio', 'contatti']);
 
 const BUBBLE_SIZE   = 64;
 const LOGO_SIZE     = 56;
-const CHILD_SIZE    = 76;
-const RADIUS_MOBILE = 140;
-const RADIUS_DESK   = 170;
+const CHILD_SIZE    = 72;
+const RADIUS_MOBILE = 155;
+const RADIUS_DESK   = 190;
 const MARGIN        = 20;
+
 
 // ─── Soap Bubble CSS ──────────────────────────────────────────────────────────
 const soap = (extra: React.CSSProperties = {}): React.CSSProperties => ({
@@ -90,8 +96,9 @@ export const NavBubble: React.FC = () => {
     useEffect(() => {
         const detectSection = () => {
             const midY = window.scrollY + window.innerHeight * 0.4;
-            let active = NAV_ITEMS[0].sectionId;
+            let active = '';  // empty = none (Home is never highlighted)
             for (const item of NAV_ITEMS) {
+                if (!HIGHLIGHTABLE.has(item.sectionId)) continue;
                 const el = document.getElementById(item.sectionId);
                 if (el && el.offsetTop <= midY) active = item.sectionId;
             }
@@ -314,8 +321,12 @@ export const NavBubble: React.FC = () => {
     const handleNavClick = (sectionId: string) => {
         closeMenu();
         setTimeout(() => {
-            const el = document.getElementById(sectionId);
-            if (el) el.scrollIntoView({ behavior: 'smooth' });
+            if (sectionId === 'home') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                const el = document.getElementById(sectionId);
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }
         }, 700);
     };
 
