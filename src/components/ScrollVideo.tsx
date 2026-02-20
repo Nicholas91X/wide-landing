@@ -191,9 +191,24 @@ export const ScrollVideo: React.FC = () => {
         return () => window.removeEventListener('resize', handleCanvasResize);
     }, [handleCanvasResize]);
 
+    // Draw initial frame as soon as images are ready
     useEffect(() => {
-        if (isLoaded && images.length > 0) drawFrame(0);
+        if (isLoaded && images.length > 0) {
+            drawFrame(0);
+        }
     }, [isLoaded, images, drawFrame]);
+
+    // Scroll lock until loaded
+    useEffect(() => {
+        if (!isLoaded) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isLoaded]);
 
     // Main ScrollTrigger logic
     useEffect(() => {
@@ -457,7 +472,7 @@ export const ScrollVideo: React.FC = () => {
         <section ref={containerRef} style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden', backgroundColor: '#000' }}>
             {/* Loading overlay — fades out smoothly when ready */}
             <div style={{
-                position: 'absolute', inset: 0, zIndex: 100,
+                position: 'absolute', inset: 0, zIndex: 2001, // above IntroOverlay (1999)
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
                 backgroundColor: '#000', color: '#fff',
