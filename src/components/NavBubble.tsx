@@ -84,23 +84,21 @@ export const NavBubble: React.FC = () => {
         c.style.strokeDashoffset = `${circ * (1 - scrollPct)}`;
     }, [scrollPct]);
 
-    // ── Active section via IntersectionObserver ───────────────────────────────
+    // ── Active section via scroll position (reliable even with GSAP pin) ────────
     useEffect(() => {
-        const ids = NAV_ITEMS.map(n => n.sectionId);
-        const observers: IntersectionObserver[] = [];
-
-        ids.forEach(id => {
-            const el = document.getElementById(id);
-            if (!el) return;
-            const obs = new IntersectionObserver(
-                ([entry]) => { if (entry.isIntersecting) setActiveSection(id); },
-                { threshold: 0.4 }
-            );
-            obs.observe(el);
-            observers.push(obs);
-        });
-
-        return () => observers.forEach(o => o.disconnect());
+        const detectSection = () => {
+            const midY = window.scrollY + window.innerHeight * 0.4;
+            let active = NAV_ITEMS[0].sectionId;
+            // Iterate in order: last section whose offsetTop <= midY wins
+            for (const item of NAV_ITEMS) {
+                const el = document.getElementById(item.sectionId);
+                if (el && el.offsetTop <= midY) active = item.sectionId;
+            }
+            setActiveSection(active);
+        };
+        detectSection(); // run once on mount
+        window.addEventListener('scroll', detectSection, { passive: true });
+        return () => window.removeEventListener('scroll', detectSection);
     }, []);
 
     // ── Open ──────────────────────────────────────────────────────────────────
@@ -275,25 +273,7 @@ export const NavBubble: React.FC = () => {
                             ref={el => { childRefs.current[i] = el; }}
                             onClick={(e) => { e.stopPropagation(); handleNavClick(item.sectionId); }}
                             style={{
-                                position: 'absolute',
-                                top: '50%', left: '50%',
-                                marginTop:  -CHILD_SIZE / 2,
-                                marginLeft: -CHILD_SIZE / 2,
-                                width: CHILD_SIZE, height: CHILD_SIZE,
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                flexDirection: 'column',
-                                opacity: 0,
-                                pointerEvents: isOpen ? 'all' : 'none',
-                                // Active glow
-                                ...(isActive ? {
-                                    boxShadow: [
-                                        'inset 0 0 18px rgba(255,255,255,0.22)',
-                                        'inset 0 0 40px rgba(140,180,255,0.10)',
-                                        '0 0 22px rgba(255,255,255,0.55)',
-                                        '0 0 45px rgba(200,220,255,0.25)',
-                                    ].join(', '),
-                                    border: '1.5px solid rgba(255,255,255,0.7)',
-                                } : {}),
+                                // Base soap bubble style
                                 ...soap({
                                     position: 'absolute',
                                     top: '50%', left: '50%',
@@ -302,7 +282,19 @@ export const NavBubble: React.FC = () => {
                                     width: CHILD_SIZE, height: CHILD_SIZE,
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     flexDirection: 'column',
+                                    opacity: 0,
+                                    pointerEvents: isOpen ? 'all' : 'none',
                                 }),
+                                // Active glow OVERRIDES soap() — must come last
+                                ...(isActive ? {
+                                    border: '1.5px solid rgba(255,255,255,0.75)',
+                                    boxShadow: [
+                                        'inset 0 0 18px rgba(255,255,255,0.30)',
+                                        'inset 0 0 40px rgba(140,180,255,0.15)',
+                                        '0 0 24px rgba(255,255,255,0.60)',
+                                        '0 0 50px rgba(200,220,255,0.30)',
+                                    ].join(', '),
+                                } : {}),
                             }}
                         >
                             <span style={{
