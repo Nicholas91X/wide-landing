@@ -263,7 +263,21 @@ export const NavBubble: React.FC = () => {
         const dx      = toCx - cx;
         const dy      = toCy - cy;
         const mobile  = window.innerWidth < 768;
-        const radius  = mobile ? RADIUS_MOBILE : RADIUS_DESK;
+
+        // ── Safe radius: keep every bubble inside the viewport ──────────────
+        // The most restrictive angles in this pentagon are ±18° (near-horizontal).
+        // cos(18°) ≈ 0.951 — the horizontal component that risks hitting the sides.
+        // Formula: halfWidth  - CHILD_SIZE/2 - margin > radius * cos(18°)
+        //          halfHeight - CHILD_SIZE/2 - margin > radius * sin(90°) [for Home top]
+        const SAFE_MARGIN = 14; // px from screen edge
+        const cosMax = Math.cos(18 * Math.PI / 180);   // ≈ 0.951
+        const halfW  = window.innerWidth  / 2;
+        const halfH  = window.innerHeight / 2;
+        const safeByWidth  = (halfW - CHILD_SIZE / 2 - SAFE_MARGIN) / cosMax;
+        const safeByHeight = halfH - CHILD_SIZE / 2 - SAFE_MARGIN; // Home at -90°
+        const maxSafe = Math.min(safeByWidth, safeByHeight);
+        const baseRadius = mobile ? RADIUS_MOBILE : RADIUS_DESK;
+        const radius = Math.min(baseRadius, maxSafe);
 
         const tl = gsap.timeline({ onComplete: () => { animating.current = false; } });
 
