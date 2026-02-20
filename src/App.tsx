@@ -6,8 +6,12 @@ function App() {
     return (
         <main>
             <NavBubble />
-            <ScrollVideo />
-            <Portfolio />
+            <section id="home">
+                <ScrollVideo />
+            </section>
+            <section id="portfolio">
+                <Portfolio />
+            </section>
         </main>
     );
 }
