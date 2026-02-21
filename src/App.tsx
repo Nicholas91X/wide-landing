@@ -1,6 +1,7 @@
 import { ScrollVideo } from './components/ScrollVideo';
 import { Portfolio } from './components/Portfolio';
 import { ChiSiamo } from './components/ChiSiamo';
+import { Contatti } from './components/Contatti';
 import { NavBubble } from './components/NavBubble';
 import { IntroOverlay } from './components/IntroOverlay';
 
@@ -25,6 +26,17 @@ function App() {
             />
             <section id="portfolio">
                 <Portfolio />
+            </section>
+            {/* Gradient fade divider */}
+            <div
+                style={{
+                    height: 'clamp(80px, 12vw, 160px)',
+                    background:
+                        'linear-gradient(to bottom, #000 0%, #0a0a0a 30%, #111 50%, #0a0a0a 70%, #000 100%)',
+                }}
+            />
+            <section id="contatti">
+                <Contatti />
             </section>
         </main>
     );
