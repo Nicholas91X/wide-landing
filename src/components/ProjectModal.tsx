@@ -163,6 +163,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                         lineHeight: 1.7,
                         fontWeight: 300,
                         margin: '0 0 24px',
+                        whiteSpace: 'pre-line',
                     }}>
                         {project?.description}
                     </p>

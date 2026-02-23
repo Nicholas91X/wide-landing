@@ -52,7 +52,7 @@ const SERVICES: Service[] = [
         layoutType: 'gallery',
         items: [
             { title: 'Dashboard UX', description: 'Sistemi modellati sui tuoi flussi di lavoro per azzerare i tempi di formazione del team.' },
-            { title: 'Cloud Backend', description: 'Reparti connessi e dati blindati. Il controllo totale della tua azienda, in tempo reale.' },
+            { title: 'Cloud Backend', description: 'Reparti connessi e dati blindati.\nIl controllo totale della tua azienda, in tempo reale.' },
             { title: 'Cross Platform', description: 'Applicativi adatti sia a sistemi Android che iOS.' },
             { title: 'AI Integration', description: 'Automatizziamo i processi aziendali e diamo vita alle tue idee, sviluppando strumenti AI esclusivi esattamente come li desideri.' },
         ]
@@ -70,7 +70,7 @@ const SERVICES: Service[] = [
     },
     {
         title: 'Produzioni Video con Intelligenza Artificiale',
-        description: 'Diamo vita a ciò che non esiste ancora. Scenari, animazioni e video ad altissimo impatto per presentare i tuoi prodotti come leader di settore.',
+        description: 'Diamo vita a ciò che non esiste ancora.\nScenari, animazioni e video ad altissimo impatto per presentare i tuoi prodotti come leader di settore.',
         layoutType: 'video',
         items: [
             { title: 'Guarda cosa possiamo far fare al tuo prodotto.', description: '' }
@@ -497,6 +497,7 @@ export const ScrollVideo: React.FC = () => {
                                         fontWeight: 300,
                                         lineHeight: 1.5,
                                         margin: 0,
+                                        whiteSpace: 'pre-line' as const,
                                         flex: 1 // Push to bottom if needed
                                     }}>{item.description}</p>
                                 </div>
@@ -533,7 +534,7 @@ export const ScrollVideo: React.FC = () => {
                                     }}>
                                         <div style={{ color: '#fff', fontSize: '2.2rem', fontWeight: 800, lineHeight: 1 }}>{item.value}</div>
                                         <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '6px' }}>{item.suffix}</div>
-                                        <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.85rem', marginTop: '12px', fontWeight: 300 }}>{item.description}</div>
+                                        <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.85rem', marginTop: '12px', fontWeight: 300, whiteSpace: 'pre-line' }}>{item.description}</div>
                                     </div>
                                 );
                             })}
@@ -847,7 +848,8 @@ export const ScrollVideo: React.FC = () => {
                             maxWidth: isMobile ? '90vw' : '800px',
                             margin: '0 auto',
                             lineHeight: 1.3,
-                            textShadow: '0 2px 10px rgba(0,0,0,0.5)'
+                            textShadow: '0 2px 10px rgba(0,0,0,0.5)',
+                            whiteSpace: 'pre-line' as const,
                         }}>
                             {currentService.description}
                         </p>

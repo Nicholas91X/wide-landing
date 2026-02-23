@@ -10,14 +10,14 @@ const TEAM = [
         name: 'Alessia Amoruso',
         role: 'Co-Founder & Strategist – Area Sviluppo e Pubblicità',
         description:
-            'Traduco la strategia in risultati misurabili. Ingegnerizzo le tue infrastrutture web (siti e applicativi) e gestisco in prima persona i budget delle tue campagne sponsorizzate, ottimizzando ogni investimento per generare contatti e vendite reali.',
+            'Traduco la strategia in risultati misurabili.\nIngegnerizzo le tue infrastrutture web (siti e applicativi) e gestisco in prima persona i budget delle tue campagne sponsorizzate, ottimizzando ogni investimento per generare contatti e vendite reali.',
         gradient: 'linear-gradient(135deg, #1a0a2e, #3d1a6e, #1a0a2e)',
     },
     {
         name: 'Asia Franceschi',
         role: 'Co-Founder & Strategist – Area Immagine e Contenuti',
         description:
-            "Studio il posizionamento della tua azienda e ne curo l'intera veste comunicativa. Dalla linea editoriale fino alla produzione reale di foto e video sul set, mi assicuro che ogni materiale trasmetta l'autorevolezza del tuo brand senza filtri o finzioni.",
+            "Studio il posizionamento della tua azienda e ne curo l'intera veste comunicativa.\nDalla linea editoriale fino alla produzione reale di foto e video sul set, mi assicuro che ogni materiale trasmetta l'autorevolezza del tuo brand senza filtri o finzioni.",
         gradient: 'linear-gradient(135deg, #0a1a2e, #1a3d6e, #0a1a2e)',
     },
 ];
@@ -168,6 +168,7 @@ export const ChiSiamo: React.FC = () => {
                     fontWeight: 300,
                     lineHeight: 1.45,
                     margin: 0,
+                    whiteSpace: 'pre-line' as const,
                 }}>
                     {TEAM[index].description}
                 </p>
@@ -211,7 +212,7 @@ export const ChiSiamo: React.FC = () => {
                     margin: '0 0 40px',
                 }}>
                     Per mantenere i nostri standard e gestire personalmente la strategia di ogni cliente,
-                    lavoriamo solo con un numero limitato di aziende ogni anno. Verifica la nostra disponibilità
+                    lavoriamo solo con un numero limitato di aziende ogni anno.<br />Verifica la nostra disponibilità
                     per capire se possiamo affiancarti in questo momento.
                 </p>
                 <button
