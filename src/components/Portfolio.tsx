@@ -153,7 +153,14 @@ export const Portfolio: React.FC = () => {
         // Refresh after a short delay to let all other ScrollTriggers (ScrollVideo)
         // register their spacers first
         const rafId = setTimeout(() => {
-            ScrollTrigger.refresh();
+            try {
+                ScrollTrigger.refresh();
+            } catch (_e) {
+                // Strict Mode may cause transient DOM issues; retry next frame
+                requestAnimationFrame(() => {
+                    try { ScrollTrigger.refresh(); } catch (_) { /* ignore */ }
+                });
+            }
         }, 200);
 
         return () => {
@@ -228,7 +235,7 @@ export const Portfolio: React.FC = () => {
                         }}
                     >
                         {/* Background / Reels */}
-                        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 0 }}>
                             {project.reels && project.reels.length > 0 ? (
                                 <div
                                     onClick={(e) => {
@@ -332,6 +339,7 @@ export const Portfolio: React.FC = () => {
                             position: 'absolute',
                             inset: 0,
                             background: `linear-gradient(to top, rgba(0,0,0,0.85) 0%, ${CARD_OVERLAYS[i % CARD_OVERLAYS.length]} 50%, transparent 100%)`,
+                            pointerEvents: 'none',
                         }} />
 
                         {/* Counter top-right */}
