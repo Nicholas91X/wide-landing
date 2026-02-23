@@ -341,19 +341,6 @@ export const Portfolio: React.FC = () => {
                             pointerEvents: 'none',
                         }} />
 
-                        {/* Counter top-right */}
-                        <div style={{
-                            position: 'absolute',
-                            top: 'clamp(20px, 5vw, 40px)',
-                            right: 'clamp(20px, 5vw, 40px)',
-                            color: 'rgba(255,255,255,0.3)',
-                            fontSize: '0.75rem',
-                            letterSpacing: '0.15em',
-                            fontWeight: 500,
-                        }}>
-                            {String(i + 1).padStart(2, '0')}&nbsp;/&nbsp;{String(PROJECTS.length).padStart(2, '0')}
-                        </div>
-
                         {/* Bottom info overlay */}
                         <div style={{
                             position: 'absolute',

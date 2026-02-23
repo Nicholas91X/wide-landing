@@ -20,6 +20,20 @@
         color: #fff;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        /* Prevent iOS rubber-band bounce that interferes with GSAP pinned sections */
+        overscroll-behavior: none;
+      }
+      /* Remove blue flash on tap (iOS/Android) */
+      * {
+        -webkit-tap-highlight-color: transparent;
+      }
+      /* Prevent double-tap zoom delay on interactive elements */
+      button, a, [role="button"] {
+        touch-action: manipulation;
+      }
+      /* Keep vertical scroll only on the page root — prevents accidental horizontal drift */
+      html {
+        touch-action: pan-y;
       }
     </style>
   </head>

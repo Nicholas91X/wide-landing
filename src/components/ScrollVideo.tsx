@@ -122,6 +122,11 @@ export const ScrollVideo: React.FC = () => {
     const [segmentProgress, setSegmentProgress] = useState<number>(0);
     const [isMobile, setIsMobile] = useState<boolean | null>(null);
 
+    // Canvas + intro text must stay hidden until the user actually scrolls,
+    // so the IntroOverlay (WIDE logo) is fully cleared before the first frame appears.
+    const [hasScrolled, setHasScrolled] = useState(false);
+    const hasScrolledRef = useRef(false);
+
     // Detect mobile before first paint. useLayoutEffect only runs in the browser.
     useLayoutEffect(() => {
         setIsMobile(window.matchMedia(MOBILE_QUERY).matches);
@@ -218,9 +223,9 @@ export const ScrollVideo: React.FC = () => {
         }
     }, [isLoaded, drawFrame]);
 
-    // Intro text sequence
+    // Intro text sequence — starts only after the user has scrolled (canvas revealed)
     useEffect(() => {
-        if (!isLoaded) return;
+        if (!isLoaded || !hasScrolled) return;
 
         let subtitleTypingTimeout: number;
         let typingInterval: number;
@@ -235,7 +240,7 @@ export const ScrollVideo: React.FC = () => {
                     currentIdx++;
                     if (currentIdx >= subtitleText.length) {
                         window.clearInterval(typingInterval);
-                        window.setTimeout(() => setShowCTA(true), 400); // Show CTA after subtitle finishes
+                        window.setTimeout(() => setShowCTA(true), 400);
                     }
                 }, 40);
             }, 600);
@@ -246,7 +251,7 @@ export const ScrollVideo: React.FC = () => {
             window.clearTimeout(subtitleTypingTimeout);
             window.clearInterval(typingInterval);
         };
-    }, [isLoaded, subtitleText]);
+    }, [isLoaded, hasScrolled, subtitleText]);
 
     // Scroll lock until loaded
     useEffect(() => {
@@ -259,6 +264,19 @@ export const ScrollVideo: React.FC = () => {
             document.body.style.overflow = '';
         };
     }, [isLoaded]);
+
+    // Reveal canvas + intro text on first scroll — keeps them hidden while
+    // the IntroOverlay (WIDE logo) is covering the screen.
+    useEffect(() => {
+        const onScroll = () => {
+            if (window.scrollY > 20 && !hasScrolledRef.current) {
+                hasScrolledRef.current = true;
+                setHasScrolled(true);
+            }
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
 
     // Ref to track the active ScrollTrigger instance across Strict Mode re-mounts
     const stRef = useRef<ScrollTrigger | null>(null);
@@ -336,13 +354,17 @@ export const ScrollVideo: React.FC = () => {
 
         const container = containerRef.current;
 
+        // On mobile, increase scroll distance so each service requires more physical
+        // scrolling — prevents swipe-fling from racing through sections too quickly.
+        const scrollEnd = isMobile ? '+=1400%' : '+=800%';
+
         const scrollTrigger = ScrollTrigger.create({
             trigger: container,
             start: 'top top',
-            end: '+=800%',
+            end: scrollEnd,
             pin: true,
             pinSpacing: true,
-            scrub: 0.8,
+            scrub: isMobile ? 1.2 : 0.8,
             invalidateOnRefresh: true,
             onUpdate: (self) => {
                 const scrollProgress = self.progress;
@@ -455,28 +477,28 @@ export const ScrollVideo: React.FC = () => {
                     <div style={{
                         display: 'grid',
                         gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-                        gap: isMobile ? '8px' : '20px',
-                        marginTop: isMobile ? '8px' : '40px',
+                        gap: isMobile ? 'clamp(10px, 2vw, 14px)' : '20px',
+                        marginTop: isMobile ? '12px' : '40px',
                         width: '100%',
                         maxWidth: '1200px',
                         justifyContent: 'center',
-                        alignItems: 'stretch', // Ensure equal height
+                        alignItems: 'stretch',
                     }}>
                         {items.map((item, i) => {
                             const vis = getElementVisibility(i, items.length);
                             return (
                                 <div key={i} style={{
-                                    padding: isMobile ? '12px 14px' : '24px',
+                                    padding: isMobile ? 'clamp(14px, 4vw, 20px) clamp(16px, 4.5vw, 22px)' : '24px',
                                     backgroundColor: 'rgba(255,255,255,0.06)',
                                     backdropFilter: 'blur(10px)',
-                                    borderRadius: isMobile ? '12px' : '16px',
+                                    borderRadius: isMobile ? '14px' : '16px',
                                     border: '1px solid rgba(255,255,255,0.1)',
                                     opacity: vis,
                                     transform: `translateY(${20 * (1 - vis)}px)`,
                                     transition: 'transform 0.3s ease-out',
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    height: '100%', // Fill grid cell
+                                    height: '100%',
                                 }}>
                                     {!isMobile && <div style={{
                                         width: '100%',
@@ -487,18 +509,18 @@ export const ScrollVideo: React.FC = () => {
                                     }} />}
                                     <h3 style={{
                                         color: '#fff',
-                                        fontSize: isMobile ? '0.85rem' : '1.15rem',
+                                        fontSize: isMobile ? 'clamp(0.92rem, 3vw, 1.05rem)' : '1.15rem',
                                         fontWeight: 700,
-                                        marginBottom: isMobile ? '4px' : '15px'
+                                        marginBottom: isMobile ? '6px' : '15px'
                                     }}>{item.title}</h3>
                                     <p style={{
-                                        color: 'rgba(255,255,255,0.65)',
-                                        fontSize: isMobile ? '0.68rem' : '0.9rem',
+                                        color: 'rgba(255,255,255,0.70)',
+                                        fontSize: isMobile ? 'clamp(0.8rem, 2.5vw, 0.9rem)' : '0.9rem',
                                         fontWeight: 300,
-                                        lineHeight: 1.5,
+                                        lineHeight: 1.55,
                                         margin: 0,
                                         whiteSpace: 'pre-line' as const,
-                                        flex: 1 // Push to bottom if needed
+                                        flex: 1
                                     }}>{item.description}</p>
                                 </div>
                             );
@@ -512,11 +534,11 @@ export const ScrollVideo: React.FC = () => {
                         <div style={{
                             display: 'flex',
                             flexDirection: 'column',
-                            gap: '12px',
-                            padding: '20px 0',
+                            gap: 'clamp(12px, 3vw, 16px)',
+                            padding: '16px 0',
                             marginTop: '10px',
                             width: '100%',
-                            maxWidth: '400px',
+                            maxWidth: '420px',
                         }}>
                             {items.map((item, i) => {
                                 const vis = getElementVisibility(i, items.length);
@@ -525,16 +547,16 @@ export const ScrollVideo: React.FC = () => {
                                         width: '100%',
                                         textAlign: 'center',
                                         opacity: vis,
-                                        padding: '24px 20px',
+                                        padding: 'clamp(18px, 5vw, 28px) clamp(16px, 4vw, 24px)',
                                         backgroundColor: 'rgba(255,255,255,0.03)',
                                         border: '1px solid rgba(255,255,255,0.1)',
-                                        borderRadius: '12px',
+                                        borderRadius: '14px',
                                         transition: 'all 0.4s ease-out',
                                         transform: `translateY(${15 * (1 - vis)}px)`,
                                     }}>
-                                        <div style={{ color: '#fff', fontSize: '2.2rem', fontWeight: 800, lineHeight: 1 }}>{item.value}</div>
-                                        <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '6px' }}>{item.suffix}</div>
-                                        <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.85rem', marginTop: '12px', fontWeight: 300, whiteSpace: 'pre-line' }}>{item.description}</div>
+                                        <div style={{ color: '#fff', fontSize: 'clamp(2rem, 7vw, 2.6rem)', fontWeight: 800, lineHeight: 1 }}>{item.value}</div>
+                                        <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 'clamp(0.7rem, 2vw, 0.78rem)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: '6px' }}>{item.suffix}</div>
+                                        <div style={{ color: 'rgba(255,255,255,0.82)', fontSize: 'clamp(0.85rem, 2.5vw, 0.95rem)', marginTop: '10px', fontWeight: 300, whiteSpace: 'pre-line' }}>{item.description}</div>
                                     </div>
                                 );
                             })}
@@ -598,8 +620,8 @@ export const ScrollVideo: React.FC = () => {
                             const vis = getElementVisibility(i, items.length);
                             return (
                                 <div key={i} style={{ opacity: vis, transform: `translateY(${10 * (1 - vis)}px)`, transition: 'opacity 0.5s ease-out' }}>
-                                    <p style={{ color: '#fff', fontSize: isMobile ? '1.4rem' : '1.8rem', fontWeight: 300, fontStyle: 'italic', lineHeight: 1.4 }}>{item.description}</p>
-                                    <div style={{ marginTop: '20px', color: 'rgba(255,255,255,0.6)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.9rem' }}>— {item.author}</div>
+                                    <p style={{ color: '#fff', fontSize: isMobile ? 'clamp(1.2rem, 4.5vw, 1.6rem)' : '1.8rem', fontWeight: 300, fontStyle: 'italic', lineHeight: 1.45 }}>{item.description}</p>
+                                    <div style={{ marginTop: '20px', color: 'rgba(255,255,255,0.6)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: isMobile ? 'clamp(0.78rem, 2.2vw, 0.88rem)' : '0.9rem' }}>— {item.author}</div>
                                 </div>
                             );
                         })}
@@ -611,22 +633,21 @@ export const ScrollVideo: React.FC = () => {
                     <div style={{
                         display: 'grid',
                         gridTemplateColumns: 'repeat(2, 1fr)',
-                        gap: isMobile ? '8px' : '15px',
-                        marginTop: isMobile ? '8px' : '30px',
+                        gap: isMobile ? 'clamp(10px, 2.5vw, 14px)' : '15px',
+                        marginTop: isMobile ? '12px' : '30px',
                         width: '100%',
                         maxWidth: isMobile ? '100%' : '600px',
-                        padding: '0 4px',
+                        padding: isMobile ? '0 2px' : '0 4px',
                         alignItems: 'stretch',
                     }}>
                         {items.map((item, i) => {
                             const vis = getElementVisibility(i, items.length);
                             return (
                                 <div key={i} style={{
-                                    aspectRatio: 'auto',
                                     background: 'rgba(255,255,255,0.05)',
-                                    borderRadius: isMobile ? '10px' : '12px',
+                                    borderRadius: isMobile ? '12px' : '12px',
                                     border: '1px solid rgba(255,255,255,0.1)',
-                                    padding: isMobile ? '12px' : '24px 20px',
+                                    padding: isMobile ? 'clamp(14px, 4vw, 20px) clamp(12px, 3.5vw, 18px)' : '24px 20px',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     justifyContent: 'center',
@@ -636,8 +657,8 @@ export const ScrollVideo: React.FC = () => {
                                     height: '100%',
                                     transition: 'all 0.3s ease-out'
                                 }}>
-                                    <div style={{ color: '#fff', fontSize: isMobile ? '0.78rem' : '0.9rem', fontWeight: 600, textAlign: 'center' }}>{item.title}</div>
-                                    <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: isMobile ? '0.65rem' : '0.75rem', textAlign: 'center', marginTop: isMobile ? '4px' : '12px', lineHeight: 1.3 }}>{item.description}</div>
+                                    <div style={{ color: '#fff', fontSize: isMobile ? 'clamp(0.84rem, 2.8vw, 0.96rem)' : '0.9rem', fontWeight: 600, textAlign: 'center', lineHeight: 1.3 }}>{item.title}</div>
+                                    <div style={{ color: 'rgba(255,255,255,0.62)', fontSize: isMobile ? 'clamp(0.74rem, 2.2vw, 0.82rem)' : '0.75rem', textAlign: 'center', marginTop: isMobile ? '6px' : '12px', lineHeight: 1.45 }}>{item.description}</div>
                                 </div>
                             );
                         })}
@@ -680,20 +701,20 @@ export const ScrollVideo: React.FC = () => {
                 </span>
             </div>
 
-            {/* Canvas — fades in after loading completes */}
+            {/* Canvas — hidden until loading AND first scroll (so IntroOverlay clears first) */}
             <canvas ref={canvasRef} style={{
                 position: 'absolute', inset: 0,
                 width: '100vw', height: '100vh',
                 display: 'block', zIndex: 0,
-                opacity: isLoaded ? 1 : 0,
-                transition: 'opacity 0.8s ease',
+                opacity: isLoaded && hasScrolled ? 1 : 0,
+                transition: 'opacity 0.5s ease',
             }} />
 
             {/* Contrast Overlay (Vignette) */}
             <div style={{
                 position: 'absolute',
                 inset: 0,
-                background: 'radial-gradient(circle at center, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.9) 50%, rgba(0,0,0,0.99) 100%)',
+                background: 'radial-gradient(circle at center, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.55) 50%, rgba(0,0,0,0.78) 100%)',
                 zIndex: 10,
                 opacity: Math.max(serviceOpacity, introOpacity * 0.65),
                 pointerEvents: 'none',
@@ -701,7 +722,7 @@ export const ScrollVideo: React.FC = () => {
             }} />
 
             {/* Intro Text */}
-            {isLoaded && currentServiceIndex === -1 && introOpacity > 0 && (
+            {isLoaded && hasScrolled && currentServiceIndex === -1 && introOpacity > 0 && (
                 <div style={{
                     position: 'absolute',
                     inset: 0,
@@ -810,7 +831,7 @@ export const ScrollVideo: React.FC = () => {
                         zIndex: 20,
                         opacity: serviceOpacity,
                         transition: 'opacity 0.2s ease-out',
-                        padding: isMobile ? '90px 16px 20px' : '40px',
+                        padding: isMobile ? 'clamp(80px, 22vw, 100px) clamp(18px, 5vw, 28px) 24px' : '40px',
                         textAlign: 'center',
                         overflowY: 'hidden', // scroll driven by segmentProgress, not user
                     }}
@@ -818,14 +839,14 @@ export const ScrollVideo: React.FC = () => {
                     <div style={{
                         transform: `translateY(${15 * (1 - serviceOpacity)}px)`,
                         transition: 'transform 0.3s ease-out',
-                        marginBottom: isMobile ? '6px' : '0',
+                        marginBottom: isMobile ? '8px' : '0',
                         flexShrink: 0,
                     }}>
                         <h2 style={{
                             color: '#fff',
-                            fontSize: isMobile ? '1.15rem' : '2.8rem',
+                            fontSize: isMobile ? 'clamp(1.2rem, 4.5vw, 1.6rem)' : '2.8rem',
                             fontWeight: 800,
-                            lineHeight: isMobile ? 1.3 : 1.1,
+                            lineHeight: isMobile ? 1.25 : 1.1,
                             margin: 0,
                             textShadow: '0 10px 40px rgba(0,0,0,0.8)',
                             letterSpacing: '-0.03em'
@@ -838,16 +859,16 @@ export const ScrollVideo: React.FC = () => {
                             height: '2px',
                             width: '30px',
                             background: '#fff',
-                            margin: isMobile ? '6px auto' : '20px auto',
+                            margin: isMobile ? '8px auto' : '20px auto',
                             opacity: 0.5
                         }} />
                         <p style={{
                             color: 'rgba(255,255,255,0.9)',
-                            fontSize: isMobile ? '0.72rem' : '1.1rem',
+                            fontSize: isMobile ? 'clamp(0.82rem, 2.8vw, 1rem)' : '1.1rem',
                             fontWeight: 300,
-                            maxWidth: isMobile ? '90vw' : '800px',
+                            maxWidth: isMobile ? '92vw' : '800px',
                             margin: '0 auto',
-                            lineHeight: 1.3,
+                            lineHeight: 1.4,
                             textShadow: '0 2px 10px rgba(0,0,0,0.5)',
                             whiteSpace: 'pre-line' as const,
                         }}>

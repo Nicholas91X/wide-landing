@@ -76,13 +76,16 @@ export const ChiSiamo: React.FC = () => {
             gsap.set(cardRight, { rotation: 0, scale: 0.85, opacity: 0, x: -40 });
 
             // ── Build timeline sequentially with .add() ──
+            // Mobile: shorter scroll distance — section was taking too long to traverse
+            const chiSiamoEnd = isMobile ? '+=200%' : '+=400%';
+
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: pinWrap,
                     start: 'top 20%',
-                    end: '+=400%',
+                    end: chiSiamoEnd,
                     pin: true,
-                    scrub: 0.8,
+                    scrub: isMobile ? 0.6 : 0.8,
                 },
             });
 
