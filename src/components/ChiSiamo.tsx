@@ -46,8 +46,8 @@ export const ChiSiamo: React.FC = () => {
 
     // ── Card dimensions — sized to fit longer descriptions ────────────────
     const cardW = isMobile ? 200 : 300;
-    const cardH = isMobile ? 380 : 480;
-    const photoH = isMobile ? 100 : 150;
+    const cardH = isMobile ? 430 : 560;
+    const photoH = cardW; // Square photo
 
     // ── GSAP Scroll Animations ──────────────────────────────────────────────
     useEffect(() => {
@@ -88,31 +88,31 @@ export const ChiSiamo: React.FC = () => {
 
             // Phase 1: Both cards enter (rotated, fanned out)
             tl.addLabel('enter')
-              .to(cardLeft, { rotation: -rotAmt, x: 0, opacity: 1, scale: 1, duration: 1, ease: 'power2.out' }, 'enter')
-              .to(cardRight, { rotation: rotAmt, x: 0, opacity: 1, scale: 1, duration: 1, ease: 'power2.out' }, 'enter');
+                .to(cardLeft, { rotation: -rotAmt, x: 0, opacity: 1, scale: 1, duration: 1, ease: 'power2.out' }, 'enter')
+                .to(cardRight, { rotation: rotAmt, x: 0, opacity: 1, scale: 1, duration: 1, ease: 'power2.out' }, 'enter');
 
             // Phase 2: Left card comes to foreground
             tl.addLabel('leftFwd')
-              .to(cardLeft, { rotation: 0, scale: fgScale, x: fgX, zIndex: 10, duration: 1, ease: 'power2.inOut' }, 'leftFwd')
-              .to(cardRight, { opacity: 0.35, scale: bgScale, duration: 1, ease: 'power2.inOut' }, 'leftFwd');
+                .to(cardLeft, { rotation: 0, scale: fgScale, x: fgX, zIndex: 10, duration: 1, ease: 'power2.inOut' }, 'leftFwd')
+                .to(cardRight, { opacity: 0.35, scale: bgScale, duration: 1, ease: 'power2.inOut' }, 'leftFwd');
 
             // Phase 3: Hold left in foreground (empty spacer tween)
             tl.addLabel('holdLeft')
-              .to(pinWrap, { duration: 2 }, 'holdLeft');
+                .to(pinWrap, { duration: 2 }, 'holdLeft');
 
             // Phase 4: Swap — left back, right forward
             tl.addLabel('swap')
-              .to(cardLeft, { rotation: -rotAmt, scale: bgScale, x: 0, opacity: 0.35, zIndex: 1, duration: 1.2, ease: 'power2.inOut' }, 'swap')
-              .to(cardRight, { rotation: 0, scale: fgScale, x: -fgX, opacity: 1, zIndex: 10, duration: 1.2, ease: 'power2.inOut' }, 'swap');
+                .to(cardLeft, { rotation: -rotAmt, scale: bgScale, x: 0, opacity: 0.35, zIndex: 1, duration: 1.2, ease: 'power2.inOut' }, 'swap')
+                .to(cardRight, { rotation: 0, scale: fgScale, x: -fgX, opacity: 1, zIndex: 10, duration: 1.2, ease: 'power2.inOut' }, 'swap');
 
             // Phase 5: Hold right in foreground
             tl.addLabel('holdRight')
-              .to(pinWrap, { duration: 2 }, 'holdRight');
+                .to(pinWrap, { duration: 2 }, 'holdRight');
 
             // Phase 6: Both return to resting
             tl.addLabel('return')
-              .to(cardLeft, { rotation: -rotAmt, scale: 1, opacity: 1, x: 0, zIndex: 1, duration: 1, ease: 'power2.inOut' }, 'return')
-              .to(cardRight, { rotation: rotAmt, scale: 1, opacity: 1, x: 0, zIndex: 2, duration: 1, ease: 'power2.inOut' }, 'return');
+                .to(cardLeft, { rotation: -rotAmt, scale: 1, opacity: 1, x: 0, zIndex: 1, duration: 1, ease: 'power2.inOut' }, 'return')
+                .to(cardRight, { rotation: rotAmt, scale: 1, opacity: 1, x: 0, zIndex: 2, duration: 1, ease: 'power2.inOut' }, 'return');
 
             // Phase 7: Breathing room
             tl.to(pinWrap, { duration: 1 });
@@ -138,7 +138,7 @@ export const ChiSiamo: React.FC = () => {
                 }}
             />
             <div style={{
-                padding: isMobile ? '14px 14px 18px' : '20px 20px 24px',
+                padding: isMobile ? '14px 14px 10px' : '20px 20px 14px',
                 flex: 1,
                 display: 'flex',
                 flexDirection: 'column',
@@ -147,7 +147,7 @@ export const ChiSiamo: React.FC = () => {
                     color: '#fff',
                     fontSize: isMobile ? '0.9rem' : '1.05rem',
                     fontWeight: 700,
-                    margin: '0 0 4px',
+                    margin: '8px 0 4px',
                     letterSpacing: '-0.01em',
                 }}>
                     {TEAM[index].name}
@@ -185,17 +185,78 @@ export const ChiSiamo: React.FC = () => {
                 /* NO overflow:hidden — it breaks GSAP pin */
             }}
         >
+            {/* ── Partnership CTA ────────────────────────────────────────── */}
+            <div style={{
+                textAlign: 'center',
+                maxWidth: 700,
+                margin: '0 auto',
+                marginBottom: 'clamp(120px, 18vw, 220px)',
+            }}>
+                <h2 style={{
+                    color: '#fff',
+                    fontSize: 'clamp(1.8rem, 5vw, 3.5rem)',
+                    fontWeight: 800,
+                    letterSpacing: '-0.03em',
+                    lineHeight: 1.1,
+                    margin: '0 0 24px',
+                    whiteSpace: isMobile ? 'normal' : 'nowrap',
+                }}>
+                    Partner,{isMobile && <br />} non semplici fornitori.
+                </h2>
+                <p style={{
+                    color: 'rgba(255,255,255,0.6)',
+                    fontSize: 'clamp(0.85rem, 2vw, 1.1rem)',
+                    fontWeight: 300,
+                    lineHeight: 1.7,
+                    margin: '0 0 40px',
+                }}>
+                    Per mantenere i nostri standard e gestire personalmente la strategia di ogni cliente,
+                    lavoriamo solo con un numero limitato di aziende ogni anno. Verifica la nostra disponibilità
+                    per capire se possiamo affiancarti in questo momento.
+                </p>
+                <button
+                    onClick={() => window.location.href = '#contatti'}
+                    style={{
+                        padding: '12px 22px',
+                        backgroundColor: '#fff',
+                        color: '#000',
+                        border: '1px solid #fff',
+                        borderRadius: '0',
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        letterSpacing: '0.12em',
+                        textTransform: 'uppercase',
+                        cursor: 'pointer',
+                        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                        whiteSpace: 'nowrap',
+                        boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                    }}
+                    onMouseOver={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 15px 40px rgba(0,0,0,0.4)';
+                    }}
+                    onMouseOut={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,0,0,0.3)';
+                    }}
+                >
+                    Verifica la nostra disponibilità
+                </button>
+            </div>
+
             {/* ── Header ──────────────────────────────────────────────────── */}
-            <div ref={headerRef} style={{ marginBottom: 'clamp(48px, 8vw, 80px)' }}>
+            <div ref={headerRef} style={{ marginBottom: 'clamp(24px, 4vw, 40px)', textAlign: 'left' }}>
                 <p style={{
                     color: 'rgba(255,255,255,0.35)', fontSize: '0.75rem', fontWeight: 600,
-                    letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 0 16px',
+                    letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 0 20px',
+                    display: 'block',
                 }}>
                     CHI SIAMO
                 </p>
                 <h2 style={{
-                    color: '#fff', fontSize: 'clamp(2.2rem, 7vw, 5rem)', fontWeight: 800,
+                    color: '#fff', fontSize: 'clamp(1.8rem, 6vw, 5rem)', fontWeight: 800,
                     letterSpacing: '-0.04em', lineHeight: 1.05, margin: '0 0 20px',
+                    display: 'block',
                 }}>
                     Le menti dietro<br />ogni progetto.
                 </h2>

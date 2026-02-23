@@ -15,14 +15,14 @@ interface PortfolioProject extends Project {
 const PROJECTS: PortfolioProject[] = [
     {
         id: 'p1',
-        title: 'Lux Brand Identity',
-        category: 'Branding',
+        title: 'Auto2G - Spa',
+        category: 'Rebranding e Marketing',
         year: '2025',
-        description: 'Identità visiva completa per un brand di lusso nel settore fashion. Dal logo al sistema di comunicazione, passando per packaging e brand guidelines.',
+        description: 'Rebranding completo e strategia marketing per Auto2G - Spa. Dall\'identità visiva alla comunicazione digitale, passando per campagne sponsorizzate e contenuti social.',
         mediaType: 'image',
         mediaSrc: '',
         accentColor: 'linear-gradient(135deg, #1a0a00, #3d1a00)',
-        tags: ['Brand Identity', 'Logo Design', 'Packaging', 'Guidelines'],
+        tags: ['Rebranding', 'Gestionale Customizzato', 'Social Media', 'Campagne Ads'],
         reels: [
             // Placeholder Bunny Stream URLs (replace with real ones)
             'https://iframe.mediadelivery.net/embed/12345/video1?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false',
@@ -32,14 +32,14 @@ const PROJECTS: PortfolioProject[] = [
     },
     {
         id: 'p2',
-        title: 'Social Campaign — Estate 2025',
-        category: 'Social Media',
+        title: 'Fit&Smile - Rita Zanicchi PT',
+        category: 'Web App & Social Media',
         year: '2025',
-        description: 'Campagna social multi-piattaforma per il lancio estivo. Contenuti video, reel e grafiche per Instagram, TikTok e LinkedIn con oltre 2M di impression.',
+        description: 'Sviluppo web app personalizzata e gestione completa della comunicazione social per Fit&Smile, il brand di fitness di Rita Zanicchi PT.',
         mediaType: 'video',
         mediaSrc: '',
         accentColor: 'linear-gradient(135deg, #001a3d, #002a5c)',
-        tags: ['Instagram', 'TikTok', 'Video', 'Copywriting'],
+        tags: ['Web App', 'Social Media', 'Branding', 'Content Creation'],
     },
     {
         id: 'p3',
@@ -363,7 +363,7 @@ export const Portfolio: React.FC = () => {
                                 textTransform: 'uppercase',
                                 marginBottom: '10px',
                             }}>
-                                {project.category} · {project.year}
+                                {project.category}
                             </div>
 
                             {/* Title */}
@@ -389,20 +389,20 @@ export const Portfolio: React.FC = () => {
                                     display: 'inline-flex',
                                     alignItems: 'center',
                                     gap: '8px',
-                                    color: '#fff',
+                                    color: '#000',
                                     fontSize: '0.85rem',
-                                    fontWeight: 500,
+                                    fontWeight: 600,
                                     letterSpacing: '0.08em',
-                                    border: '1px solid rgba(255,255,255,0.3)',
+                                    border: '1px solid #fff',
                                     padding: '10px 20px',
-                                    borderRadius: '100px',
+                                    borderRadius: '0',
                                     backdropFilter: 'blur(8px)',
-                                    backgroundColor: 'rgba(255,255,255,0.08)',
+                                    backgroundColor: '#fff',
                                 }}>
                                     Scopri il progetto
                                     <span style={{ fontSize: '0.9rem' }}>→</span>
                                 </div>
-                                
+
                                 {/* Mobile Swipe Indicator (Visible only if there are reels) */}
                                 {project.reels && project.reels.length > 0 && (
                                     <div className="portfolio-swipe-hint" style={{
@@ -416,11 +416,11 @@ export const Portfolio: React.FC = () => {
                                     }}>
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="swipe-icon">
                                             {/* Lucide Hand Pointer */}
-                                            <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/>
-                                            <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/>
-                                            <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2-2v0"/>
-                                            <path d="M6 14v-1a2 2 0 0 0-2-2v0a2 2 0 0 0-2-2v0"/>
-                                            <path d="M18 11h2a2 2 0 0 1 2 2v3.7c0 3.3-2.3 6.3-5.5 7L12 24l-6.5-6.5M6 14v4l-3-1.5"/>
+                                            <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
+                                            <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
+                                            <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2-2v0" />
+                                            <path d="M6 14v-1a2 2 0 0 0-2-2v0a2 2 0 0 0-2-2v0" />
+                                            <path d="M18 11h2a2 2 0 0 1 2 2v3.7c0 3.3-2.3 6.3-5.5 7L12 24l-6.5-6.5M6 14v4l-3-1.5" />
                                         </svg>
                                         Scorri i video
                                     </div>

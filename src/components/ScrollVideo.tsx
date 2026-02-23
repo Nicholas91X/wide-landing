@@ -106,6 +106,9 @@ export const ScrollVideo: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
     const currentFrameRef = useRef<number>(0);
+    // Stable ref for images — avoids re-creating ScrollTrigger when background
+    // chunks update the images array (which gets a new reference each time).
+    const imagesRef = useRef<HTMLImageElement[]>([]);
 
     const [currentServiceIndex, setCurrentServiceIndex] = useState<number>(-1);
     const [serviceOpacity, setServiceOpacity] = useState<number>(0);
@@ -130,10 +133,15 @@ export const ScrollVideo: React.FC = () => {
 
     const { images, progress, isLoaded, preloadFrames } = usePreload();
 
+    // Keep the ref in sync with the latest images array
+    useEffect(() => {
+        imagesRef.current = images;
+    }, [images]);
+
     const drawFrame = useCallback((frameIndex: number) => {
         const canvas = canvasRef.current;
         const ctx = contextRef.current;
-        const img = images[frameIndex];
+        const img = imagesRef.current[frameIndex];
         if (!canvas || !ctx || !img || !img.naturalWidth) return;
 
         // canvas.width/height are in device pixels (innerWidth * dpr).
@@ -157,7 +165,11 @@ export const ScrollVideo: React.FC = () => {
         const y = (canvasHeight - scaledHeight) / 2;
 
         ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
-    }, [images, isMobile]);
+    }, [isMobile]); // No dependency on images — reads from imagesRef
+
+    // Stable ref so the ScrollTrigger closure always calls the latest drawFrame
+    const drawFrameRef = useRef(drawFrame);
+    useEffect(() => { drawFrameRef.current = drawFrame; }, [drawFrame]);
 
     const handleCanvasResize = useCallback(() => {
         const canvas = canvasRef.current;
@@ -170,8 +182,8 @@ export const ScrollVideo: React.FC = () => {
             ctx.scale(dpr, dpr);
             contextRef.current = ctx;
         }
-        if (images.length > 0) drawFrame(currentFrameRef.current);
-    }, [images, drawFrame]);
+        if (imagesRef.current.length > 0) drawFrame(currentFrameRef.current);
+    }, [drawFrame]);
 
     // Listen to the breakpoint crossing to decide which frame set to load.
     // Using MediaQueryList is more reliable than innerWidth in DevTools emulation.
@@ -201,10 +213,10 @@ export const ScrollVideo: React.FC = () => {
 
     // Draw initial frame as soon as images are ready
     useEffect(() => {
-        if (isLoaded && images.length > 0) {
+        if (isLoaded && imagesRef.current.length > 0) {
             drawFrame(0);
         }
-    }, [isLoaded, images, drawFrame]);
+    }, [isLoaded, drawFrame]);
 
     // Intro text sequence
     useEffect(() => {
@@ -248,18 +260,31 @@ export const ScrollVideo: React.FC = () => {
         };
     }, [isLoaded]);
 
-    // Main ScrollTrigger logic
+    // Ref to track the active ScrollTrigger instance across Strict Mode re-mounts
+    const stRef = useRef<ScrollTrigger | null>(null);
+
+    // Main ScrollTrigger logic — depends only on isLoaded (stable boolean)
+    // drawFrame reads from imagesRef so it doesn't need to be a dependency.
     useEffect(() => {
-        if (!isLoaded || images.length === 0 || !containerRef.current) return;
+        if (!isLoaded || imagesRef.current.length === 0 || !containerRef.current) return;
+
+        // Kill any leftover ScrollTrigger from a previous mount (React Strict Mode)
+        if (stRef.current) {
+            stRef.current.kill();
+            stRef.current = null;
+        }
 
         const serviceCount = SERVICES.length;
-        const totalFrames = images.length;
+        const totalFrames = imagesRef.current.length;
         const fastSegments = serviceCount + 1;
         const slowSegments = serviceCount;
         const totalSegments = fastSegments + slowSegments;
 
-        const fastSegmentSize = 1 / totalSegments;
-        const slowSegmentSize = 1 / totalSegments;
+        // Slow segments (services visible) get 2.5× more scroll space than fast segments (transitions)
+        const slowWeight = 2.5;
+        const totalWeight = fastSegments * 1 + slowSegments * slowWeight;
+        const fastSegmentSize = 1 / totalWeight;
+        const slowSegmentSize = slowWeight / totalWeight;
 
         const framesPerFastSegment = Math.floor((totalFrames * FAST_FRAME_ALLOCATION) / fastSegments);
         const framesPerSlowSegment = Math.floor((totalFrames * SLOW_FRAME_ALLOCATION) / slowSegments);
@@ -309,12 +334,16 @@ export const ScrollVideo: React.FC = () => {
             segments[segments.length - 1].endProgress = 1;
         }
 
+        const container = containerRef.current;
+
         const scrollTrigger = ScrollTrigger.create({
-            trigger: containerRef.current,
+            trigger: container,
             start: 'top top',
             end: '+=800%',
             pin: true,
+            pinSpacing: true,
             scrub: 0.8,
+            invalidateOnRefresh: true,
             onUpdate: (self) => {
                 const scrollProgress = self.progress;
                 const currentSegment = segments.find(
@@ -329,7 +358,7 @@ export const ScrollVideo: React.FC = () => {
 
                 if (frameIndex !== currentFrameRef.current) {
                     currentFrameRef.current = frameIndex;
-                    drawFrame(frameIndex);
+                    drawFrameRef.current(frameIndex);
                 }
 
                 // Intro opacity — stay fully visible for most of the first segment,
@@ -362,12 +391,29 @@ export const ScrollVideo: React.FC = () => {
             },
         });
 
-        // After this section's pin spacer is created, notify all other
-        // ScrollTriggers (e.g. Portfolio) to recalculate their positions.
-        ScrollTrigger.refresh();
+        stRef.current = scrollTrigger;
 
-        return () => { scrollTrigger.kill(); };
-    }, [isLoaded, images, drawFrame]);
+        // Notify other ScrollTriggers to recalculate after pin spacer is created.
+        // Wrapped in try-catch because React Strict Mode may cause a transient
+        // DOM state where the pin spacer's parent is stale.
+        const timerId = setTimeout(() => {
+            try {
+                ScrollTrigger.refresh();
+            } catch (_e) {
+                // Retry once – by now React has settled the DOM
+                requestAnimationFrame(() => ScrollTrigger.refresh());
+            }
+        }, 50);
+
+        return () => {
+            clearTimeout(timerId);
+            if (stRef.current === scrollTrigger) {
+                scrollTrigger.kill();
+                stRef.current = null;
+            }
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoaded]);
 
     const currentService = currentServiceIndex >= 0 ? SERVICES[currentServiceIndex] : null;
     const serviceContentRef = useRef<HTMLDivElement>(null);
@@ -409,8 +455,8 @@ export const ScrollVideo: React.FC = () => {
                     <div style={{
                         display: 'grid',
                         gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-                        gap: isMobile ? '12px' : '20px',
-                        marginTop: isMobile ? '12px' : '40px',
+                        gap: isMobile ? '8px' : '20px',
+                        marginTop: isMobile ? '8px' : '40px',
                         width: '100%',
                         maxWidth: '1200px',
                         justifyContent: 'center',
@@ -420,7 +466,7 @@ export const ScrollVideo: React.FC = () => {
                             const vis = getElementVisibility(i, items.length);
                             return (
                                 <div key={i} style={{
-                                    padding: isMobile ? '16px' : '24px',
+                                    padding: isMobile ? '12px 14px' : '24px',
                                     backgroundColor: 'rgba(255,255,255,0.06)',
                                     backdropFilter: 'blur(10px)',
                                     borderRadius: isMobile ? '12px' : '16px',
@@ -439,17 +485,17 @@ export const ScrollVideo: React.FC = () => {
                                         borderRadius: '8px',
                                         marginBottom: '16px'
                                     }} />}
-                                    <h3 style={{ 
-                                        color: '#fff', 
-                                        fontSize: isMobile ? '0.95rem' : '1.15rem', 
+                                    <h3 style={{
+                                        color: '#fff',
+                                        fontSize: isMobile ? '0.85rem' : '1.15rem',
                                         fontWeight: 700,
-                                        marginBottom: isMobile ? '8px' : '15px' 
+                                        marginBottom: isMobile ? '4px' : '15px'
                                     }}>{item.title}</h3>
-                                    <p style={{ 
-                                        color: 'rgba(255,255,255,0.65)', 
-                                        fontSize: isMobile ? '0.75rem' : '0.9rem', 
-                                        fontWeight: 300, 
-                                        lineHeight: 1.5, 
+                                    <p style={{
+                                        color: 'rgba(255,255,255,0.65)',
+                                        fontSize: isMobile ? '0.68rem' : '0.9rem',
+                                        fontWeight: 300,
+                                        lineHeight: 1.5,
                                         margin: 0,
                                         flex: 1 // Push to bottom if needed
                                     }}>{item.description}</p>
@@ -567,7 +613,7 @@ export const ScrollVideo: React.FC = () => {
                         gap: isMobile ? '8px' : '15px',
                         marginTop: isMobile ? '8px' : '30px',
                         width: '100%',
-                        maxWidth: isMobile ? '100%' : '1000px',
+                        maxWidth: isMobile ? '100%' : '600px',
                         padding: '0 4px',
                         alignItems: 'stretch',
                     }}>
@@ -575,11 +621,11 @@ export const ScrollVideo: React.FC = () => {
                             const vis = getElementVisibility(i, items.length);
                             return (
                                 <div key={i} style={{
-                                    aspectRatio: isMobile ? 'auto' : '1',
+                                    aspectRatio: 'auto',
                                     background: 'rgba(255,255,255,0.05)',
                                     borderRadius: isMobile ? '10px' : '12px',
                                     border: '1px solid rgba(255,255,255,0.1)',
-                                    padding: isMobile ? '12px' : '20px',
+                                    padding: isMobile ? '12px' : '24px 20px',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     justifyContent: 'center',
@@ -758,12 +804,12 @@ export const ScrollVideo: React.FC = () => {
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        justifyContent: isMobile ? 'flex-start' : 'center',
+                        justifyContent: 'center',
                         pointerEvents: 'none',
                         zIndex: 20,
                         opacity: serviceOpacity,
                         transition: 'opacity 0.2s ease-out',
-                        padding: isMobile ? '100px 16px 20px' : '120px 40px 40px', // Extra top padding to clear Logo/Menu
+                        padding: isMobile ? '90px 16px 20px' : '40px',
                         textAlign: 'center',
                         overflowY: 'hidden', // scroll driven by segmentProgress, not user
                     }}
@@ -776,29 +822,31 @@ export const ScrollVideo: React.FC = () => {
                     }}>
                         <h2 style={{
                             color: '#fff',
-                            fontSize: isMobile ? '1.3rem' : '2.8rem',
+                            fontSize: isMobile ? '1.15rem' : '2.8rem',
                             fontWeight: 800,
-                            lineHeight: 1.1,
+                            lineHeight: isMobile ? 1.3 : 1.1,
                             margin: 0,
                             textShadow: '0 10px 40px rgba(0,0,0,0.8)',
                             letterSpacing: '-0.03em'
                         }}>
-                            {currentService.title}
+                            {isMobile && currentService.title.includes('ed E-commerce')
+                                ? <>Sviluppo Piattaforme Web<br />ed E-commerce</>
+                                : currentService.title}
                         </h2>
                         <div style={{
                             height: '2px',
                             width: '30px',
                             background: '#fff',
-                            margin: isMobile ? '8px auto' : '20px auto',
+                            margin: isMobile ? '6px auto' : '20px auto',
                             opacity: 0.5
                         }} />
                         <p style={{
                             color: 'rgba(255,255,255,0.9)',
-                            fontSize: isMobile ? '0.8rem' : '1.1rem',
+                            fontSize: isMobile ? '0.72rem' : '1.1rem',
                             fontWeight: 300,
                             maxWidth: isMobile ? '90vw' : '800px',
                             margin: '0 auto',
-                            lineHeight: 1.4,
+                            lineHeight: 1.3,
                             textShadow: '0 2px 10px rgba(0,0,0,0.5)'
                         }}>
                             {currentService.description}

@@ -10,22 +10,22 @@ interface NavItem {
 
 // Pentagon arrangement (starting at top, clockwise, 72° apart)
 const NAV_ITEMS: NavItem[] = [
-    { label: 'Home',      sectionId: 'home',       angle: -90   }, // 12 o'clock
-    { label: 'Servizi',   sectionId: 'servizi',    angle: -18   }, // 1-2 o'clock
-    { label: 'Chi Siamo', sectionId: 'chi-siamo',  angle: 54    }, // 4-5 o'clock
-    { label: 'Portfolio', sectionId: 'portfolio',  angle: 126   }, // 7-8 o'clock
-    { label: 'Contatti',  sectionId: 'contatti',   angle: 198   }, // 9-10 o'clock
+    { label: 'Home', sectionId: 'home', angle: -90 }, // 12 o'clock
+    { label: 'Servizi', sectionId: 'servizi', angle: -18 }, // 1-2 o'clock
+    { label: 'Chi Siamo', sectionId: 'chi-siamo', angle: 54 }, // 4-5 o'clock
+    { label: 'Portfolio', sectionId: 'portfolio', angle: 126 }, // 7-8 o'clock
+    { label: 'Contatti', sectionId: 'contatti', angle: 198 }, // 9-10 o'clock
 ];
 
 // Sections that can be highlighted (Home is intentionally excluded)
 const HIGHLIGHTABLE = new Set(['servizi', 'chi-siamo', 'portfolio', 'contatti']);
 
-const BUBBLE_SIZE   = 64;
-const LOGO_SIZE     = 56;
-const CHILD_SIZE    = 72;
+const BUBBLE_SIZE = 48;
+const LOGO_SIZE = 42;
+const CHILD_SIZE = 72;
 const RADIUS_MOBILE = 155;
-const RADIUS_DESK   = 190;
-const MARGIN        = 20;
+const RADIUS_DESK = 190;
+const MARGIN = 16;
 
 
 // ─── Soap Bubble CSS ──────────────────────────────────────────────────────────
@@ -60,17 +60,17 @@ function polarOffset(angleDeg: number, radius: number) {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export const NavBubble: React.FC = () => {
-    const mainRef     = useRef<HTMLDivElement>(null);
-    const childRefs   = useRef<(HTMLDivElement | null)[]>([]);
-    const overlayRef  = useRef<HTMLDivElement>(null);
+    const mainRef = useRef<HTMLDivElement>(null);
+    const childRefs = useRef<(HTMLDivElement | null)[]>([]);
+    const overlayRef = useRef<HTMLDivElement>(null);
     const progressRef = useRef<SVGCircleElement>(null);
-    const animating   = useRef(false);
+    const animating = useRef(false);
 
-    const [isOpen,         setIsOpen]         = useState(false);
-    const [scrollPct,      setScrollPct]      = useState(0);
-    const [activeSection,  setActiveSection]  = useState('home');
+    const [isOpen, setIsOpen] = useState(false);
+    const [scrollPct, setScrollPct] = useState(0);
+    const [activeSection, setActiveSection] = useState('home');
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const rafRef    = useRef<number>(0);
+    const rafRef = useRef<number>(0);
 
     // ── Scroll progress ───────────────────────────────────────────────────────
     useEffect(() => {
@@ -88,7 +88,7 @@ export const NavBubble: React.FC = () => {
         if (!c) return;
         const r = parseFloat(c.getAttribute('r') || '34');
         const circ = 2 * Math.PI * r;
-        c.style.strokeDasharray  = `${circ}`;
+        c.style.strokeDasharray = `${circ}`;
         c.style.strokeDashoffset = `${circ * (1 - scrollPct)}`;
     }, [scrollPct]);
 
@@ -122,7 +122,7 @@ export const NavBubble: React.FC = () => {
         }
 
         // Resize canvas to full viewport
-        canvas.width  = window.innerWidth;
+        canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
@@ -146,16 +146,16 @@ export const NavBubble: React.FC = () => {
         const spawnBubble = (): Bubble => {
             const r = 6 + Math.random() * 20;                // 6–26px
             return {
-                x:     Math.random() * canvas.width,
-                y:     canvas.height + r + Math.random() * canvas.height * 0.3,
+                x: Math.random() * canvas.width,
+                y: canvas.height + r + Math.random() * canvas.height * 0.3,
                 r,
                 // Larger bubbles rise slower (Stokes' law approximation)
                 speed: 0.4 + (1 - r / 26) * 1.2 + Math.random() * 0.4,
-                amp:   8 + Math.random() * 22,
-                freq:  0.008 + Math.random() * 0.012,
+                amp: 8 + Math.random() * 22,
+                freq: 0.008 + Math.random() * 0.012,
                 phase: Math.random() * Math.PI * 2,
                 ticks: 0,
-                life:  Math.round((canvas.height + r) / (0.4 + (1 - r / 26) * 1.2)),
+                life: Math.round((canvas.height + r) / (0.4 + (1 - r / 26) * 1.2)),
             };
         };
 
@@ -191,16 +191,16 @@ export const NavBubble: React.FC = () => {
                 b.x - b.r * 0.3, b.y - b.r * 0.3, b.r * 0.05,
                 b.x, b.y, b.r
             );
-            grad.addColorStop(0,   'rgba(255,255,255,0.55)');
+            grad.addColorStop(0, 'rgba(255,255,255,0.55)');
             grad.addColorStop(0.3, 'rgba(180,214,255,0.15)');
             grad.addColorStop(0.7, 'rgba(200,140,255,0.10)');
-            grad.addColorStop(1,   'rgba(140,255,200,0.05)');
+            grad.addColorStop(1, 'rgba(140,255,200,0.05)');
             ctx.fillStyle = grad;
             ctx.fill();
 
             // Border
             ctx.strokeStyle = 'rgba(255,255,255,0.30)';
-            ctx.lineWidth   = 0.8;
+            ctx.lineWidth = 0.8;
             ctx.stroke();
 
             // Specular highlight
@@ -251,18 +251,18 @@ export const NavBubble: React.FC = () => {
         animating.current = true;
         setIsOpen(true);
 
-        const main    = mainRef.current;
+        const main = mainRef.current;
         const overlay = overlayRef.current;
         if (!main || !overlay) { animating.current = false; return; }
 
-        const rect    = main.getBoundingClientRect();
-        const cx      = rect.left + rect.width  / 2;
-        const cy      = rect.top  + rect.height / 2;
-        const toCx    = window.innerWidth  / 2;
-        const toCy    = window.innerHeight / 2;
-        const dx      = toCx - cx;
-        const dy      = toCy - cy;
-        const mobile  = window.innerWidth < 768;
+        const rect = main.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const toCx = window.innerWidth / 2;
+        const toCy = window.innerHeight / 2;
+        const dx = toCx - cx;
+        const dy = toCy - cy;
+        const mobile = window.innerWidth < 768;
 
         // ── Safe radius: keep every bubble inside the viewport ──────────────
         // The most restrictive angles in this pentagon are ±18° (near-horizontal).
@@ -271,9 +271,9 @@ export const NavBubble: React.FC = () => {
         //          halfHeight - CHILD_SIZE/2 - margin > radius * sin(90°) [for Home top]
         const SAFE_MARGIN = 14; // px from screen edge
         const cosMax = Math.cos(18 * Math.PI / 180);   // ≈ 0.951
-        const halfW  = window.innerWidth  / 2;
-        const halfH  = window.innerHeight / 2;
-        const safeByWidth  = (halfW - CHILD_SIZE / 2 - SAFE_MARGIN) / cosMax;
+        const halfW = window.innerWidth / 2;
+        const halfH = window.innerHeight / 2;
+        const safeByWidth = (halfW - CHILD_SIZE / 2 - SAFE_MARGIN) / cosMax;
         const safeByHeight = halfH - CHILD_SIZE / 2 - SAFE_MARGIN; // Home at -90°
         const maxSafe = Math.min(safeByWidth, safeByHeight);
         const baseRadius = mobile ? RADIUS_MOBILE : RADIUS_DESK;
@@ -310,7 +310,7 @@ export const NavBubble: React.FC = () => {
         if (animating.current || !isOpen) return;
         animating.current = true;
 
-        const main    = mainRef.current;
+        const main = mainRef.current;
         const overlay = overlayRef.current;
         if (!main || !overlay) { animating.current = false; return; }
 
@@ -372,7 +372,7 @@ export const NavBubble: React.FC = () => {
                 }}
             />
 
-            {/* ── Logo bubble — top-left ───────────────────────────────────── */}
+            {/* ── Logo bubble — top-left (hero only) ────────────────────────── */}
             <div style={{
                 position: 'fixed', top: MARGIN, left: MARGIN,
                 width: LOGO_SIZE, height: LOGO_SIZE,
@@ -380,6 +380,9 @@ export const NavBubble: React.FC = () => {
                 overflow: 'hidden',
                 ...soap(),
                 padding: 0,
+                opacity: activeSection === 'home' ? 1 : 0,
+                pointerEvents: activeSection === 'home' ? 'auto' : 'none',
+                transition: 'opacity 0.4s ease',
             }}>
                 <img
                     src="/logo.png" alt="WIDE"
@@ -451,7 +454,7 @@ export const NavBubble: React.FC = () => {
                                 ...soap({
                                     position: 'absolute',
                                     top: '50%', left: '50%',
-                                    marginTop:  -CHILD_SIZE / 2,
+                                    marginTop: -CHILD_SIZE / 2,
                                     marginLeft: -CHILD_SIZE / 2,
                                     width: CHILD_SIZE, height: CHILD_SIZE,
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
