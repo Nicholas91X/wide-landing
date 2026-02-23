@@ -7,12 +7,15 @@ import { IntroOverlay } from './components/IntroOverlay';
 
 function App() {
     return (
-        <main>
-            <IntroOverlay />
+        <>
+            {/* NavBubble OUTSIDE <main> to prevent GSAP pin transforms
+                from creating a containing block that breaks position:fixed */}
             <NavBubble />
-            <section id="servizi">
-                <ScrollVideo />
-            </section>
+            <IntroOverlay />
+            <main style={{ overflowX: 'hidden' }}>
+                <section id="servizi">
+                    <ScrollVideo />
+                </section>
             <section id="chi-siamo">
                 <ChiSiamo />
             </section>
@@ -39,6 +42,7 @@ function App() {
                 <Contatti />
             </section>
         </main>
+        </>
     );
 }
 

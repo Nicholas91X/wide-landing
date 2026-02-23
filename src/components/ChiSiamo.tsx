@@ -44,10 +44,10 @@ export const ChiSiamo: React.FC = () => {
             mq.removeEventListener('change', onChange as (e: MediaQueryListEvent) => void);
     }, []);
 
-    // ── Card dimensions ──────────────────────────────────────────────────────
-    const cardW = isMobile ? 180 : 260;
-    const cardH = isMobile ? 300 : 400;
-    const photoH = isMobile ? 140 : 200;
+    // ── Card dimensions — sized to fit longer descriptions ────────────────
+    const cardW = isMobile ? 200 : 300;
+    const cardH = isMobile ? 380 : 480;
+    const photoH = isMobile ? 100 : 150;
 
     // ── GSAP Scroll Animations ──────────────────────────────────────────────
     useEffect(() => {
@@ -164,9 +164,9 @@ export const ChiSiamo: React.FC = () => {
                 </p>
                 <p style={{
                     color: 'rgba(255,255,255,0.55)',
-                    fontSize: isMobile ? '0.72rem' : '0.8rem',
+                    fontSize: isMobile ? '0.65rem' : '0.75rem',
                     fontWeight: 300,
-                    lineHeight: 1.5,
+                    lineHeight: 1.45,
                     margin: 0,
                 }}>
                     {TEAM[index].description}
@@ -181,6 +181,7 @@ export const ChiSiamo: React.FC = () => {
             style={{
                 backgroundColor: '#000',
                 padding: `clamp(60px, 10vw, 120px) clamp(24px, 5vw, 80px)`,
+                overflowX: 'hidden',
                 /* NO overflow:hidden — it breaks GSAP pin */
             }}
         >

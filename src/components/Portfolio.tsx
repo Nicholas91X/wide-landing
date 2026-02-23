@@ -197,8 +197,9 @@ export const Portfolio: React.FC = () => {
                 ref={containerRef}
                 style={{
                     position: 'relative',
-                    width: '100vw',
-                    height: '100vh',
+                    width: '100%',
+                    height: '100dvh',
+                    minHeight: '100dvh',
                     overflow: 'hidden',
                     backgroundColor: '#000',
                 }}
