@@ -293,6 +293,16 @@ export const Portfolio: React.FC = () => {
                                             .portfolio-reel-item {
                                                 width: 100% !important;
                                             }
+                                            .portfolio-swipe-hint {
+                                                display: none !important;
+                                            }
+                                        }
+                                        @keyframes swipeHand {
+                                            0%, 100% { transform: translateX(5px) rotate(5deg); opacity: 0.5; }
+                                            50% { transform: translateX(-15px) rotate(-5deg); opacity: 1; }
+                                        }
+                                        .swipe-icon {
+                                            animation: swipeHand 3s infinite ease-in-out;
                                         }
                                     `}} />
                                 </div>
@@ -368,23 +378,53 @@ export const Portfolio: React.FC = () => {
                                 {project.title}
                             </h3>
 
-                            {/* CTA */}
+                            {/* CTA & Swipe Indicator */}
                             <div style={{
-                                display: 'inline-flex',
+                                display: 'flex',
                                 alignItems: 'center',
-                                gap: '8px',
-                                color: '#fff',
-                                fontSize: '0.85rem',
-                                fontWeight: 500,
-                                letterSpacing: '0.08em',
-                                border: '1px solid rgba(255,255,255,0.3)',
-                                padding: '10px 20px',
-                                borderRadius: '100px',
-                                backdropFilter: 'blur(8px)',
-                                backgroundColor: 'rgba(255,255,255,0.08)',
+                                gap: '16px',
+                                flexWrap: 'wrap',
                             }}>
-                                Scopri il progetto
-                                <span style={{ fontSize: '0.9rem' }}>→</span>
+                                <div style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    color: '#fff',
+                                    fontSize: '0.85rem',
+                                    fontWeight: 500,
+                                    letterSpacing: '0.08em',
+                                    border: '1px solid rgba(255,255,255,0.3)',
+                                    padding: '10px 20px',
+                                    borderRadius: '100px',
+                                    backdropFilter: 'blur(8px)',
+                                    backgroundColor: 'rgba(255,255,255,0.08)',
+                                }}>
+                                    Scopri il progetto
+                                    <span style={{ fontSize: '0.9rem' }}>→</span>
+                                </div>
+                                
+                                {/* Mobile Swipe Indicator (Visible only if there are reels) */}
+                                {project.reels && project.reels.length > 0 && (
+                                    <div className="portfolio-swipe-hint" style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px',
+                                        color: 'rgba(255,255,255,0.6)',
+                                        fontSize: '0.75rem',
+                                        letterSpacing: '0.05em',
+                                        textTransform: 'uppercase',
+                                    }}>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="swipe-icon">
+                                            {/* Lucide Hand Pointer */}
+                                            <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/>
+                                            <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/>
+                                            <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2-2v0"/>
+                                            <path d="M6 14v-1a2 2 0 0 0-2-2v0a2 2 0 0 0-2-2v0"/>
+                                            <path d="M18 11h2a2 2 0 0 1 2 2v3.7c0 3.3-2.3 6.3-5.5 7L12 24l-6.5-6.5M6 14v4l-3-1.5"/>
+                                        </svg>
+                                        Scorri i video
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
