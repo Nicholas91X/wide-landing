@@ -11,14 +11,14 @@ const TEAM = [
         role: 'Co-Founder & Strategist – Area Sviluppo e Pubblicità',
         description:
             'Traduco la strategia in risultati misurabili. Ingegnerizzo le tue infrastrutture web (siti e applicativi) e gestisco in prima persona i budget delle tue campagne sponsorizzate, ottimizzando ogni investimento per generare contatti e vendite reali.',
-        gradient: 'linear-gradient(135deg, #1a0a2e, #3d1a6e, #1a0a2e)',
+        image: '/founders/Alessia_Amoruso.jpeg',
     },
     {
         name: 'Asia Franceschi',
         role: 'Co-Founder & Strategist – Area Immagine e Contenuti',
         description:
             "Studio il posizionamento della tua azienda e ne curo l'intera veste comunicativa. Dalla linea editoriale fino alla produzione reale di foto e video sul set, mi assicuro che ogni materiale trasmetta l'autorevolezza del tuo brand senza filtri o finzioni.",
-        gradient: 'linear-gradient(135deg, #0a1a2e, #1a3d6e, #0a1a2e)',
+        image: '/founders/Asia_Franceschi.jpeg',
     },
 ];
 
@@ -129,12 +129,15 @@ export const ChiSiamo: React.FC = () => {
 
     const renderCard = (index: number) => (
         <>
-            <div
+            <img
+                src={TEAM[index].image}
+                alt={TEAM[index].name}
                 style={{
                     width: '100%',
                     height: photoH,
-                    background: TEAM[index].gradient,
+                    objectFit: 'cover',
                     flexShrink: 0,
+                    objectPosition: 'center 20%', // Shift focus towards faces
                 }}
             />
             <div style={{
