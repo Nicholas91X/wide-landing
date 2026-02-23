@@ -6,8 +6,13 @@ import type { Project } from './ProjectModal';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// ─── Extended Project Data Type for Portfolio ────────────────────────────────
+interface PortfolioProject extends Project {
+    reels?: string[];
+}
+
 // ─── Project Data (placeholder — replace src with real assets) ───────────────
-const PROJECTS: Project[] = [
+const PROJECTS: PortfolioProject[] = [
     {
         id: 'p1',
         title: 'Lux Brand Identity',
@@ -18,6 +23,12 @@ const PROJECTS: Project[] = [
         mediaSrc: '',
         accentColor: 'linear-gradient(135deg, #1a0a00, #3d1a00)',
         tags: ['Brand Identity', 'Logo Design', 'Packaging', 'Guidelines'],
+        reels: [
+            // Placeholder Bunny Stream URLs (replace with real ones)
+            'https://iframe.mediadelivery.net/embed/12345/video1?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false',
+            'https://iframe.mediadelivery.net/embed/12345/video2?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false',
+            'https://iframe.mediadelivery.net/embed/12345/video3?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false'
+        ],
     },
     {
         id: 'p2',
@@ -90,7 +101,7 @@ const CARD_OVERLAYS = [
 export const Portfolio: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const cardsRef = useRef<HTMLDivElement[]>([]);
-    const [activeProject, setActiveProject] = useState<Project | null>(null);
+    const [activeProject, setActiveProject] = useState<PortfolioProject | null>(null);
 
     useEffect(() => {
         const container = containerRef.current;
@@ -216,9 +227,76 @@ export const Portfolio: React.FC = () => {
                             willChange: 'transform, opacity',
                         }}
                     >
-                        {/* Background */}
-                        <div style={{ position: 'absolute', inset: 0 }}>
-                            {project.mediaType === 'video' && project.mediaSrc ? (
+                        {/* Background / Reels */}
+                        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+                            {project.reels && project.reels.length > 0 ? (
+                                <div
+                                    onClick={(e) => {
+                                        // Prevent modal opening when clicking on the videos
+                                        e.stopPropagation();
+                                    }}
+                                    className="portfolio-reels-bg"
+                                    style={{
+                                        display: 'flex',
+                                        width: '100%',
+                                        height: '100%',
+                                        overflowX: 'auto',
+                                        overflowY: 'hidden',
+                                        scrollSnapType: 'x mandatory',
+                                        WebkitOverflowScrolling: 'touch',
+                                        scrollbarWidth: 'none',
+                                        msOverflowStyle: 'none',
+                                    }}
+                                >
+                                    {project.reels.map((reelUrl, idx) => (
+                                        <div
+                                            key={idx}
+                                            className="portfolio-reel-item"
+                                            style={{
+                                                flex: '0 0 auto',
+                                                width: '100%',
+                                                height: '100%',
+                                                scrollSnapAlign: 'start',
+                                                position: 'relative',
+                                                backgroundColor: '#000',
+                                            }}
+                                        >
+                                            <iframe
+                                                src={reelUrl}
+                                                loading="lazy"
+                                                style={{
+                                                    border: 'none',
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    position: 'absolute',
+                                                    inset: 0,
+                                                    pointerEvents: 'none', // Prevent iframe from stealing touch/scroll events on mobile
+                                                }}
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowFullScreen
+                                            />
+                                            {/* Invisible overlay to catch scroll/swipe events over the iframe */}
+                                            <div style={{ position: 'absolute', inset: 0, zIndex: 1 }} />
+                                        </div>
+                                    ))}
+                                    <style dangerouslySetInnerHTML={{
+                                        __html: `
+                                        .portfolio-reels-bg::-webkit-scrollbar {
+                                            display: none;
+                                        }
+                                        @media (min-width: 768px) {
+                                            .portfolio-reels-bg {
+                                                display: grid !important;
+                                                grid-template-columns: repeat(3, 1fr);
+                                                overflow: hidden !important;
+                                            }
+                                            .portfolio-reel-item {
+                                                width: 100% !important;
+                                            }
+                                        }
+                                    `}} />
+                                </div>
+                            ) : project.mediaType === 'video' && project.mediaSrc ? (
                                 <video
                                     src={project.mediaSrc}
                                     autoPlay muted loop playsInline
