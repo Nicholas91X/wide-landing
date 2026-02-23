@@ -127,7 +127,7 @@ export const ScrollVideo: React.FC = () => {
         const canvas = canvasRef.current;
         const ctx = contextRef.current;
         const img = images[frameIndex];
-        if (!canvas || !ctx || !img) return;
+        if (!canvas || !ctx || !img || !img.naturalWidth) return;
 
         // canvas.width/height are in device pixels (innerWidth * dpr).
         // After ctx.scale(dpr, dpr), all drawing coordinates are in CSS pixels.
