@@ -7,17 +7,17 @@ gsap.registerPlugin(ScrollTrigger);
 // ─── Team Data ───────────────────────────────────────────────────────────────
 const TEAM = [
     {
-        name: 'Nome Cognome',
-        role: 'Co-Founder & Creative Director',
+        name: 'Alessia Amoruso',
+        role: 'Co-Founder & Strategist – Area Sviluppo e Pubblicità',
         description:
-            'Specializzato in brand strategy e direzione creativa. Trasforma visioni in identità visive memorabili.',
+            'Traduco la strategia in risultati misurabili. Ingegnerizzo le tue infrastrutture web (siti e applicativi) e gestisco in prima persona i budget delle tue campagne sponsorizzate, ottimizzando ogni investimento per generare contatti e vendite reali.',
         gradient: 'linear-gradient(135deg, #1a0a2e, #3d1a6e, #1a0a2e)',
     },
     {
-        name: 'Nome Cognome',
-        role: 'Co-Founder & Tech Lead',
+        name: 'Asia Franceschi',
+        role: 'Co-Founder & Strategist – Area Immagine e Contenuti',
         description:
-            'Esperto in sviluppo web e produzione digitale. Unisce tecnologia e design per esperienze innovative.',
+            "Studio il posizionamento della tua azienda e ne curo l'intera veste comunicativa. Dalla linea editoriale fino alla produzione reale di foto e video sul set, mi assicuro che ogni materiale trasmetta l'autorevolezza del tuo brand senza filtri o finzioni.",
         gradient: 'linear-gradient(135deg, #0a1a2e, #1a3d6e, #0a1a2e)',
     },
 ];
@@ -262,22 +262,38 @@ export const ChiSiamo: React.FC = () => {
                 </div>
             </div>
 
-            {/* ── Vision ──────────────────────────────────────────────────── */}
-            <div ref={visionRef} style={{ textAlign: 'center', maxWidth: 600, margin: '0 auto' }}>
-                <h3 style={{
-                    color: '#fff', fontSize: 'clamp(1.4rem, 4vw, 2.2rem)', fontWeight: 700,
-                    letterSpacing: '-0.03em', lineHeight: 1.15, margin: '0 0 20px',
-                }}>
-                    La Nostra Vision
+            {/* ── Vision ──────────────────────────────────────────────────────── */}
+            <div
+                ref={visionRef}
+                style={{
+                    textAlign: 'center',
+                    maxWidth: 600,
+                    margin: '0 auto',
+                }}
+            >
+                <h3
+                    style={{
+                        color: '#fff',
+                        fontSize: 'clamp(1.4rem, 4vw, 2.2rem)',
+                        fontWeight: 700,
+                        letterSpacing: '-0.03em',
+                        lineHeight: 1.15,
+                        margin: '0 0 20px',
+                    }}
+                >
+                    Come lavoriamo
                 </h3>
-                <p style={{
-                    color: 'rgba(255,255,255,0.5)', fontSize: 'clamp(0.9rem, 2vw, 1.1rem)',
-                    fontWeight: 300, lineHeight: 1.7, margin: 0,
-                }}>
-                    Crediamo che il design e la tecnologia possano trasformare le idee in
-                    esperienze straordinarie. Ogni progetto è un'opportunità per superare i
-                    confini del possibile, unendo creatività, strategia e innovazione per
-                    costruire brand che lasciano il segno.
+                <p
+                    style={{
+                        color: 'rgba(255,255,255,0.5)',
+                        fontSize: 'clamp(0.9rem, 2vw, 1.1rem)',
+                        fontWeight: 300,
+                        lineHeight: 1.7,
+                        margin: 0,
+                    }}
+                >
+                    Analizziamo e pianifichiamo la strategia della tua azienda a quattro mani,
+                    per poi verticalizzare le nostre competenze sull'esecuzione pratica.
                 </p>
             </div>
         </div>

@@ -27,22 +27,22 @@ interface Service {
 
 const SERVICES: Service[] = [
     {
-        title: 'Gestione Pagine Social',
-        description: 'Strategie editoriali per dominare il feed.',
+        title: 'Social Media Marketing',
+        description: 'Non la solita vetrina, ma strategie per vendere e posizionare il tuo brand.',
         layoutType: 'cards',
         items: [
-            { title: 'Pianificazione', description: 'Calendari editoriali strategici' },
-            { title: 'Engagement', description: 'Community management attivo' },
-            { title: 'Analytics', description: 'Report e ottimizzazione continua' },
+            { title: 'Strategia Sartoriale', description: "Studiamo il tuo mercato e creiamo un piano d'attacco su misura insieme a te, senza intermediari che rallentano il processo." },
+            { title: 'Contenuti che Convertono', description: "Produciamo foto e video reali per catturare l'attenzione del tuo target e costruire un'identità visiva premium e inconfondibile." },
+            { title: 'Pubblicità e Sponsorizzate', description: "Curiamo le tue sponsorizzate in prima persona, ottimizzando ogni centesimo per generare contatti qualificati e vendite reali, non semplici \"mi piace\"." },
         ]
     },
     {
-        title: 'Creazione Contenuti Personalizzati',
-        description: 'Visual storytelling ad alto impatto.',
+        title: 'Creiamo Contenuti Che Convertono',
+        description: 'Mostriamo il vero volto della tua azienda.',
         layoutType: 'stats',
         items: [
-            { value: '10M+', suffix: 'Visualizzazioni', description: 'Raggiunte per i nostri clienti' },
-            { value: '500+', suffix: 'Progetti', description: 'Creativi completati con successo' },
+            { value: '+500K', suffix: 'Visite al profilo in organico', description: 'Raggiunte per i nostri clienti' },
+            { value: '+40%', suffix: 'Di contatti generati', description: 'In organico' },
             { value: '100%', suffix: 'Originalità', description: 'Niente template, solo branding' },
         ]
     },
@@ -51,10 +51,10 @@ const SERVICES: Service[] = [
         description: 'Software su misura per business scalabili.',
         layoutType: 'gallery',
         items: [
-            { title: 'Dashboard UX', description: 'Interfacce intuitive' },
-            { title: 'Cloud Backend', description: 'Infrastrutture robuste' },
-            { title: 'Cross Platform', description: 'iOS & Android' },
-            { title: 'AI Integration', description: 'Automazione intelligente' },
+            { title: 'Dashboard UX', description: 'Sistemi modellati sui tuoi flussi di lavoro per azzerare i tempi di formazione del team.' },
+            { title: 'Cloud Backend', description: 'Reparti connessi e dati blindati. Il controllo totale della tua azienda, in tempo reale.' },
+            { title: 'Cross Platform', description: 'Applicativi adatti sia a sistemi Android che iOS.' },
+            { title: 'AI Integration', description: 'Automatizziamo i processi aziendali e diamo vita alle tue idee, sviluppando strumenti AI esclusivi esattamente come li desideri.' },
         ]
     },
     {
@@ -64,26 +64,26 @@ const SERVICES: Service[] = [
         items: [
             {
                 description: '"La qualità delle riprese ha cambiato radicalmente la percezione del nostro brand."',
-                author: 'CEO di Luxury Group'
+                author: 'CEO di AUTO2G'
             }
         ]
     },
     {
-        title: 'Generazione Video AI',
-        description: "L'avanguardia della produzione digitale.",
+        title: 'Produzioni Video con Intelligenza Artificiale',
+        description: 'Diamo vita a ciò che non esiste ancora. Scenari, animazioni e video ad altissimo impatto per presentare i tuoi prodotti come leader di settore.',
         layoutType: 'video',
         items: [
-            { title: 'AI Rendering Core', description: 'Processo di generazione in real-time' }
+            { title: 'Guarda cosa possiamo far fare al tuo prodotto.', description: '' }
         ]
     },
     {
-        title: 'Creazione Siti Web',
+        title: 'Sviluppo Piattaforme Web ed E-commerce',
         description: 'Esperienze immersive e conversion-oriented.',
         layoutType: 'cards',
         items: [
-            { title: 'Landing Page', description: 'Conversion rate ottimizzato' },
-            { title: 'E-commerce', description: 'Shop online performanti' },
-            { title: 'Corporate', description: 'Vetrine aziendali premium' },
+            { title: 'Landing page', description: 'Pagine progettate esclusivamente per trasformare il traffico delle tue campagne in contatti qualificati' },
+            { title: 'E-commerce', description: "Negozi online strutturati per massimizzare le vendite, rendendo l'esperienza di acquisto dei tuoi clienti facile, sicura e senza ostacoli." },
+            { title: 'Corporate', description: 'Ecosistemi digitali autorevoli, sviluppati per riflettere il reale valore della tua azienda e consolidare la fiducia di partner e clienti.' },
         ]
     },
 ];
@@ -109,6 +109,13 @@ export const ScrollVideo: React.FC = () => {
 
     const [currentServiceIndex, setCurrentServiceIndex] = useState<number>(-1);
     const [serviceOpacity, setServiceOpacity] = useState<number>(0);
+    const [introOpacity, setIntroOpacity] = useState<number>(1);
+
+    const [showFirstPhrase, setShowFirstPhrase] = useState(false);
+    const subtitleText = "Ma esterno.";
+    const [typedSubtitle, setTypedSubtitle] = useState("");
+    const [showCTA, setShowCTA] = useState(false);
+
     const [segmentProgress, setSegmentProgress] = useState<number>(0);
     const [isMobile, setIsMobile] = useState<boolean | null>(null);
 
@@ -180,12 +187,13 @@ export const ScrollVideo: React.FC = () => {
     useEffect(() => {
         if (isMobile === null) return;
         preloadFrames(framesPath, frameCount);
-    // framesPath/frameCount are derived from isMobile — re-run only when it changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // framesPath/frameCount are derived from isMobile — re-run only when it changes.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [preloadFrames, isMobile]);
 
     // Handle canvas pixel sizing on every resize.
     useEffect(() => {
+
         handleCanvasResize();
         window.addEventListener('resize', handleCanvasResize);
         return () => window.removeEventListener('resize', handleCanvasResize);
@@ -197,6 +205,36 @@ export const ScrollVideo: React.FC = () => {
             drawFrame(0);
         }
     }, [isLoaded, images, drawFrame]);
+
+    // Intro text sequence
+    useEffect(() => {
+        if (!isLoaded) return;
+
+        let subtitleTypingTimeout: number;
+        let typingInterval: number;
+
+        const firstPhraseTimeout = window.setTimeout(() => {
+            setShowFirstPhrase(true);
+
+            subtitleTypingTimeout = window.setTimeout(() => {
+                let currentIdx = 0;
+                typingInterval = window.setInterval(() => {
+                    setTypedSubtitle(subtitleText.slice(0, currentIdx + 1));
+                    currentIdx++;
+                    if (currentIdx >= subtitleText.length) {
+                        window.clearInterval(typingInterval);
+                        window.setTimeout(() => setShowCTA(true), 400); // Show CTA after subtitle finishes
+                    }
+                }, 40);
+            }, 600);
+        }, 300);
+
+        return () => {
+            window.clearTimeout(firstPhraseTimeout);
+            window.clearTimeout(subtitleTypingTimeout);
+            window.clearInterval(typingInterval);
+        };
+    }, [isLoaded, subtitleText]);
 
     // Scroll lock until loaded
     useEffect(() => {
@@ -294,6 +332,14 @@ export const ScrollVideo: React.FC = () => {
                     drawFrame(frameIndex);
                 }
 
+                // Intro opacity (fade out during first segment)
+                const introFadeThreshold = segments[0].endProgress * 0.5;
+                if (scrollProgress < introFadeThreshold) {
+                    setIntroOpacity(1 - (scrollProgress / introFadeThreshold));
+                } else {
+                    setIntroOpacity(0);
+                }
+
                 if (currentSegment.type === 'slow' && currentSegment.serviceIndex !== undefined) {
                     const fadeInEnd = 0.1;
                     const fadeOutStart = 0.9;
@@ -372,7 +418,7 @@ export const ScrollVideo: React.FC = () => {
                                         borderRadius: '8px',
                                         marginBottom: isMobile ? '8px' : '12px'
                                     }} />
-                                    <h3 style={{ color: '#fff', fontSize: isMobile ? '0.95rem' : '1.1rem', marginBottom: '4px' }}>{item.title}</h3>
+                                    <h3 style={{ color: '#fff', fontSize: isMobile ? '0.95rem' : '1.1rem', marginBottom: isMobile ? '10px' : '15px' }}>{item.title}</h3>
                                     <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: isMobile ? '0.8rem' : '0.9rem', fontWeight: 300 }}>{item.description}</p>
                                 </div>
                             );
@@ -381,23 +427,90 @@ export const ScrollVideo: React.FC = () => {
                 );
 
             case 'stats':
+                if (isMobile) {
+                    return (
+                        <div style={{
+                            width: '100vw',
+                            overflowX: 'auto',
+                            display: 'flex',
+                            gap: '20px',
+                            padding: '20px 40px',
+                            marginTop: '20px',
+                            scrollSnapType: 'x mandatory',
+                            WebkitOverflowScrolling: 'touch',
+                            msOverflowStyle: 'none',
+                            scrollbarWidth: 'none',
+                        }}>
+                            {items.map((item, i) => {
+                                const vis = getElementVisibility(i, items.length);
+                                return (
+                                    <div key={i} style={{
+                                        minWidth: '70vw',
+                                        scrollSnapAlign: 'center',
+                                        textAlign: 'center',
+                                        opacity: vis,
+                                        padding: '40px 20px',
+                                        backgroundColor: 'rgba(255,255,255,0.03)',
+                                        border: '1px solid rgba(255,255,255,0.1)',
+                                        borderRadius: '4px',
+                                        transition: 'all 0.4s ease-out'
+                                    }}>
+                                        <div style={{ color: '#fff', fontSize: '2.5rem', fontWeight: 800, lineHeight: 1 }}>{item.value}</div>
+                                        <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.02em', marginTop: '8px' }}>{item.suffix}</div>
+                                        <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem', marginTop: '15px', fontWeight: 300 }}>{item.description}</div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    );
+                }
+
                 return (
                     <div style={{
-                        display: 'flex',
-                        flexDirection: isMobile ? 'column' : 'row',
-                        gap: isMobile ? '15px' : '60px',
-                        marginTop: isMobile ? '20px' : '60px',
+                        display: 'grid',
+                        gridTemplateColumns: '1.2fr 0.8fr',
+                        gap: '0',
+                        marginTop: '60px',
+                        width: '100%',
+                        maxWidth: '1100px',
+                        border: '1px solid rgba(255,255,255,0.1)',
                     }}>
-                        {items.map((item, i) => {
-                            const vis = getElementVisibility(i, items.length);
-                            return (
-                                <div key={i} style={{ textAlign: 'center', opacity: vis, transform: `scale(${0.8 + 0.2 * vis})`, transition: 'transform 0.4s ease-out' }}>
-                                    <div style={{ color: '#fff', fontSize: isMobile ? '2rem' : '4rem', fontWeight: 800, lineHeight: 1 }}>{item.value}</div>
-                                    <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: isMobile ? '0.7rem' : '0.9rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>{item.suffix}</div>
-                                    <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: isMobile ? '0.85rem' : '1rem', marginTop: i === 0 ? '5px' : '8px', fontWeight: 300 }}>{item.description}</div>
-                                </div>
-                            );
-                        })}
+                        {/* Core Stat (Big Left) */}
+                        <div style={{
+                            padding: '80px 60px',
+                            borderRight: '1px solid rgba(255,255,255,0.1)',
+                            textAlign: 'left',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            opacity: getElementVisibility(0, 3)
+                        }}>
+                            <div style={{ color: '#fff', fontSize: '6rem', fontWeight: 800, lineHeight: 0.9 }}>{items[0].value}</div>
+                            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.02em', marginTop: '20px' }}>{items[0].suffix}</div>
+                            <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: '1.4rem', marginTop: '30px', fontWeight: 300, maxWidth: '400px' }}>{items[0].description}</div>
+                        </div>
+
+                        {/* Secondary Stats (Stacked Right) */}
+                        <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr' }}>
+                            {items.slice(1).map((item, i) => {
+                                const vis = getElementVisibility(i + 1, 3);
+                                return (
+                                    <div key={i} style={{
+                                        padding: '40px 50px',
+                                        borderBottom: i === 0 ? '1px solid rgba(255,255,255,0.1)' : 'none',
+                                        textAlign: 'left',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'center',
+                                        opacity: vis,
+                                    }}>
+                                        <div style={{ color: '#fff', fontSize: '3rem', fontWeight: 700, lineHeight: 1 }}>{item.value}</div>
+                                        <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.02em', marginTop: '8px' }}>{item.suffix}</div>
+                                        <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1rem', marginTop: '12px', fontWeight: 300 }}>{item.description}</div>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                 );
 
@@ -445,7 +558,7 @@ export const ScrollVideo: React.FC = () => {
                                     transition: 'all 0.3s ease-out'
                                 }}>
                                     <div style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 600, textAlign: 'center' }}>{item.title}</div>
-                                    <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', textAlign: 'center', marginTop: '4px' }}>{item.description}</div>
+                                    <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', textAlign: 'center', marginTop: '12px' }}>{item.description}</div>
                                 </div>
                             );
                         })}
@@ -503,10 +616,106 @@ export const ScrollVideo: React.FC = () => {
                 inset: 0,
                 background: 'radial-gradient(circle at center, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.9) 50%, rgba(0,0,0,0.99) 100%)',
                 zIndex: 10,
-                opacity: serviceOpacity,
+                opacity: Math.max(serviceOpacity, introOpacity * 0.65),
                 pointerEvents: 'none',
                 transition: 'opacity 0.3s ease-out'
             }} />
+
+            {/* Intro Text */}
+            {isLoaded && currentServiceIndex === -1 && introOpacity > 0 && (
+                <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 4000,
+                    opacity: introOpacity,
+                    padding: isMobile ? '20px' : '40px',
+                    textAlign: 'center',
+                    pointerEvents: 'none',
+                    boxSizing: 'border-box',
+                    transition: 'opacity 0.3s ease-out'
+                }}>
+                    <h1 style={{
+                        color: '#fff',
+                        fontSize: isMobile ? '1.2rem' : '2.2rem',
+                        fontWeight: 700,
+                        lineHeight: 1.3,
+                        width: isMobile ? '100%' : '90vw',
+                        maxWidth: '1200px',
+                        margin: 0,
+                        letterSpacing: '-0.01em',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        textShadow: `
+                            0 4px 6px rgba(0,0,0,0.9), 
+                            0 10px 40px rgba(0,0,0,0.8), 
+                            0 0 10px rgba(0,0,0,0.5)
+                        `
+                    }}>
+                        <span style={{
+                            opacity: showFirstPhrase ? 1 : 0,
+                            transform: `translateY(${showFirstPhrase ? 0 : 10}px)`,
+                            transition: 'opacity 0.8s ease-out, transform 0.8s ease-out',
+                            whiteSpace: isMobile ? 'normal' : 'nowrap',
+                            textAlign: 'center',
+                            display: 'block',
+                            width: '100%'
+                        }}>
+                            Il reparto marketing che la tua azienda ha sempre voluto.
+                        </span>
+                        <span style={{
+                            opacity: typedSubtitle ? 1 : 0,
+                            fontWeight: 800,
+                            marginTop: isMobile ? '15px' : '35px',
+                            fontSize: isMobile ? '1.6rem' : '2.4rem',
+                            color: '#fff',
+                            minHeight: isMobile ? '1.8rem' : '2.8rem',
+                            letterSpacing: '-0.02em'
+                        }}>
+                            {typedSubtitle}
+                        </span>
+
+                        <button
+                            style={{
+                                marginTop: isMobile ? '35px' : '60px',
+                                padding: isMobile ? '12px 20px' : '18px 48px',
+                                backgroundColor: '#fff',
+                                color: '#000',
+                                border: '1px solid #fff',
+                                borderRadius: '0',
+                                fontSize: isMobile ? '0.7rem' : '0.9rem',
+                                fontWeight: 700,
+                                letterSpacing: '0.12em',
+                                textTransform: 'uppercase',
+                                cursor: 'pointer',
+                                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                                opacity: showCTA ? 1 : 0,
+                                transform: `translateY(${showCTA ? 0 : 20}px)`,
+                                pointerEvents: showCTA ? 'all' : 'none',
+                                width: isMobile ? '90%' : 'auto',
+                                maxWidth: isMobile ? '400px' : 'none',
+                                whiteSpace: 'nowrap',
+                                boxSizing: 'border-box',
+                                boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
+                            }}
+                            onMouseOver={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                e.currentTarget.style.boxShadow = '0 15px 40px rgba(0,0,0,0.4)';
+                            }}
+                            onMouseOut={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,0,0,0.3)';
+                            }}
+                        >
+                            Prenota una chiamata conoscitiva
+                        </button>
+                    </h1>
+                </div>
+            )}
 
             {isLoaded && currentService && (
                 <div style={{
@@ -531,7 +740,7 @@ export const ScrollVideo: React.FC = () => {
                     }}>
                         <h2 style={{
                             color: '#fff',
-                            fontSize: isMobile ? '1.5rem' : '3.5rem',
+                            fontSize: isMobile ? '1.5rem' : '2.8rem',
                             fontWeight: 800,
                             lineHeight: 1.1,
                             margin: 0,
@@ -549,11 +758,11 @@ export const ScrollVideo: React.FC = () => {
                         }} />
                         <p style={{
                             color: 'rgba(255,255,255,0.9)',
-                            fontSize: isMobile ? '0.85rem' : '1.2rem',
+                            fontSize: isMobile ? '0.85rem' : '1.1rem',
                             fontWeight: 300,
-                            maxWidth: '600px',
+                            maxWidth: isMobile ? '90vw' : '800px',
                             margin: '0 auto',
-                            lineHeight: 1.4,
+                            lineHeight: 1.5,
                             textShadow: '0 2px 10px rgba(0,0,0,0.5)'
                         }}>
                             {currentService.description}

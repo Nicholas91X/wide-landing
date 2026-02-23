@@ -14,13 +14,13 @@ const AUTO_DISMISS_MS = 4200;
 const SCROLL_THRESHOLD = 20; // px: hide overlay when scrolled past this
 
 export const IntroOverlay: React.FC = () => {
-    const overlayRef   = useRef<HTMLDivElement>(null);
-    const textAreaRef  = useRef<HTMLDivElement>(null);
-    const lettersRef   = useRef<(HTMLSpanElement | null)[]>([]);
-    const kickerRef    = useRef<HTMLParagraphElement>(null);
+    const overlayRef = useRef<HTMLDivElement>(null);
+    const textAreaRef = useRef<HTMLDivElement>(null);
+    const lettersRef = useRef<(HTMLSpanElement | null)[]>([]);
+    const kickerRef = useRef<HTMLParagraphElement>(null);
     const scrollIndRef = useRef<HTMLDivElement>(null);
 
-    const textFadedRef    = useRef(false);
+    const textFadedRef = useRef(false);
     const overlayShownRef = useRef(true); // tracks current visibility
 
     // ── Text-only fade (timer-driven) ─────────────────────────────────────────
@@ -34,12 +34,12 @@ export const IntroOverlay: React.FC = () => {
 
     // ── Entry animation ───────────────────────────────────────────────────────
     useEffect(() => {
-        const letters   = lettersRef.current.filter(Boolean) as HTMLSpanElement[];
-        const kicker    = kickerRef.current;
+        const letters = lettersRef.current.filter(Boolean) as HTMLSpanElement[];
+        const kicker = kickerRef.current;
         const scrollInd = scrollIndRef.current;
 
-        gsap.set(letters,   { opacity: 0, y: 16, filter: 'blur(10px)' });
-        if (kicker)    gsap.set(kicker,    { opacity: 0 });
+        gsap.set(letters, { opacity: 0, y: 16, filter: 'blur(10px)' });
+        if (kicker) gsap.set(kicker, { opacity: 0 });
         if (scrollInd) gsap.set(scrollInd, { opacity: 0 });
 
         const tl = gsap.timeline({ delay: 0.4 });
@@ -48,7 +48,7 @@ export const IntroOverlay: React.FC = () => {
             duration: 1.0, ease: 'power3.out',
             stagger: { each: 0.12 },
         }, 0);
-        if (kicker)    tl.to(kicker,    { opacity: 1, duration: 0.7, ease: 'power2.out' }, 0.85);
+        if (kicker) tl.to(kicker, { opacity: 1, duration: 0.7, ease: 'power2.out' }, 0.85);
         if (scrollInd) tl.to(scrollInd, { opacity: 1, duration: 0.6, ease: 'power2.out' }, 1.2);
 
         return () => { tl.kill(); };
@@ -58,7 +58,7 @@ export const IntroOverlay: React.FC = () => {
     useEffect(() => {
         const timer = setTimeout(fadeOutText, AUTO_DISMISS_MS);
         return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // ── Scroll-reactive visibility ────────────────────────────────────────────
@@ -98,7 +98,8 @@ export const IntroOverlay: React.FC = () => {
                 position: 'fixed', inset: 0, zIndex: 1999,
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
-                backgroundColor: 'rgba(0,0,0,0.92)',
+                backgroundColor: 'rgba(0,0,0,0.85)', // Slightly less dark
+                transition: 'opacity 0.8s ease, background-color 0.8s ease',
                 backdropFilter: 'blur(2px)', WebkitBackdropFilter: 'blur(2px)',
                 backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E\")",
             }}
