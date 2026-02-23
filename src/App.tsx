@@ -16,6 +16,14 @@ function App() {
                 <section id="servizi">
                     <ScrollVideo />
                 </section>
+            {/* Gradient fade divider */}
+            <div
+                style={{
+                    height: 'clamp(80px, 12vw, 160px)',
+                    background:
+                        'linear-gradient(to bottom, #000 0%, #0a0a0a 30%, #111 50%, #0a0a0a 70%, #000 100%)',
+                }}
+            />
             <section id="chi-siamo">
                 <ChiSiamo />
             </section>

@@ -3,6 +3,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ProjectModal } from './ProjectModal';
 import type { Project } from './ProjectModal';
+import { useReducedMotion } from '../hooks/useReducedMotion';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -101,6 +102,10 @@ export const Portfolio: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const cardsRef = useRef<HTMLDivElement[]>([]);
     const [activeProject, setActiveProject] = useState<PortfolioProject | null>(null);
+    const [currentCardIndex, setCurrentCardIndex] = useState(0);
+    const currentCardIndexRef = useRef(0);
+
+    const prefersReduced = useReducedMotion();
 
     useEffect(() => {
         const container = containerRef.current;
@@ -122,11 +127,18 @@ export const Portfolio: React.FC = () => {
                 end: `+=${count * 100}%`,
                 pin: true,
                 pinSpacing: true,
-                scrub: 1,
+                scrub: prefersReduced ? true : 1,
                 anticipatePin: 1,
                 invalidateOnRefresh: true,
                 // Ensures Portfolio recalculates AFTER ScrollVideo (which has default priority 0)
                 refreshPriority: -1,
+                onUpdate: (self) => {
+                    const newIndex = Math.min(count - 1, Math.floor(self.progress * count));
+                    if (currentCardIndexRef.current !== newIndex) {
+                        currentCardIndexRef.current = newIndex;
+                        setCurrentCardIndex(newIndex);
+                    }
+                },
             },
         });
 
@@ -168,7 +180,8 @@ export const Portfolio: React.FC = () => {
                 if (st.vars.trigger === container) st.kill();
             });
         };
-    }, []);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [prefersReduced]);
 
 
     return (
@@ -221,6 +234,30 @@ export const Portfolio: React.FC = () => {
                     backgroundColor: '#000',
                 }}
             >
+                {/* Vertical progress dots */}
+                <div style={{
+                    position: 'absolute',
+                    right: 'clamp(12px, 3vw, 24px)',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 8,
+                    zIndex: 10,
+                    pointerEvents: 'none',
+                }}>
+                    {PROJECTS.map((_, i) => (
+                        <div key={i} style={{
+                            width: 4,
+                            height: currentCardIndex === i ? 20 : 4,
+                            borderRadius: 2,
+                            backgroundColor: currentCardIndex === i ? '#fff' : 'rgba(255,255,255,0.3)',
+                            transition: 'all 0.35s cubic-bezier(0.4,0,0.2,1)',
+                        }} />
+                    ))}
+                </div>
+
                 {PROJECTS.map((project, i) => (
                     <div
                         key={project.id}
@@ -265,6 +302,7 @@ export const Portfolio: React.FC = () => {
                                                 scrollSnapAlign: 'start',
                                                 position: 'relative',
                                                 backgroundColor: '#000',
+                                                overflow: 'hidden',
                                             }}
                                         >
                                             <iframe
@@ -272,11 +310,16 @@ export const Portfolio: React.FC = () => {
                                                 loading="lazy"
                                                 style={{
                                                     border: 'none',
-                                                    width: '100%',
-                                                    height: '100%',
                                                     position: 'absolute',
-                                                    inset: 0,
-                                                    pointerEvents: 'none', // Prevent iframe from stealing touch/scroll events on mobile
+                                                    top: '50%',
+                                                    left: '50%',
+                                                    // Force iframe to 9:16 ratio based on viewport height,
+                                                    // then clip overflow — eliminates black bars for portrait reels
+                                                    height: '100dvh',
+                                                    width: 'calc(100dvh * 9 / 16)',
+                                                    minWidth: '100%',
+                                                    transform: 'translate(-50%, -50%)',
+                                                    pointerEvents: 'none',
                                                 }}
                                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                                 allowFullScreen

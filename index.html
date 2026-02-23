@@ -35,6 +35,18 @@
       html {
         touch-action: pan-y;
       }
+      /* Tactile feedback on tap */
+      button:active, a:active, [role="button"]:active {
+        opacity: 0.82;
+      }
+      /* Respect reduced-motion preference */
+      @media (prefers-reduced-motion: reduce) {
+        *, ::before, ::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+        }
+      }
     </style>
   </head>
   <body>

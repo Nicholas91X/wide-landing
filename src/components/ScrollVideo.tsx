@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState, useLayoutEffect, useCallback } from
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { usePreload } from '../hooks/usePreload';
+import { useReducedMotion } from '../hooks/useReducedMotion';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -126,6 +127,11 @@ export const ScrollVideo: React.FC = () => {
     // so the IntroOverlay (WIDE logo) is fully cleared before the first frame appears.
     const [hasScrolled, setHasScrolled] = useState(false);
     const hasScrolledRef = useRef(false);
+
+    const prefersReduced = useReducedMotion();
+    // Use a ref so the ScrollTrigger closure (created on isLoaded) reads the live value
+    const prefersReducedRef = useRef(prefersReduced);
+    useEffect(() => { prefersReducedRef.current = prefersReduced; }, [prefersReduced]);
 
     // Detect mobile before first paint. useLayoutEffect only runs in the browser.
     useLayoutEffect(() => {
@@ -364,7 +370,7 @@ export const ScrollVideo: React.FC = () => {
             end: scrollEnd,
             pin: true,
             pinSpacing: true,
-            scrub: isMobile ? 1.2 : 0.8,
+            scrub: prefersReducedRef.current ? true : (isMobile ? 1.2 : 0.8),
             invalidateOnRefresh: true,
             onUpdate: (self) => {
                 const scrollProgress = self.progress;
@@ -814,6 +820,32 @@ export const ScrollVideo: React.FC = () => {
                             Prenota una chiamata conoscitiva
                         </button>
                     </h1>
+                </div>
+            )}
+
+            {/* Service progress dots — visible only during service segments */}
+            {isLoaded && currentServiceIndex >= 0 && (
+                <div style={{
+                    position: 'absolute',
+                    bottom: 'clamp(20px, 4vw, 32px)',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    display: 'flex',
+                    gap: 6,
+                    zIndex: 30,
+                    pointerEvents: 'none',
+                    opacity: serviceOpacity,
+                    transition: 'opacity 0.2s ease-out',
+                }}>
+                    {SERVICES.map((_, i) => (
+                        <div key={i} style={{
+                            height: 5,
+                            width: currentServiceIndex === i ? 18 : 5,
+                            borderRadius: 3,
+                            backgroundColor: currentServiceIndex === i ? '#fff' : 'rgba(255,255,255,0.4)',
+                            transition: 'all 0.35s cubic-bezier(0.4,0,0.2,1)',
+                        }} />
+                    ))}
                 </div>
             )}
 
