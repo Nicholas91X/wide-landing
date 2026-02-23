@@ -24,10 +24,9 @@ const PROJECTS: PortfolioProject[] = [
         accentColor: 'linear-gradient(135deg, #1a0a00, #3d1a00)',
         tags: ['Rebranding', 'Gestionale Customizzato', 'Social Media', 'Campagne Ads'],
         reels: [
-            // Placeholder Bunny Stream URLs (replace with real ones)
-            'https://iframe.mediadelivery.net/embed/12345/video1?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false',
-            'https://iframe.mediadelivery.net/embed/12345/video2?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false',
-            'https://iframe.mediadelivery.net/embed/12345/video3?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false'
+            'https://iframe.mediadelivery.net/embed/604848/9545bd9d-deb4-4f3b-984a-cd36f7aa80ab?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false',
+            'https://iframe.mediadelivery.net/embed/604848/752b038f-31c4-4e34-a3ef-e2088fcd0ac6?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false',
+            'https://iframe.mediadelivery.net/embed/604848/8111cf83-982b-4c9b-8c8a-8c69b4a76511?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false'
         ],
     },
     {
