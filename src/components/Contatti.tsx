@@ -46,11 +46,11 @@ const PERTURB_MAX_DIST = 700;
 const PERTURB_Y = 3;
 const PERTURB_ROT = 0.6;
 
-// Floating orbs
+// Floating orbs — deeper tones for visibility on light background
 const ORBS = [
-    { size: 380, color: 'rgba(90,50,180,0.06)', x: '12%', y: '18%', dx: 50, dy: 35, dur: 9 },
-    { size: 300, color: 'rgba(40,90,200,0.05)', x: '72%', y: '55%', dx: -40, dy: 45, dur: 11 },
-    { size: 260, color: 'rgba(70,30,160,0.05)', x: '45%', y: '78%', dx: 35, dy: -25, dur: 10 },
+    { size: 380, color: 'rgba(90,50,180,0.12)', x: '12%', y: '18%', dx: 50, dy: 35, dur: 9 },
+    { size: 300, color: 'rgba(40,90,200,0.10)', x: '72%', y: '55%', dx: -40, dy: 45, dur: 11 },
+    { size: 260, color: 'rgba(70,30,160,0.10)', x: '45%', y: '78%', dx: 35, dy: -25, dur: 10 },
 ];
 
 // Pond physics
@@ -119,7 +119,7 @@ const AnimatedLink: React.FC<{
                     left: 0,
                     right: 0,
                     height: 1,
-                    backgroundColor: 'rgba(255,255,255,0.4)',
+                    backgroundColor: 'rgba(0,0,0,0.35)',
                     transformOrigin: 'left',
                     transform: 'scaleX(0)',
                 }}
@@ -380,7 +380,7 @@ export const Contatti: React.FC = () => {
                     if (alpha <= 0.001) continue;
                     ctx.beginPath();
                     ctx.arc(ripple.x, ripple.y, radius, 0, Math.PI * 2);
-                    ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+                    ctx.strokeStyle = `rgba(0,0,0,${alpha})`;
                     ctx.lineWidth = Math.max(0.3, 1.0 * (1 - ringNorm));
                     ctx.stroke();
                 }
@@ -639,14 +639,14 @@ export const Contatti: React.FC = () => {
         return () => ctx.revert();
     }, [isMobile, spawnPondRipple]);
 
-    /* ── Styles ──────────────────────────────────────────────────────────── */
+    /* ── Styles (light-theme palette) ───────────────────────────────────── */
     const labelStyle: React.CSSProperties = {
-        color: 'rgba(255,255,255,0.35)', fontSize: '0.7rem', fontWeight: 600,
+        color: 'rgba(0,0,0,0.42)', fontSize: '0.7rem', fontWeight: 600,
         letterSpacing: '0.15em', textTransform: 'uppercase', margin: '0 0 8px',
     };
 
     const valueStyle: React.CSSProperties = {
-        color: 'rgba(255,255,255,0.85)', fontSize: 'clamp(0.95rem, 2vw, 1.15rem)',
+        color: 'rgba(0,0,0,0.82)', fontSize: 'clamp(0.95rem, 2vw, 1.15rem)',
         fontWeight: 400, margin: 0,
     };
 
@@ -657,7 +657,7 @@ export const Contatti: React.FC = () => {
             onClick={handleInteraction}
             onTouchStart={handleInteraction}
             style={{
-                position: 'relative', backgroundColor: '#000',
+                position: 'relative', backgroundColor: '#ece8e0da',
                 padding: 'clamp(60px, 10vw, 120px) clamp(24px, 5vw, 80px)',
                 overflow: 'hidden', clipPath: 'inset(100% 0 0 0)',
                 cursor: 'default', userSelect: 'none',
@@ -681,14 +681,14 @@ export const Contatti: React.FC = () => {
             {/* ── Header ─────────────────────────────────────────────────── */}
             <div style={{ marginBottom: 'clamp(48px, 8vw, 80px)', position: 'relative', zIndex: 2 }}>
                 <p style={{
-                    color: 'rgba(255,255,255,0.35)', fontSize: '0.75rem', fontWeight: 600,
+                    color: 'rgba(0,0,0,0.4)', fontSize: '0.75rem', fontWeight: 600,
                     letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 0 16px',
                 }}>
                     CONTATTI
                 </p>
                 {/* Title with per-line reveal (#6) */}
                 <h2 style={{
-                    color: '#fff', fontSize: 'clamp(2.2rem, 7vw, 5rem)', fontWeight: 800,
+                    color: '#0a0a0a', fontSize: 'clamp(2.2rem, 7vw, 5rem)', fontWeight: 800,
                     letterSpacing: '-0.04em', lineHeight: 1.05, margin: '0 0 20px',
                 }}>
                     <span ref={titleLine1Ref} style={{ display: 'block', willChange: 'transform, opacity' }}>
@@ -698,7 +698,7 @@ export const Contatti: React.FC = () => {
                         tuo progetto.
                     </span>
                 </h2>
-                <div style={{ width: 30, height: 2, backgroundColor: 'rgba(255,255,255,0.25)' }} />
+                <div style={{ width: 30, height: 2, backgroundColor: 'rgba(0,0,0,0.18)' }} />
             </div>
 
             {/* ── Body ───────────────────────────────────────────────────── */}
@@ -735,8 +735,8 @@ export const Contatti: React.FC = () => {
                                 position: 'relative', width: '100%',
                                 height: isMobile ? 120 : 140,
                                 borderRadius: '28px 20px 24px 18px / 20px 26px 18px 24px', // organic shape (#8)
-                                border: '1px solid rgba(255,255,255,0.06)',
-                                backgroundColor: 'rgba(255,255,255,0.02)',
+                                border: '1px solid rgba(0,0,0,0.10)',
+                                backgroundColor: 'rgba(0,0,0,0.04)',
                                 overflow: 'hidden',
                             }}
                         >
@@ -756,9 +756,9 @@ export const Contatti: React.FC = () => {
                             <div style={{
                                 position: 'absolute', inset: -4,
                                 background: `
-                                    radial-gradient(ellipse at 25% 35%, rgba(80,60,180,0.06), transparent 55%),
-                                    radial-gradient(ellipse at 75% 65%, rgba(30,70,200,0.05), transparent 55%),
-                                    radial-gradient(ellipse at 50% 50%, rgba(60,40,160,0.03), transparent 70%)
+                                    radial-gradient(ellipse at 25% 35%, rgba(80,60,180,0.10), transparent 55%),
+                                    radial-gradient(ellipse at 75% 65%, rgba(30,70,200,0.08), transparent 55%),
+                                    radial-gradient(ellipse at 50% 50%, rgba(60,40,160,0.06), transparent 70%)
                                 `,
                                 filter: 'url(#pond-liquid)', pointerEvents: 'none',
                             }} />
@@ -773,7 +773,7 @@ export const Contatti: React.FC = () => {
                                         left: r.x, top: r.y,
                                         width: 120, height: 120,
                                         borderRadius: '50%',
-                                        border: '1px solid rgba(255,255,255,0.12)',
+                                        border: '1px solid rgba(0,0,0,0.18)',
                                         pointerEvents: 'none',
                                         animation: 'pondRippleExpand 1s ease-out forwards',
                                     }}
@@ -789,8 +789,8 @@ export const Contatti: React.FC = () => {
                                         position: 'absolute', top: 0, left: 0,
                                         width: BOAT_CIRCLE, height: BOAT_CIRCLE,
                                         borderRadius: '50%',
-                                        backgroundColor: 'rgba(255,255,255,0.04)',
-                                        border: '1px solid rgba(255,255,255,0.10)',
+                                        backgroundColor: 'rgba(255,255,255,0.65)',
+                                        border: '1px solid rgba(0,0,0,0.12)',
                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                                         color: social.color,
                                         willChange: 'transform',
@@ -801,15 +801,15 @@ export const Contatti: React.FC = () => {
                                     onClick={(e) => { e.stopPropagation(); window.open(social.href, '_blank', 'noopener,noreferrer'); }}
                                     onMouseEnter={(e) => {
                                         e.currentTarget.style.color = social.color.replace('0.7', '1');
-                                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.20)';
-                                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.07)';
+                                        e.currentTarget.style.borderColor = 'rgba(0,0,0,0.22)';
+                                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.90)';
                                         const label = e.currentTarget.querySelector<HTMLDivElement>('[data-label]');
                                         if (label) label.style.opacity = '1';
                                     }}
                                     onMouseLeave={(e) => {
                                         e.currentTarget.style.color = social.color;
-                                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)';
-                                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.04)';
+                                        e.currentTarget.style.borderColor = 'rgba(0,0,0,0.12)';
+                                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.65)';
                                         const label = e.currentTarget.querySelector<HTMLDivElement>('[data-label]');
                                         if (label) label.style.opacity = '0';
                                     }}
@@ -865,7 +865,7 @@ export const Contatti: React.FC = () => {
                 >
                     <div style={{
                         position: 'relative', borderRadius: 17, padding: 1,
-                        background: 'linear-gradient(135deg, rgba(100,60,200,0.25), rgba(40,80,200,0.15), rgba(100,60,200,0.25))',
+                        background: 'linear-gradient(135deg, rgba(100,60,200,0.45), rgba(40,80,200,0.30), rgba(100,60,200,0.45))',
                     }}>
                         {/* Mobile tap glow (#4) */}
                         <div

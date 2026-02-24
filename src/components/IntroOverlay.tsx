@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
+import { useReducedMotion } from '../hooks/useReducedMotion';
 
 // ─── IntroOverlay ─────────────────────────────────────────────────────────────
 // Behavior:
@@ -23,6 +24,8 @@ export const IntroOverlay: React.FC = () => {
     const textFadedRef = useRef(false);
     const overlayShownRef = useRef(true); // tracks current visibility
 
+    const prefersReduced = useReducedMotion();
+
     // ── Text-only fade (timer-driven) ─────────────────────────────────────────
     const fadeOutText = () => {
         if (textFadedRef.current) return;
@@ -38,6 +41,14 @@ export const IntroOverlay: React.FC = () => {
         const kicker = kickerRef.current;
         const scrollInd = scrollIndRef.current;
 
+        if (prefersReduced) {
+            // Show everything immediately — no motion
+            gsap.set(letters, { opacity: 1, y: 0, filter: 'blur(0px)' });
+            if (kicker) gsap.set(kicker, { opacity: 1 });
+            if (scrollInd) gsap.set(scrollInd, { opacity: 1 });
+            return;
+        }
+
         gsap.set(letters, { opacity: 0, y: 16, filter: 'blur(10px)' });
         if (kicker) gsap.set(kicker, { opacity: 0 });
         if (scrollInd) gsap.set(scrollInd, { opacity: 0 });
@@ -52,7 +63,7 @@ export const IntroOverlay: React.FC = () => {
         if (scrollInd) tl.to(scrollInd, { opacity: 1, duration: 0.6, ease: 'power2.out' }, 1.2);
 
         return () => { tl.kill(); };
-    }, []);
+    }, [prefersReduced]);
 
     // ── Auto-fade text after timer ────────────────────────────────────────────
     useEffect(() => {
@@ -172,6 +183,7 @@ export const IntroOverlay: React.FC = () => {
                     }} />
                 </div>
             </div>
+
         </div>
     );
 };

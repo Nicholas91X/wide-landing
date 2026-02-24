@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useReducedMotion } from '../hooks/useReducedMotion';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -26,12 +27,17 @@ const TEAM = [
 export const ChiSiamo: React.FC = () => {
     const sectionRef = useRef<HTMLDivElement>(null);
     const headerRef = useRef<HTMLDivElement>(null);
+    const entryLineRef = useRef<HTMLDivElement>(null);
     const pinWrapRef = useRef<HTMLDivElement>(null);
     const cardLeftRef = useRef<HTMLDivElement>(null);
     const cardRightRef = useRef<HTMLDivElement>(null);
     const visionRef = useRef<HTMLDivElement>(null);
 
     const [isMobile, setIsMobile] = useState(false);
+    const [focusedCard, setFocusedCard] = useState<-1 | 0 | 1>(-1);
+    const focusedCardRef = useRef<-1 | 0 | 1>(-1);
+
+    const prefersReduced = useReducedMotion();
 
     // ── Responsive state ────────────────────────────────────────────────────
     useEffect(() => {
@@ -53,36 +59,66 @@ export const ChiSiamo: React.FC = () => {
     useEffect(() => {
         const section = sectionRef.current;
         const header = headerRef.current;
+        const entryLine = entryLineRef.current;
         const pinWrap = pinWrapRef.current;
         const cardLeft = cardLeftRef.current;
         const cardRight = cardRightRef.current;
         const vision = visionRef.current;
-        if (!section || !header || !pinWrap || !cardLeft || !cardRight || !vision) return;
+        if (!section || !header || !entryLine || !pinWrap || !cardLeft || !cardRight || !vision) return;
 
         const rotAmt = isMobile ? 12 : 20;
         const fgScale = isMobile ? 1.18 : 1.22;
         const bgScale = 0.88;
         const fgX = isMobile ? 20 : 40;
+        const scrubVal = prefersReduced ? true : (isMobile ? 0.6 : 0.8);
 
         const ctx = gsap.context(() => {
             // Header fade-in
-            gsap.fromTo(header, { opacity: 0, y: 40 }, {
-                opacity: 1, y: 0, duration: 1, ease: 'power2.out',
-                scrollTrigger: { trigger: header, start: 'top 85%', end: 'top 55%', scrub: 1 },
-            });
+            if (prefersReduced) {
+                gsap.set(header, { opacity: 1, y: 0 });
+            } else {
+                gsap.fromTo(header, { opacity: 0, y: 40 }, {
+                    opacity: 1, y: 0, duration: 1, ease: 'power2.out',
+                    scrollTrigger: { trigger: header, start: 'top 85%', end: 'top 55%', scrub: 1 },
+                });
+            }
+
+            // Entry line scaleX reveal
+            gsap.fromTo(entryLine,
+                { scaleX: 0, transformOrigin: 'left center' },
+                {
+                    scaleX: 1, duration: 1, ease: 'power2.out',
+                    scrollTrigger: { trigger: header, start: 'top 80%', end: 'top 50%', scrub: 1 },
+                }
+            );
 
             // ── Set initial GSAP state (no CSS transform conflicts) ──
             gsap.set(cardLeft, { rotation: 0, scale: 0.85, opacity: 0, x: 40 });
             gsap.set(cardRight, { rotation: 0, scale: 0.85, opacity: 0, x: -40 });
 
             // ── Build timeline sequentially with .add() ──
+            const chiSiamoEnd = isMobile ? '+=200%' : '+=400%';
+
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: pinWrap,
                     start: 'top 20%',
-                    end: '+=400%',
+                    end: chiSiamoEnd,
                     pin: true,
-                    scrub: 0.8,
+                    scrub: scrubVal,
+                    onUpdate: (self) => {
+                        const p = self.progress;
+                        // Thresholds derived from timeline durations (total ≈ 9.2 units)
+                        // Left foreground: phases leftFwd + holdLeft (1/9.2 → 4/9.2)
+                        // Right foreground: phases swap + holdRight (5.2/9.2 → 7.2/9.2)
+                        const next: -1 | 0 | 1 =
+                            (p >= 0.11 && p <= 0.44) ? 0 :
+                            (p >= 0.57 && p <= 0.78) ? 1 : -1;
+                        if (focusedCardRef.current !== next) {
+                            focusedCardRef.current = next;
+                            setFocusedCard(next);
+                        }
+                    },
                 },
             });
 
@@ -118,20 +154,25 @@ export const ChiSiamo: React.FC = () => {
             tl.to(pinWrap, { duration: 1 });
 
             // ── Vision fade-in ──
-            gsap.fromTo(vision, { opacity: 0, y: 50 }, {
-                opacity: 1, y: 0, duration: 1, ease: 'power2.out',
-                scrollTrigger: { trigger: vision, start: 'top 85%', end: 'top 55%', scrub: 1 },
-            });
+            if (prefersReduced) {
+                gsap.set(vision, { opacity: 1, y: 0 });
+            } else {
+                gsap.fromTo(vision, { opacity: 0, y: 50 }, {
+                    opacity: 1, y: 0, duration: 1, ease: 'power2.out',
+                    scrollTrigger: { trigger: vision, start: 'top 85%', end: 'top 55%', scrub: 1 },
+                });
+            }
         }, section);
 
         return () => ctx.revert();
-    }, [isMobile, cardH]);
+    }, [isMobile, cardH, prefersReduced]);
 
     const renderCard = (index: number) => (
         <>
             <img
                 src={TEAM[index].image}
                 alt={TEAM[index].name}
+                loading="lazy"
                 style={{
                     width: '100%',
                     height: photoH,
@@ -264,7 +305,8 @@ export const ChiSiamo: React.FC = () => {
                 }}>
                     Le menti dietro<br />ogni progetto.
                 </h2>
-                <div style={{ width: 30, height: 2, backgroundColor: 'rgba(255,255,255,0.25)' }} />
+                {/* Animated entry line */}
+                <div ref={entryLineRef} style={{ width: 30, height: 2, backgroundColor: 'rgba(255,255,255,0.25)' }} />
             </div>
 
             {/* ── Pinned cards area ───────────────────────────────────────── */}
@@ -325,6 +367,43 @@ export const ChiSiamo: React.FC = () => {
                     }}
                 >
                     {renderCard(1)}
+                </div>
+
+                {/* ── Founder indicator dots ─────────────────────────────── */}
+                <div style={{
+                    position: 'absolute',
+                    bottom: -44,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 8,
+                    pointerEvents: 'none',
+                    zIndex: 20,
+                }}>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                        {[0, 1].map(i => (
+                            <div key={i} style={{
+                                height: 5,
+                                width: focusedCard === i ? 18 : 5,
+                                borderRadius: 3,
+                                backgroundColor: focusedCard === i ? '#fff' : 'rgba(255,255,255,0.3)',
+                                transition: 'all 0.35s cubic-bezier(0.4,0,0.2,1)',
+                            }} />
+                        ))}
+                    </div>
+                    {focusedCard >= 0 && (
+                        <span style={{
+                            color: 'rgba(255,255,255,0.5)',
+                            fontSize: '0.58rem',
+                            fontWeight: 600,
+                            letterSpacing: '0.15em',
+                            textTransform: 'uppercase',
+                        }}>
+                            {TEAM[focusedCard].name.split(' ')[0]}
+                        </span>
+                    )}
                 </div>
             </div>
 

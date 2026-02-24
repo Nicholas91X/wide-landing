@@ -56,6 +56,61 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
         });
     };
 
+    // ── Focus trap + ESC ──────────────────────────────────────────────────────
+    useEffect(() => {
+        if (!isVisible) return;
+
+        const previousFocus = document.activeElement as HTMLElement | null;
+
+        // Auto-focus close button after slide-in animation
+        const focusTimer = setTimeout(() => {
+            const closeBtn = sheetRef.current?.querySelector('button') as HTMLButtonElement | null;
+            closeBtn?.focus();
+        }, 450);
+
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                handleClose();
+                return;
+            }
+            if (e.key !== 'Tab') return;
+
+            const sheet = sheetRef.current;
+            if (!sheet) return;
+
+            const focusable = Array.from(
+                sheet.querySelectorAll<HTMLElement>(
+                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                )
+            );
+            if (!focusable.length) return;
+
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+
+            if (e.shiftKey) {
+                if (document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                }
+            } else {
+                if (document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
+        };
+
+        document.addEventListener('keydown', onKeyDown);
+
+        return () => {
+            clearTimeout(focusTimer);
+            document.removeEventListener('keydown', onKeyDown);
+            previousFocus?.focus();
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isVisible]);
+
     if (!isVisible) return null;
 
     return (
