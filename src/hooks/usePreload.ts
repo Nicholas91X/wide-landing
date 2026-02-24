@@ -2,6 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 
 interface PreloadResult {
     images: HTMLImageElement[];
+    fallbackImage: HTMLImageElement | null;
     progress: number;
     isLoaded: boolean;
 }
@@ -23,14 +24,18 @@ const BG_CHUNK_SIZE = 40;
  * Hook for preloading a sequence of frame images with progress tracking.
  *
  * Chunked strategy:
- *  1. Load the first INITIAL_CHUNK frames → set isLoaded=true so scroll unlocks
- *  2. Continue loading remaining frames in BG_CHUNK_SIZE batches in background
- *  3. The images array is updated progressively so canvas always has the latest
+ *  0. Load frame 0 first in isolation → stored as fallbackImage.
+ *     If any subsequent frame fails or is not yet available, the canvas
+ *     will render frame 0 instead of going blank.
+ *  1. Load frames 1…INITIAL_CHUNK-1 → set isLoaded=true so scroll unlocks.
+ *  2. Continue loading remaining frames in BG_CHUNK_SIZE batches in background.
+ *  3. The images array is updated progressively so canvas always has the latest.
  *
  * Supports cancellation via generation counter.
  */
 export function usePreload(): UsePreloadReturn {
     const [images, setImages] = useState<HTMLImageElement[]>([]);
+    const [fallbackImage, setFallbackImage] = useState<HTMLImageElement | null>(null);
     const [progress, setProgress] = useState(0);
     const [isLoaded, setIsLoaded] = useState(false);
 
@@ -43,6 +48,7 @@ export function usePreload(): UsePreloadReturn {
             setIsLoaded(false);
             setProgress(0);
             setImages([]);
+            setFallbackImage(null);
 
             const loadedImages: HTMLImageElement[] = new Array(count);
             let loadedCount = 0;
@@ -66,7 +72,7 @@ export function usePreload(): UsePreloadReturn {
 
                     img.onerror = () => {
                         // Don't reject the whole chain for a single frame –
-                        // just leave a gap (canvas will skip it gracefully).
+                        // canvas will use the fallback image instead.
                         loadedImages[index] = img; // broken but present
                         loadedCount++;
                         resolve(img);
@@ -77,9 +83,25 @@ export function usePreload(): UsePreloadReturn {
             const stale = () => generationRef.current !== myGeneration;
 
             try {
-                // ── Phase 1: initial chunk (blocks scroll) ──────────────
+                // ── Priority phase: frame 0 in isolation → becomes fallback ──
+                // This runs before everything else so the canvas always has a
+                // valid image to render even if later frames haven't arrived yet.
+                await loadImage(0);
+
+                if (stale()) return loadedImages;
+
+                const frame0 = loadedImages[0];
+                if (frame0?.naturalWidth) {
+                    setFallbackImage(frame0);
+                }
+
+                // ── Phase 1: initial chunk (blocks scroll) ──────────────────
+                // Frame 0 is already loaded; start from index 1.
                 const initialEnd = Math.min(INITIAL_CHUNK, count);
-                const initialPromises = Array.from({ length: initialEnd }, (_, i) => loadImage(i));
+                const initialPromises = Array.from(
+                    { length: initialEnd - 1 },
+                    (_, i) => loadImage(i + 1)
+                );
                 await Promise.all(initialPromises);
 
                 if (stale()) return loadedImages;
@@ -88,7 +110,7 @@ export function usePreload(): UsePreloadReturn {
                 setImages([...loadedImages]);
                 setIsLoaded(true);
 
-                // ── Phase 2: remaining frames in background chunks ──────
+                // ── Phase 2: remaining frames in background chunks ──────────
                 let cursor = initialEnd;
                 while (cursor < count) {
                     if (stale()) return loadedImages;
@@ -120,6 +142,7 @@ export function usePreload(): UsePreloadReturn {
 
     return {
         images,
+        fallbackImage,
         progress,
         isLoaded,
         preloadFrames,

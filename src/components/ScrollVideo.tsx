@@ -143,17 +143,23 @@ export const ScrollVideo: React.FC = () => {
     const framesPath = isMobile ? MOBILE_FRAMES_PATH : DESKTOP_FRAMES_PATH;
     const frameCount = isMobile ? MOBILE_FRAME_COUNT : DESKTOP_FRAME_COUNT;
 
-    const { images, progress, isLoaded, preloadFrames } = usePreload();
+    const { images, fallbackImage, progress, isLoaded, preloadFrames } = usePreload();
 
-    // Keep the ref in sync with the latest images array
+    // Keep the refs in sync with the latest arrays/images
     useEffect(() => {
         imagesRef.current = images;
     }, [images]);
 
+    // Stable ref for the fallback so drawFrame can read it without re-creating
+    const fallbackRef = useRef<HTMLImageElement | null>(null);
+    useEffect(() => { fallbackRef.current = fallbackImage; }, [fallbackImage]);
+
     const drawFrame = useCallback((frameIndex: number) => {
         const canvas = canvasRef.current;
         const ctx = contextRef.current;
-        const img = imagesRef.current[frameIndex];
+        const rawImg = imagesRef.current[frameIndex];
+        // If the requested frame hasn't loaded or is broken, fall back to frame 0
+        const img = rawImg?.naturalWidth ? rawImg : (fallbackRef.current ?? rawImg);
         if (!canvas || !ctx || !img || !img.naturalWidth) return;
 
         // canvas.width/height are in device pixels (innerWidth * dpr).
@@ -408,6 +414,9 @@ export const ScrollVideo: React.FC = () => {
                 if (frameIndex !== currentFrameRef.current) {
                     currentFrameRef.current = frameIndex;
                     drawFrameRef.current(frameIndex);
+                    window.dispatchEvent(
+                        new CustomEvent('scrollvideo-frame', { detail: { frame: frameIndex } })
+                    );
                 }
 
                 // Intro text fades out early (girl's eye appears ~40% into first segment)

@@ -69,8 +69,25 @@ export const NavBubble: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [scrollPct, setScrollPct] = useState(0);
     const [activeSection, setActiveSection] = useState('home');
+
+    // Logo fades out after frame 100 of the scroll-video section
+    const videoFrameRef = useRef(0);
+    const [logoVisible, setLogoVisible] = useState(true);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const rafRef = useRef<number>(0);
+
+    // ── Logo visibility: track scroll-video frame progress ───────────────────
+    useEffect(() => {
+        const onFrame = (e: Event) => {
+            const frame = (e as CustomEvent<{ frame: number }>).detail.frame;
+            const wasVisible = videoFrameRef.current <= 100;
+            const isNowVisible = frame <= 100;
+            videoFrameRef.current = frame;
+            if (wasVisible !== isNowVisible) setLogoVisible(isNowVisible);
+        };
+        window.addEventListener('scrollvideo-frame', onFrame);
+        return () => window.removeEventListener('scrollvideo-frame', onFrame);
+    }, []);
 
     // ── Scroll progress ───────────────────────────────────────────────────────
     useEffect(() => {
@@ -390,9 +407,9 @@ export const NavBubble: React.FC = () => {
                 overflow: 'hidden',
                 ...soap(),
                 padding: 0,
-                opacity: activeSection === 'home' ? 1 : 0,
-                pointerEvents: activeSection === 'home' ? 'auto' : 'none',
-                transition: 'opacity 0.4s ease',
+                opacity: logoVisible ? 1 : 0,
+                pointerEvents: logoVisible ? 'auto' : 'none',
+                transition: 'opacity 1.2s ease',
             }}>
                 <img
                     src="/logo.png" alt="WIDE"
