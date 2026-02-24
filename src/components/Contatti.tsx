@@ -36,32 +36,32 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
 
 // Ripple
 const RIPPLE_SPEED = 220;
-const RIPPLE_LIFE  = 3200;
-const RING_COUNT   = 3;
-const RING_GAP     = 40;
-const MAX_RIPPLES  = 3;
+const RIPPLE_LIFE = 3200;
+const RING_COUNT = 3;
+const RING_GAP = 40;
+const MAX_RIPPLES = 3;
 
 // Element perturbation
 const PERTURB_MAX_DIST = 700;
-const PERTURB_Y        = 3;
-const PERTURB_ROT      = 0.6;
+const PERTURB_Y = 3;
+const PERTURB_ROT = 0.6;
 
 // Floating orbs
 const ORBS = [
-    { size: 380, color: 'rgba(90,50,180,0.06)',  x: '12%', y: '18%', dx: 50,  dy: 35, dur: 9  },
-    { size: 300, color: 'rgba(40,90,200,0.05)',   x: '72%', y: '55%', dx: -40, dy: 45, dur: 11 },
-    { size: 260, color: 'rgba(70,30,160,0.05)',   x: '45%', y: '78%', dx: 35,  dy: -25, dur: 10 },
+    { size: 380, color: 'rgba(90,50,180,0.06)', x: '12%', y: '18%', dx: 50, dy: 35, dur: 9 },
+    { size: 300, color: 'rgba(40,90,200,0.05)', x: '72%', y: '55%', dx: -40, dy: 45, dur: 11 },
+    { size: 260, color: 'rgba(70,30,160,0.05)', x: '45%', y: '78%', dx: 35, dy: -25, dur: 10 },
 ];
 
 // Pond physics
-const BOAT_RADIUS    = 22;
+const BOAT_RADIUS = 22;
 const BOAT_ICON_SIZE = 22;
-const BOAT_CIRCLE    = 44;
-const BOAT_FRICTION  = 0.97;
-const BOAT_DRIFT_F   = 0.02;
-const BOUNCE_DAMP    = 0.3;
-const WAVE_PUSH_F    = 15;
-const POND_PADDING   = 10;
+const BOAT_CIRCLE = 44;
+const BOAT_FRICTION = 0.97;
+const BOAT_DRIFT_F = 0.02;
+const BOUNCE_DAMP = 0.3;
+const WAVE_PUSH_F = 15;
+const POND_PADDING = 10;
 
 /* ═══════════════════════════════════════════════════════════════════════════
    SVG Icons
@@ -89,8 +89,8 @@ const BehanceIcon: React.FC<{ size?: number }> = ({ size = 22 }) => (
 
 const SOCIALS = [
     { label: 'Instagram', href: '#', Icon: InstagramIcon, color: 'rgba(225,48,108,0.7)' },
-    { label: 'LinkedIn',  href: '#', Icon: LinkedInIcon,  color: 'rgba(10,102,194,0.7)' },
-    { label: 'Behance',   href: '#', Icon: BehanceIcon,   color: 'rgba(5,62,255,0.7)' },
+    { label: 'LinkedIn', href: '#', Icon: LinkedInIcon, color: 'rgba(10,102,194,0.7)' },
+    { label: 'Behance', href: '#', Icon: BehanceIcon, color: 'rgba(5,62,255,0.7)' },
 ];
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -106,7 +106,7 @@ const AnimatedLink: React.FC<{
     return (
         <a
             href={href}
-            style={{ ...style, display: 'inline-block', textDecoration: 'none', position: 'relative' }}
+            style={{ ...style, display: 'inline-block', textDecoration: 'none', position: 'relative', cursor: 'pointer', pointerEvents: 'auto', zIndex: 10 }}
             onMouseEnter={() => lineRef.current && gsap.to(lineRef.current, { scaleX: 1, duration: 0.35, ease: 'power2.out' })}
             onMouseLeave={() => lineRef.current && gsap.to(lineRef.current, { scaleX: 0, duration: 0.3, ease: 'power2.in' })}
         >
@@ -141,26 +141,26 @@ interface PondVisualRipple { id: number; x: number; y: number; }
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export const Contatti: React.FC = () => {
-    const sectionRef      = useRef<HTMLDivElement>(null);
-    const canvasRef       = useRef<HTMLCanvasElement>(null);
-    const titleLine1Ref   = useRef<HTMLSpanElement>(null);
-    const titleLine2Ref   = useRef<HTMLSpanElement>(null);
-    const infoRowsRef     = useRef<HTMLDivElement[]>([]);
-    const calCardRef      = useRef<HTMLDivElement>(null);
+    const sectionRef = useRef<HTMLDivElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const titleLine1Ref = useRef<HTMLSpanElement>(null);
+    const titleLine2Ref = useRef<HTMLSpanElement>(null);
+    const infoRowsRef = useRef<HTMLDivElement[]>([]);
+    const calCardRef = useRef<HTMLDivElement>(null);
     const calCardInnerRef = useRef<HTMLDivElement>(null);
-    const calGlowRef      = useRef<HTMLDivElement>(null);
-    const orbRefs         = useRef<HTMLDivElement[]>([]);
-    const ripplesRef      = useRef<Ripple[]>([]);
-    const rafRef          = useRef<number>(0);
-    const perturbableRef  = useRef<HTMLElement[]>([]);
+    const calGlowRef = useRef<HTMLDivElement>(null);
+    const orbRefs = useRef<HTMLDivElement[]>([]);
+    const ripplesRef = useRef<Ripple[]>([]);
+    const rafRef = useRef<number>(0);
+    const perturbableRef = useRef<HTMLElement[]>([]);
 
     // Pond
-    const pondRef         = useRef<HTMLDivElement>(null);
-    const boatElsRef      = useRef<HTMLDivElement[]>([]);
-    const boatsRef        = useRef<Boat[]>([]);
-    const pondRafRef      = useRef<number>(0);
-    const lastTimeRef     = useRef<number>(0);
-    const pondRipplesRef  = useRef<Ripple[]>([]);
+    const pondRef = useRef<HTMLDivElement>(null);
+    const boatElsRef = useRef<HTMLDivElement[]>([]);
+    const boatsRef = useRef<Boat[]>([]);
+    const pondRafRef = useRef<number>(0);
+    const lastTimeRef = useRef<number>(0);
+    const pondRipplesRef = useRef<Ripple[]>([]);
     const boatsEnteredRef = useRef(false);
     const pondRippleIdRef = useRef(0);
 
@@ -712,15 +712,15 @@ export const Contatti: React.FC = () => {
                     {/* Email with animated underline (#9) */}
                     <div ref={(el) => { if (el) infoRowsRef.current[0] = el; }} style={{ willChange: 'transform' }}>
                         <p style={labelStyle}>Email</p>
-                        <AnimatedLink href="mailto:hello@wide.studio" style={valueStyle}>
-                            hello@wide.studio
+                        <AnimatedLink href="mailto:widestudiodigitale@gmail.com" style={valueStyle}>
+                            widestudiodigitale@gmail.com
                         </AnimatedLink>
                     </div>
                     {/* Telefono with animated underline (#9) */}
                     <div ref={(el) => { if (el) infoRowsRef.current[1] = el; }} style={{ willChange: 'transform' }}>
                         <p style={labelStyle}>Telefono</p>
-                        <AnimatedLink href="tel:+390000000000" style={valueStyle}>
-                            +39 000 000 0000
+                        <AnimatedLink href="tel:+393271562265" style={valueStyle}>
+                            +39 327 156 2265
                         </AnimatedLink>
                     </div>
 

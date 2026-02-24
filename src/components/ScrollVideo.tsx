@@ -113,11 +113,13 @@ export const ScrollVideo: React.FC = () => {
     const [currentServiceIndex, setCurrentServiceIndex] = useState<number>(-1);
     const [serviceOpacity, setServiceOpacity] = useState<number>(0);
     const [introOpacity, setIntroOpacity] = useState<number>(1);
+    const [introTextOpacity, setIntroTextOpacity] = useState<number>(1);
 
     const [showFirstPhrase, setShowFirstPhrase] = useState(false);
     const subtitleText = "Ma esterno.";
     const [typedSubtitle, setTypedSubtitle] = useState("");
     const [showCTA, setShowCTA] = useState(false);
+    const [hasScrolled, setHasScrolled] = useState(false);
 
     const [segmentProgress, setSegmentProgress] = useState<number>(0);
     const [isMobile, setIsMobile] = useState<boolean | null>(null);
@@ -218,9 +220,21 @@ export const ScrollVideo: React.FC = () => {
         }
     }, [isLoaded, drawFrame]);
 
-    // Intro text sequence
+    // Detect when the user starts scrolling (IntroOverlay fades at 20px)
     useEffect(() => {
-        if (!isLoaded) return;
+        if (hasScrolled) return;
+        const onScroll = () => {
+            if (window.scrollY > 20) {
+                setHasScrolled(true);
+            }
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, [hasScrolled]);
+
+    // Intro text sequence — waits for scroll so the video frame appears first
+    useEffect(() => {
+        if (!isLoaded || !hasScrolled) return;
 
         let subtitleTypingTimeout: number;
         let typingInterval: number;
@@ -235,18 +249,18 @@ export const ScrollVideo: React.FC = () => {
                     currentIdx++;
                     if (currentIdx >= subtitleText.length) {
                         window.clearInterval(typingInterval);
-                        window.setTimeout(() => setShowCTA(true), 400); // Show CTA after subtitle finishes
+                        window.setTimeout(() => setShowCTA(true), 400);
                     }
                 }, 40);
             }, 600);
-        }, 300);
+        }, 1500);
 
         return () => {
             window.clearTimeout(firstPhraseTimeout);
             window.clearTimeout(subtitleTypingTimeout);
             window.clearInterval(typingInterval);
         };
-    }, [isLoaded, subtitleText]);
+    }, [isLoaded, hasScrolled, subtitleText]);
 
     // Scroll lock until loaded
     useEffect(() => {
@@ -339,13 +353,21 @@ export const ScrollVideo: React.FC = () => {
         const scrollTrigger = ScrollTrigger.create({
             trigger: container,
             start: 'top top',
-            end: '+=800%',
+            end: '+=850%',
             pin: true,
             pinSpacing: true,
             scrub: 0.8,
             invalidateOnRefresh: true,
             onUpdate: (self) => {
-                const scrollProgress = self.progress;
+                const rawProgress = self.progress;
+
+                // Dead zone: first 5% of scroll keeps frame 0 (flower with eye)
+                // while the IntroOverlay fades away
+                const DEAD_ZONE = 0.05;
+                const scrollProgress = rawProgress <= DEAD_ZONE
+                    ? 0
+                    : (rawProgress - DEAD_ZONE) / (1 - DEAD_ZONE);
+
                 const currentSegment = segments.find(
                     seg => scrollProgress >= seg.startProgress && scrollProgress < seg.endProgress
                 ) || segments[segments.length - 1];
@@ -361,8 +383,18 @@ export const ScrollVideo: React.FC = () => {
                     drawFrameRef.current(frameIndex);
                 }
 
-                // Intro opacity — stay fully visible for most of the first segment,
-                // then fade out in the last 20%
+                // Intro text fades out early (girl's eye appears ~40% into first segment)
+                const textFadeStart = segments[0].endProgress * 0.25;
+                const textFadeEnd = segments[0].endProgress * 0.45;
+                if (scrollProgress < textFadeStart) {
+                    setIntroTextOpacity(1);
+                } else if (scrollProgress < textFadeEnd) {
+                    setIntroTextOpacity(1 - (scrollProgress - textFadeStart) / (textFadeEnd - textFadeStart));
+                } else {
+                    setIntroTextOpacity(0);
+                }
+
+                // CTA + vignette stay visible longer, fade out at end of first segment
                 const introHoldEnd = segments[0].endProgress * 0.8;
                 const introFadeEnd = segments[0].endProgress;
                 if (scrollProgress < introHoldEnd) {
@@ -736,9 +768,9 @@ export const ScrollVideo: React.FC = () => {
                         `
                     }}>
                         <span style={{
-                            opacity: showFirstPhrase ? 1 : 0,
+                            opacity: showFirstPhrase ? introTextOpacity : 0,
                             transform: `translateY(${showFirstPhrase ? 0 : 10}px)`,
-                            transition: 'opacity 0.8s ease-out, transform 0.8s ease-out',
+                            transition: 'opacity 0.5s ease-out, transform 0.8s ease-out',
                             whiteSpace: isMobile ? 'normal' : 'nowrap',
                             textAlign: 'center',
                             display: 'block',
@@ -747,7 +779,7 @@ export const ScrollVideo: React.FC = () => {
                             Il reparto marketing che la tua azienda ha sempre voluto.
                         </span>
                         <span style={{
-                            opacity: typedSubtitle ? 1 : 0,
+                            opacity: typedSubtitle ? introTextOpacity : 0,
                             fontWeight: 800,
                             marginTop: isMobile ? '15px' : '35px',
                             fontSize: isMobile ? '1.6rem' : '2.4rem',
@@ -780,6 +812,9 @@ export const ScrollVideo: React.FC = () => {
                                 whiteSpace: 'nowrap',
                                 boxSizing: 'border-box',
                                 boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
+                            }}
+                            onClick={() => {
+                                document.getElementById('contatti')?.scrollIntoView({ behavior: 'instant' });
                             }}
                             onMouseOver={(e) => {
                                 e.currentTarget.style.transform = 'translateY(-2px)';

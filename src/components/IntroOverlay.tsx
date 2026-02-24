@@ -98,7 +98,7 @@ export const IntroOverlay: React.FC = () => {
                 position: 'fixed', inset: 0, zIndex: 1999,
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
-                backgroundColor: 'rgba(0,0,0,0.85)', // Slightly less dark
+                backgroundColor: '#000',
                 transition: 'opacity 0.8s ease, background-color 0.8s ease',
                 backdropFilter: 'blur(2px)', WebkitBackdropFilter: 'blur(2px)',
                 backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E\")",
@@ -111,7 +111,7 @@ export const IntroOverlay: React.FC = () => {
                     letterSpacing: '0.30em', textTransform: 'uppercase',
                     margin: '0 0 clamp(10px, 2vw, 20px)', opacity: 0,
                 }}>
-                    Creative Studio
+                    Studio Digitale
                 </p>
                 <h1 style={{
                     display: 'flex', gap: 'clamp(0.01em, 0.5vw, 0.05em)',
