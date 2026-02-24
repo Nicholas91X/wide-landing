@@ -62,6 +62,9 @@ const PROJECTS: PortfolioProject[] = [
         mediaSrc: '',
         accentColor: 'linear-gradient(135deg, #0a0a00, #1a1a00)',
         tags: ['Fotografia', 'Video', 'Architettura', 'Color Grading'],
+        reels: [
+            'https://iframe.mediadelivery.net/embed/604848/3db82693-b0fa-4aa0-b2d1-d5d5fbe6f94e?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false',
+        ],
     },
     {
         id: 'p5',
@@ -73,6 +76,9 @@ const PROJECTS: PortfolioProject[] = [
         mediaSrc: '',
         accentColor: 'linear-gradient(135deg, #001a10, #003d25)',
         tags: ['AI Generation', 'Video Produzione', 'Sound Design', 'Motion'],
+        reels: [
+            'https://iframe.mediadelivery.net/embed/604848/0fa6efb4-a0d1-49d7-b691-356f9fd3704f?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false',
+        ],
     },
     {
         id: 'p6',
@@ -84,6 +90,9 @@ const PROJECTS: PortfolioProject[] = [
         mediaSrc: '',
         accentColor: 'linear-gradient(135deg, #1a0010, #3d0025)',
         tags: ['Shopify', 'Fotografia', 'Paid Ads', 'Social'],
+        reels: [
+            'https://iframe.mediadelivery.net/embed/604848/190f2414-cf0a-42e9-906d-54043db89fce?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false',
+        ],
     },
 ];
 
@@ -367,7 +376,7 @@ export const Portfolio: React.FC = () => {
                                         @media (min-width: 768px) {
                                             .portfolio-reels-bg {
                                                 display: grid !important;
-                                                grid-template-columns: repeat(3, 1fr);
+                                                grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
                                                 overflow: hidden !important;
                                             }
                                             .portfolio-reel-item {
