@@ -59,7 +59,8 @@ const BOAT_ICON_SIZE = 22;
 const BOAT_CIRCLE = 44;
 const BOAT_FRICTION = 0.97;
 const BOAT_DRIFT_F = 0.02;
-const BOUNCE_DAMP = 0.3;
+const BOUNCE_DAMP = 0.55;  // boat-to-boat
+const WALL_BOUNCE  = 0.75;  // wall reflection (bouncier)
 const WAVE_PUSH_F = 15;
 const POND_PADDING = 10;
 
@@ -81,16 +82,23 @@ const LinkedInIcon: React.FC<{ size?: number }> = ({ size = 22 }) => (
     </svg>
 );
 
-const BehanceIcon: React.FC<{ size?: number }> = ({ size = 22 }) => (
+const TikTokIcon: React.FC<{ size?: number }> = ({ size = 22 }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M7.8 11.3c.65-.42 1.08-1.08 1.08-2.03 0-1.96-1.48-2.77-3.3-2.77H1v10.5h4.83c1.96 0 3.5-1.12 3.5-3.18 0-1.2-.62-2.15-1.53-2.52zM3.3 8.4h1.83c.78 0 1.44.3 1.44 1.18 0 .82-.5 1.22-1.28 1.22H3.3V8.4zm2.02 7.2H3.3v-2.82h2.1c.9 0 1.52.45 1.52 1.44 0 .97-.68 1.38-1.6 1.38zm9.14-5.52c-2.78 0-4.46 1.78-4.46 4.5 0 2.82 1.58 4.56 4.46 4.56 2.18 0 3.58-1.02 4.14-3.12h-2.14c-.18.7-.9 1.18-1.92 1.18-1.38 0-2.18-.82-2.24-2.22h6.4c.12-2.82-1.3-4.9-4.24-4.9zm-2.14 3.5c.14-1.12.9-1.82 2.08-1.82 1.12 0 1.82.72 1.9 1.82h-3.98zM14 6.5h4.6V5h-4.6v1.5z" transform="scale(0.95) translate(1,1.5)" />
+        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.13 8.13 0 0 0 4.77 1.52V6.76a4.85 4.85 0 0 1-1-.07z" />
+    </svg>
+);
+
+const FacebookIcon: React.FC<{ size?: number }> = ({ size = 22 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M24 12.073C24 5.446 18.627 0 12 0S0 5.446 0 12.073C0 18.063 4.388 23.027 10.125 23.927v-8.386H7.078v-3.468h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953h-1.514c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.468h-2.796v8.386C19.612 23.027 24 18.063 24 12.073z" />
     </svg>
 );
 
 const SOCIALS = [
-    { label: 'Instagram', href: '#', Icon: InstagramIcon, color: 'rgba(225,48,108,0.7)' },
-    { label: 'LinkedIn', href: '#', Icon: LinkedInIcon, color: 'rgba(10,102,194,0.7)' },
-    { label: 'Behance', href: '#', Icon: BehanceIcon, color: 'rgba(5,62,255,0.7)' },
+    { label: 'TikTok',    href: '#', Icon: TikTokIcon,    color: 'rgba(0,200,210,0.7)'   },
+    { label: 'Instagram', href: '#', Icon: InstagramIcon, color: 'rgba(225,48,108,0.7)'  },
+    { label: 'Facebook',  href: '#', Icon: FacebookIcon,  color: 'rgba(24,119,242,0.7)'  },
+    { label: 'LinkedIn',  href: '#', Icon: LinkedInIcon,  color: 'rgba(10,102,194,0.7)'  },
 ];
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -195,9 +203,10 @@ export const Contatti: React.FC = () => {
         const h = rect.height;
 
         const positions = [
-            { x: w * 0.2, y: h * 0.35 },
-            { x: w * 0.5, y: h * 0.6 },
-            { x: w * 0.75, y: h * 0.4 },
+            { x: w * 0.2,  y: h * 0.35 },
+            { x: w * 0.5,  y: h * 0.65 },
+            { x: w * 0.75, y: h * 0.4  },
+            { x: w * 0.38, y: h * 0.2  },
         ];
 
         boatsRef.current = positions.map((p) => ({
@@ -275,10 +284,10 @@ export const Contatti: React.FC = () => {
                 const min = BOAT_RADIUS + POND_PADDING;
                 const maxX = W - BOAT_RADIUS - POND_PADDING;
                 const maxY = H - BOAT_RADIUS - POND_PADDING;
-                if (b.x < min) { b.x = min; b.vx = Math.abs(b.vx) * BOUNCE_DAMP; }
-                if (b.x > maxX) { b.x = maxX; b.vx = -Math.abs(b.vx) * BOUNCE_DAMP; }
-                if (b.y < min) { b.y = min; b.vy = Math.abs(b.vy) * BOUNCE_DAMP; }
-                if (b.y > maxY) { b.y = maxY; b.vy = -Math.abs(b.vy) * BOUNCE_DAMP; }
+                if (b.x < min) { b.x = min; b.vx = Math.abs(b.vx) * WALL_BOUNCE; }
+                if (b.x > maxX) { b.x = maxX; b.vx = -Math.abs(b.vx) * WALL_BOUNCE; }
+                if (b.y < min) { b.y = min; b.vy = Math.abs(b.vy) * WALL_BOUNCE; }
+                if (b.y > maxY) { b.y = maxY; b.vy = -Math.abs(b.vy) * WALL_BOUNCE; }
             });
 
             // Boat-to-boat collisions

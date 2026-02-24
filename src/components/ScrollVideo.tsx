@@ -6,6 +6,21 @@ import { useReducedMotion } from '../hooks/useReducedMotion';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Inject scroll-hint keyframe once
+const SV_STYLE_ID = 'scrollvideo-styles';
+if (typeof document !== 'undefined' && !document.getElementById(SV_STYLE_ID)) {
+    const s = document.createElement('style');
+    s.id = SV_STYLE_ID;
+    s.textContent = `
+        @keyframes svScrollDrop {
+            0%   { opacity: 0;   transform: translateY(-6px); }
+            40%  { opacity: 0.7; transform: translateY(0);    }
+            100% { opacity: 0;   transform: translateY(8px);  }
+        }
+    `;
+    document.head.appendChild(s);
+}
+
 // Layout types for diverse service presentations
 type LayoutType = 'cards' | 'gallery' | 'testimonial' | 'stats' | 'video';
 
@@ -893,6 +908,77 @@ export const ScrollVideo: React.FC = () => {
                         }} />
                     ))}
                 </div>
+            )}
+
+            {/* ── Scroll hint — right side, visible during service cards ──── */}
+            {isLoaded && hasScrolled && currentServiceIndex >= 0 && (
+                <div style={{
+                    position: 'absolute',
+                    right: isMobile ? '10px' : '18px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    zIndex: 30,
+                    pointerEvents: 'none',
+                    opacity: serviceOpacity * 0.5,
+                    transition: 'opacity 0.6s ease-out',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '8px',
+                }}>
+                    <span style={{
+                        color: 'rgba(255,255,255,0.55)',
+                        fontSize: '0.46rem',
+                        letterSpacing: '0.22em',
+                        textTransform: 'uppercase',
+                        writingMode: 'vertical-rl' as const,
+                        transform: 'rotate(180deg)',
+                    }}>scorri</span>
+                    <div style={{
+                        width: '1px',
+                        height: '28px',
+                        background: 'rgba(255,255,255,0.35)',
+                        animation: 'svScrollDrop 1.8s ease-in-out infinite',
+                    }} />
+                </div>
+            )}
+
+            {/* ── Skip section button — bottom-right, extremely discreet ──── */}
+            {isLoaded && hasScrolled && (
+                <button
+                    style={{
+                        position: 'absolute',
+                        bottom: 'clamp(20px, 4vw, 32px)',
+                        right: isMobile ? '12px' : '20px',
+                        zIndex: 30,
+                        background: 'transparent',
+                        border: 'none',
+                        color: 'rgba(255,255,255,0.28)',
+                        fontSize: '0.52rem',
+                        letterSpacing: '0.18em',
+                        textTransform: 'uppercase',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                        padding: '10px 0 10px 10px',
+                        fontFamily: 'inherit',
+                        transition: 'color 0.3s ease',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.62)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.28)'; }}
+                    onClick={() => {
+                        const el = document.getElementById('chi-siamo');
+                        if (el) el.scrollIntoView({ behavior: 'instant' });
+                    }}
+                    aria-label="Salta la sezione servizi"
+                >
+                    Salta
+                    <svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="2.5,1.5 6.5,4.5 2.5,7.5" />
+                        <line x1="7" y1="1.5" x2="7" y2="7.5" />
+                    </svg>
+                </button>
             )}
 
             {isLoaded && currentService && (
