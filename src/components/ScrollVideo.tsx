@@ -33,12 +33,12 @@ const SERVICES: Service[] = [
         layoutType: 'cards',
         items: [
             { title: 'Strategia Sartoriale', description: "Studiamo il tuo mercato e creiamo un piano d'attacco su misura insieme a te, senza intermediari che rallentano il processo." },
-            { title: 'Contenuti che Convertono', description: "Produciamo foto e video reali per catturare l'attenzione del tuo target e costruire un'identità visiva premium e inconfondibile." },
+            { title: 'Content Marketing', description: "Produciamo foto e video reali per catturare l'attenzione del tuo target e costruire un'identità visiva premium e inconfondibile." },
             { title: 'Pubblicità e Sponsorizzate', description: "Curiamo le tue sponsorizzate in prima persona, ottimizzando ogni centesimo per generare contatti qualificati e vendite reali, non semplici \"mi piace\"." },
         ]
     },
     {
-        title: 'Creiamo Contenuti Che Convertono',
+        title: 'Content Marketing',
         description: 'Mostriamo il vero volto della tua azienda.',
         layoutType: 'stats',
         items: [
@@ -753,7 +753,10 @@ export const ScrollVideo: React.FC = () => {
                 inset: 0,
                 background: 'radial-gradient(circle at center, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.55) 50%, rgba(0,0,0,0.78) 100%)',
                 zIndex: 10,
-                opacity: Math.max(serviceOpacity, introOpacity * 0.65),
+                // Stronger vignette for all services except SMM (index 0) to improve text readability
+                opacity: currentServiceIndex > 0
+                    ? Math.max(serviceOpacity * 1.8, introOpacity * 0.65)
+                    : Math.max(serviceOpacity, introOpacity * 0.65),
                 pointerEvents: 'none',
                 transition: 'opacity 0.3s ease-out'
             }} />
