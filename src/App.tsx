@@ -2,6 +2,7 @@ import { ScrollVideo } from './components/ScrollVideo';
 import { Portfolio } from './components/Portfolio';
 import { ChiSiamo } from './components/ChiSiamo';
 import { Contatti } from './components/Contatti';
+import { Footer } from './components/Footer';
 import { NavBubble } from './components/NavBubble';
 import { IntroOverlay } from './components/IntroOverlay';
 
@@ -49,6 +50,13 @@ function App() {
             <section id="contatti">
                 <Contatti />
             </section>
+            {/* Gradient fade — cream (#ece8e0) → black, bridges Contatti → Footer */}
+            <div style={{
+                height: 'clamp(60px, 10vw, 120px)',
+                background: 'linear-gradient(to bottom, #ece8e0 0%, #000 100%)',
+                pointerEvents: 'none',
+            }} />
+            <Footer />
         </main>
         </>
     );
