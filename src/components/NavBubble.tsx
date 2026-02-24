@@ -336,10 +336,20 @@ export const NavBubble: React.FC = () => {
         closeMenu();
         setTimeout(() => {
             if (sectionId === 'home') {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                window.scrollTo({ top: 0, behavior: 'instant' });
+            } else if (sectionId === 'servizi') {
+                // The services section is pinned by ScrollTrigger (800vh scroll range).
+                // The first service appears after the intro fast-segment (~7% progress).
+                // Scroll to sectionTop + offset so the first service card is visible.
+                const el = document.getElementById('servizi');
+                if (el) {
+                    const sectionTop = el.getBoundingClientRect().top + window.scrollY;
+                    const offset = window.innerHeight * 0.55;
+                    window.scrollTo({ top: sectionTop + offset, behavior: 'instant' });
+                }
             } else {
                 const el = document.getElementById(sectionId);
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
+                if (el) el.scrollIntoView({ behavior: 'instant' });
             }
         }, 700);
     };

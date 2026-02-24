@@ -43,10 +43,10 @@ const PROJECTS: PortfolioProject[] = [
     },
     {
         id: 'p3',
-        title: 'Corporate Web Platform',
-        category: 'Web Design',
+        title: 'My Way Dance Academy',
+        category: 'Shooting Video ed Editing',
         year: '2024',
-        description: 'Piattaforma web enterprise con dashboard interattiva, area clienti e integrazione CRM.\nArchitettura scalabile e design system completo.',
+        description: 'Riprese video ed editing.',
         mediaType: 'image',
         mediaSrc: '',
         accentColor: 'linear-gradient(135deg, #0a001a, #1a003d)',
