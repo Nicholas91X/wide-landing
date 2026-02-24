@@ -107,6 +107,33 @@ export const Portfolio: React.FC = () => {
 
     const prefersReduced = useReducedMotion();
 
+    // ── Reel swipe: one-item-at-a-time on mobile ──────────────────────────────
+    // Capture scroll position at touchstart so momentum between start→end
+    // doesn't affect which index we target.
+    const reelTouchStartX = useRef(0);
+    const reelTouchStartScrollLeft = useRef(0);
+
+    const handleReelTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+        reelTouchStartX.current = e.touches[0].clientX;
+        reelTouchStartScrollLeft.current = e.currentTarget.scrollLeft;
+    };
+
+    const handleReelTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+        const dx = e.changedTouches[0].clientX - reelTouchStartX.current;
+        if (Math.abs(dx) < 15) return; // ignore micro-swipes
+
+        const container = e.currentTarget;
+        const itemWidth = container.offsetWidth;
+        if (!itemWidth) return;
+
+        const items = container.querySelectorAll<HTMLElement>('.portfolio-reel-item');
+        // Use scroll position recorded at touchstart — immune to momentum drift
+        const currentIndex = Math.round(reelTouchStartScrollLeft.current / itemWidth);
+        const nextIndex = Math.max(0, Math.min(items.length - 1, currentIndex + (dx < 0 ? 1 : -1)));
+
+        container.scrollTo({ left: nextIndex * itemWidth, behavior: 'smooth' });
+    };
+
     useEffect(() => {
         const container = containerRef.current;
         if (!container) return;
@@ -278,6 +305,8 @@ export const Portfolio: React.FC = () => {
                                         // Prevent modal opening when clicking on the videos
                                         e.stopPropagation();
                                     }}
+                                    onTouchStart={handleReelTouchStart}
+                                    onTouchEnd={handleReelTouchEnd}
                                     className="portfolio-reels-bg"
                                     style={{
                                         display: 'flex',
@@ -289,6 +318,7 @@ export const Portfolio: React.FC = () => {
                                         WebkitOverflowScrolling: 'touch',
                                         scrollbarWidth: 'none',
                                         msOverflowStyle: 'none',
+                                        overscrollBehaviorX: 'contain',
                                     }}
                                 >
                                     {project.reels.map((reelUrl, idx) => (
@@ -300,6 +330,7 @@ export const Portfolio: React.FC = () => {
                                                 width: '100%',
                                                 height: '100%',
                                                 scrollSnapAlign: 'start',
+                                                scrollSnapStop: 'always',
                                                 position: 'relative',
                                                 backgroundColor: '#000',
                                                 overflow: 'hidden',
