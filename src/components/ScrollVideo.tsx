@@ -132,7 +132,7 @@ export const ScrollVideo: React.FC = () => {
     const [introTextOpacity, setIntroTextOpacity] = useState<number>(1);
 
     const [showFirstPhrase, setShowFirstPhrase] = useState(false);
-    const subtitleText = "Ma esterno.";
+    const subtitleText = "la tua azienda merita una strategia più veloce del passaparola.";
     const [typedSubtitle, setTypedSubtitle] = useState("");
     const [showCTA, setShowCTA] = useState(false);
 
@@ -827,18 +827,22 @@ export const ScrollVideo: React.FC = () => {
                             whiteSpace: isMobile ? 'normal' : 'nowrap',
                             textAlign: 'center',
                             display: 'block',
-                            width: '100%'
+                            width: '100%',
+                            fontSize: isMobile ? '1.8rem' : '4.2rem',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.05em'
                         }}>
-                            Il reparto marketing che la tua azienda ha sempre voluto.
+                            IL MONDO È CAMBIATO:
                         </span>
                         <span style={{
                             opacity: typedSubtitle ? introTextOpacity : 0,
-                            fontWeight: 800,
-                            marginTop: isMobile ? '15px' : '35px',
-                            fontSize: isMobile ? '1.6rem' : '2.4rem',
-                            color: '#fff',
+                            fontWeight: 600,
+                            marginTop: isMobile ? '10px' : '20px',
+                            fontSize: isMobile ? '1.1rem' : '1.8rem',
+                            color: 'rgba(255,255,255,0.85)',
                             minHeight: isMobile ? '1.8rem' : '2.8rem',
-                            letterSpacing: '-0.02em'
+                            letterSpacing: '0.02em',
+                            maxWidth: '900px'
                         }}>
                             {typedSubtitle}
                         </span>
