@@ -230,6 +230,8 @@ export const Portfolio: React.FC = () => {
                 <p style={{
                     color: 'rgba(255,255,255,0.35)',
                     fontSize: '0.75rem',
+                    fontFamily: 'var(--font-subtitle)',
+                    fontWeight: 600,
                     letterSpacing: '0.2em',
                     textTransform: 'uppercase',
                     margin: '0 0 16px',
@@ -239,8 +241,10 @@ export const Portfolio: React.FC = () => {
                 <h2 style={{
                     color: '#fff',
                     fontSize: 'clamp(2.2rem, 7vw, 5rem)',
-                    fontWeight: 800,
-                    letterSpacing: '-0.04em',
+                    fontFamily: 'var(--font-title)',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.02em',
                     lineHeight: 1.05,
                     margin: '0 0 16px',
                 }}>
@@ -249,7 +253,8 @@ export const Portfolio: React.FC = () => {
                 <p style={{
                     color: 'rgba(255,255,255,0.45)',
                     fontSize: 'clamp(0.9rem, 2vw, 1.1rem)',
-                    fontWeight: 300,
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 400,
                     maxWidth: '480px',
                     lineHeight: 1.6,
                     margin: 0,
@@ -436,6 +441,8 @@ export const Portfolio: React.FC = () => {
                             <div style={{
                                 color: 'rgba(255,255,255,0.5)',
                                 fontSize: '0.75rem',
+                                fontFamily: 'var(--font-subtitle)',
+                                fontWeight: 600,
                                 letterSpacing: '0.15em',
                                 textTransform: 'uppercase',
                                 marginBottom: '10px',
@@ -447,7 +454,8 @@ export const Portfolio: React.FC = () => {
                             <h3 style={{
                                 color: '#fff',
                                 fontSize: 'clamp(1.6rem, 6vw, 3.5rem)',
-                                fontWeight: 800,
+                                fontFamily: 'var(--font-title)',
+                                fontWeight: 700,
                                 letterSpacing: '-0.03em',
                                 lineHeight: 1.05,
                                 margin: '0 0 20px',
@@ -468,6 +476,7 @@ export const Portfolio: React.FC = () => {
                                     gap: '8px',
                                     color: '#000',
                                     fontSize: '0.85rem',
+                                    fontFamily: 'var(--font-subtitle)',
                                     fontWeight: 600,
                                     letterSpacing: '0.08em',
                                     border: '1px solid #fff',
@@ -488,6 +497,8 @@ export const Portfolio: React.FC = () => {
                                         gap: '6px',
                                         color: 'rgba(255,255,255,0.6)',
                                         fontSize: '0.75rem',
+                                        fontFamily: 'var(--font-subtitle)',
+                                        fontWeight: 600,
                                         letterSpacing: '0.05em',
                                         textTransform: 'uppercase',
                                     }}>

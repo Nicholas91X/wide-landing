@@ -15,5 +15,5 @@
 5. **Produzioni Video con Intelligenza Artificiale**
    Diamo vita a ciò che non esiste ancora. Scenari, animazioni e video ad altissimo impatto per presentare i tuoi prodotti come leader di settore.
 
-6. **Sviluppo Piattaforme Web ed E-commerce**
+6. **Sviluppo Piattaforme Web su misura**
    Esperienze immersive e conversion-oriented.

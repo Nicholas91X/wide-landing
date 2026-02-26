@@ -60,7 +60,7 @@ const BOAT_CIRCLE = 44;
 const BOAT_FRICTION = 0.97;
 const BOAT_DRIFT_F = 0.02;
 const BOUNCE_DAMP = 0.55;  // boat-to-boat
-const WALL_BOUNCE  = 0.75;  // wall reflection (bouncier)
+const WALL_BOUNCE = 0.75;  // wall reflection (bouncier)
 const WAVE_PUSH_F = 15;
 const POND_PADDING = 10;
 
@@ -95,10 +95,10 @@ const FacebookIcon: React.FC<{ size?: number }> = ({ size = 22 }) => (
 );
 
 const SOCIALS = [
-    { label: 'TikTok',    href: '#', Icon: TikTokIcon,    color: 'rgba(0,200,210,0.7)'   },
-    { label: 'Instagram', href: '#', Icon: InstagramIcon, color: 'rgba(225,48,108,0.7)'  },
-    { label: 'Facebook',  href: '#', Icon: FacebookIcon,  color: 'rgba(24,119,242,0.7)'  },
-    { label: 'LinkedIn',  href: '#', Icon: LinkedInIcon,  color: 'rgba(10,102,194,0.7)'  },
+    { label: 'TikTok', href: '#', Icon: TikTokIcon, color: 'rgba(0,200,210,0.7)' },
+    { label: 'Instagram', href: '#', Icon: InstagramIcon, color: 'rgba(225,48,108,0.7)' },
+    { label: 'Facebook', href: '#', Icon: FacebookIcon, color: 'rgba(24,119,242,0.7)' },
+    { label: 'LinkedIn', href: '#', Icon: LinkedInIcon, color: 'rgba(10,102,194,0.7)' },
 ];
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -203,10 +203,10 @@ export const Contatti: React.FC = () => {
         const h = rect.height;
 
         const positions = [
-            { x: w * 0.2,  y: h * 0.35 },
-            { x: w * 0.5,  y: h * 0.65 },
-            { x: w * 0.75, y: h * 0.4  },
-            { x: w * 0.38, y: h * 0.2  },
+            { x: w * 0.2, y: h * 0.35 },
+            { x: w * 0.5, y: h * 0.65 },
+            { x: w * 0.75, y: h * 0.4 },
+            { x: w * 0.38, y: h * 0.2 },
         ];
 
         boatsRef.current = positions.map((p) => ({
@@ -650,13 +650,13 @@ export const Contatti: React.FC = () => {
 
     /* ── Styles (light-theme palette) ───────────────────────────────────── */
     const labelStyle: React.CSSProperties = {
-        color: 'rgba(0,0,0,0.42)', fontSize: '0.7rem', fontWeight: 600,
+        color: 'rgba(0,0,0,0.42)', fontSize: '0.7rem', fontFamily: 'var(--font-subtitle)', fontWeight: 600,
         letterSpacing: '0.15em', textTransform: 'uppercase', margin: '0 0 8px',
     };
 
     const valueStyle: React.CSSProperties = {
         color: 'rgba(0,0,0,0.82)', fontSize: 'clamp(0.95rem, 2vw, 1.15rem)',
-        fontWeight: 400, margin: 0,
+        fontFamily: 'var(--font-body)', fontWeight: 400, margin: 0,
     };
 
     /* ── Render ───────────────────────────────────────────────────────────── */
@@ -690,15 +690,15 @@ export const Contatti: React.FC = () => {
             {/* ── Header ─────────────────────────────────────────────────── */}
             <div style={{ marginBottom: 'clamp(48px, 8vw, 80px)', position: 'relative', zIndex: 2 }}>
                 <p style={{
-                    color: 'rgba(0,0,0,0.4)', fontSize: '0.75rem', fontWeight: 600,
+                    color: 'rgba(0,0,0,0.4)', fontSize: '0.75rem', fontFamily: 'var(--font-subtitle)', fontWeight: 600,
                     letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 0 16px',
                 }}>
                     CONTATTI
                 </p>
                 {/* Title with per-line reveal (#6) */}
                 <h2 style={{
-                    color: '#0a0a0a', fontSize: 'clamp(2.2rem, 7vw, 5rem)', fontWeight: 800,
-                    letterSpacing: '-0.04em', lineHeight: 1.05, margin: '0 0 20px',
+                    color: '#0a0a0a', fontSize: 'clamp(2.2rem, 7vw, 5rem)', fontFamily: 'var(--font-title)', fontWeight: 700,
+                    textTransform: 'uppercase', letterSpacing: '0.02em', lineHeight: 1.05, margin: '0 0 20px',
                 }}>
                     <span ref={titleLine1Ref} style={{ display: 'block', willChange: 'transform, opacity' }}>
                         Parliamo del

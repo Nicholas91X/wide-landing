@@ -113,7 +113,7 @@ export const ChiSiamo: React.FC = () => {
                         // Right foreground: phases swap + holdRight (5.2/9.2 → 7.2/9.2)
                         const next: -1 | 0 | 1 =
                             (p >= 0.11 && p <= 0.44) ? 0 :
-                            (p >= 0.57 && p <= 0.78) ? 1 : -1;
+                                (p >= 0.57 && p <= 0.78) ? 1 : -1;
                         if (focusedCardRef.current !== next) {
                             focusedCardRef.current = next;
                             setFocusedCard(next);
@@ -190,7 +190,8 @@ export const ChiSiamo: React.FC = () => {
                 <p style={{
                     color: '#fff',
                     fontSize: isMobile ? '0.9rem' : '1.05rem',
-                    fontWeight: 700,
+                    fontFamily: 'var(--font-subtitle)',
+                    fontWeight: 600,
                     margin: '8px 0 4px',
                     letterSpacing: '-0.01em',
                 }}>
@@ -199,6 +200,7 @@ export const ChiSiamo: React.FC = () => {
                 <p style={{
                     color: 'rgba(255,255,255,0.45)',
                     fontSize: '0.65rem',
+                    fontFamily: 'var(--font-subtitle)',
                     fontWeight: 600,
                     letterSpacing: '0.1em',
                     textTransform: 'uppercase',
@@ -209,7 +211,8 @@ export const ChiSiamo: React.FC = () => {
                 <p style={{
                     color: 'rgba(255,255,255,0.55)',
                     fontSize: isMobile ? '0.65rem' : '0.75rem',
-                    fontWeight: 300,
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 400,
                     lineHeight: 1.45,
                     margin: 0,
                     whiteSpace: 'pre-line' as const,
@@ -240,8 +243,10 @@ export const ChiSiamo: React.FC = () => {
                 <h2 style={{
                     color: '#fff',
                     fontSize: 'clamp(1.8rem, 5vw, 3.5rem)',
-                    fontWeight: 800,
-                    letterSpacing: '-0.03em',
+                    fontFamily: 'var(--font-title)',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
                     lineHeight: 1.1,
                     margin: '0 0 24px',
                     whiteSpace: isMobile ? 'normal' : 'nowrap',
@@ -251,7 +256,8 @@ export const ChiSiamo: React.FC = () => {
                 <p style={{
                     color: 'rgba(255,255,255,0.6)',
                     fontSize: 'clamp(0.85rem, 2vw, 1.1rem)',
-                    fontWeight: 300,
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 400,
                     lineHeight: 1.7,
                     margin: '0 0 40px',
                 }}>
@@ -268,7 +274,8 @@ export const ChiSiamo: React.FC = () => {
                         border: '1px solid #fff',
                         borderRadius: '0',
                         fontSize: '0.75rem',
-                        fontWeight: 700,
+                        fontFamily: 'var(--font-subtitle)',
+                        fontWeight: 600,
                         letterSpacing: '0.12em',
                         textTransform: 'uppercase',
                         cursor: 'pointer',
@@ -292,15 +299,15 @@ export const ChiSiamo: React.FC = () => {
             {/* ── Header ──────────────────────────────────────────────────── */}
             <div ref={headerRef} style={{ marginBottom: 'clamp(24px, 4vw, 40px)', textAlign: 'left' }}>
                 <p style={{
-                    color: 'rgba(255,255,255,0.35)', fontSize: '0.75rem', fontWeight: 600,
+                    color: 'rgba(255,255,255,0.35)', fontSize: '0.75rem', fontFamily: 'var(--font-subtitle)', fontWeight: 600,
                     letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 0 20px',
                     display: 'block',
                 }}>
                     CHI SIAMO
                 </p>
                 <h2 style={{
-                    color: '#fff', fontSize: 'clamp(1.8rem, 6vw, 5rem)', fontWeight: 800,
-                    letterSpacing: '-0.04em', lineHeight: 1.05, margin: '0 0 20px',
+                    color: '#fff', fontSize: 'clamp(1.8rem, 6vw, 5rem)', fontFamily: 'var(--font-title)', fontWeight: 700,
+                    textTransform: 'uppercase', letterSpacing: '0.02em', lineHeight: 1.05, margin: '0 0 20px',
                     display: 'block',
                 }}>
                     Le menti dietro<br />ogni progetto.
@@ -397,6 +404,7 @@ export const ChiSiamo: React.FC = () => {
                         <span style={{
                             color: 'rgba(255,255,255,0.5)',
                             fontSize: '0.58rem',
+                            fontFamily: 'var(--font-subtitle)',
                             fontWeight: 600,
                             letterSpacing: '0.15em',
                             textTransform: 'uppercase',
@@ -420,6 +428,7 @@ export const ChiSiamo: React.FC = () => {
                     style={{
                         color: '#fff',
                         fontSize: 'clamp(1.4rem, 4vw, 2.2rem)',
+                        fontFamily: 'var(--font-title)',
                         fontWeight: 700,
                         letterSpacing: '-0.03em',
                         lineHeight: 1.15,
@@ -432,7 +441,8 @@ export const ChiSiamo: React.FC = () => {
                     style={{
                         color: 'rgba(255,255,255,0.5)',
                         fontSize: 'clamp(0.9rem, 2vw, 1.1rem)',
-                        fontWeight: 300,
+                        fontFamily: 'var(--font-body)',
+                        fontWeight: 400,
                         lineHeight: 1.7,
                         margin: 0,
                     }}

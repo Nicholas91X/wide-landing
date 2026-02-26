@@ -48,8 +48,8 @@ const SERVICES: Service[] = [
         layoutType: 'cards',
         items: [
             { title: 'Strategia Sartoriale', description: "Studiamo il tuo mercato e creiamo un piano d'attacco su misura insieme a te, senza intermediari che rallentano il processo." },
+            { title: 'Pubblicità e Sponsorizzate', description: "Generiamo lead qualificati tramite campagne pubblicitarie di Meta, per farti acquisire nuovi clienti" },
             { title: 'Content Marketing', description: "Produciamo foto e video reali per catturare l'attenzione del tuo target e costruire un'identità visiva premium e inconfondibile." },
-            { title: 'Pubblicità e Sponsorizzate', description: "Curiamo le tue sponsorizzate in prima persona, ottimizzando ogni centesimo per generare contatti qualificati e vendite reali, non semplici \"mi piace\"." },
         ]
     },
     {
@@ -63,14 +63,14 @@ const SERVICES: Service[] = [
         ]
     },
     {
-        title: 'Creazione Applicativi Personalizzati',
-        description: 'Software su misura per business scalabili.',
+        title: 'Il Tuo Strumento Digitale, Su Misura',
+        description: 'Dal negozio online al gestionale: costruiamo esattamente quello che serve alla tua azienda.',
         layoutType: 'gallery',
         items: [
-            { title: 'Dashboard UX', description: 'Sistemi modellati sui tuoi flussi di lavoro per azzerare i tempi di formazione del team.' },
-            { title: 'Cloud Backend', description: 'Reparti connessi e dati blindati.\nIl controllo totale della tua azienda, in tempo reale.' },
-            { title: 'Cross Platform', description: 'Applicativi adatti sia a sistemi Android che iOS.' },
-            { title: 'AI Integration', description: 'Automatizziamo i processi aziendali e diamo vita alle tue idee, sviluppando strumenti AI esclusivi esattamente come li desideri.' },
+            { title: 'Vendi online', description: 'Un negozio digitale aperto 24 ore su 24, che trasforma i visitatori in clienti paganti senza bisogno di intermediari.' },
+            { title: 'Gestisci tutto da un solo posto', description: 'Un pannello semplice per tenere sotto controllo ordini, personale e dati senza fogli Excel, senza confusione.' },
+            { title: 'La tua app aziendale', description: 'App che funzionano su mobile o pc, per i tuoi clienti e/o collaboratori.' },
+            { title: 'Costruito per te', description: 'Non usiamo template già pronti: partiamo dai tuoi processi e costruiamo lo strumento che si adatta alla tua realtà.' },
         ]
     },
     {
@@ -93,7 +93,7 @@ const SERVICES: Service[] = [
         ]
     },
     {
-        title: 'Sviluppo Piattaforme Web ed E-commerce',
+        title: 'Sviluppo Piattaforme Web su misura',
         description: 'Esperienze immersive e conversion-oriented.',
         layoutType: 'cards',
         items: [
@@ -571,16 +571,21 @@ export const ScrollVideo: React.FC = () => {
                                     <h3 style={{
                                         color: '#fff',
                                         fontSize: isMobile ? 'clamp(0.92rem, 3vw, 1.05rem)' : '1.15rem',
+                                        fontFamily: 'var(--font-title)',
                                         fontWeight: 700,
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.05em',
                                         marginBottom: isMobile ? '6px' : '15px'
                                     }}>{item.title}</h3>
                                     <p style={{
-                                        color: 'rgba(255,255,255,0.70)',
-                                        fontSize: isMobile ? 'clamp(0.8rem, 2.5vw, 0.9rem)' : '0.9rem',
-                                        fontWeight: 300,
+                                        color: 'rgba(255,255,255,0.92)',
+                                        fontSize: isMobile ? 'clamp(0.82rem, 2.6vw, 0.95rem)' : '0.95rem',
+                                        fontFamily: 'var(--font-body)',
+                                        fontWeight: 500,
                                         lineHeight: 1.55,
                                         margin: 0,
                                         whiteSpace: 'pre-line' as const,
+                                        textShadow: '0 1px 2px rgba(0,0,0,0.3)',
                                         flex: 1
                                     }}>{item.description}</p>
                                 </div>
@@ -609,15 +614,16 @@ export const ScrollVideo: React.FC = () => {
                                         textAlign: 'center',
                                         opacity: vis,
                                         padding: 'clamp(18px, 5vw, 28px) clamp(16px, 4vw, 24px)',
-                                        backgroundColor: 'rgba(255,255,255,0.03)',
+                                        backgroundColor: 'rgba(255,255,255,0.06)',
+                                        backdropFilter: 'blur(10px)',
                                         border: '1px solid rgba(255,255,255,0.1)',
                                         borderRadius: '14px',
                                         transition: 'all 0.4s ease-out',
                                         transform: `translateY(${15 * (1 - vis)}px)`,
                                     }}>
-                                        <div style={{ color: '#fff', fontSize: 'clamp(2rem, 7vw, 2.6rem)', fontWeight: 800, lineHeight: 1 }}>{item.value}</div>
-                                        <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 'clamp(0.7rem, 2vw, 0.78rem)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: '6px' }}>{item.suffix}</div>
-                                        <div style={{ color: 'rgba(255,255,255,0.82)', fontSize: 'clamp(0.85rem, 2.5vw, 0.95rem)', marginTop: '10px', fontWeight: 300, whiteSpace: 'pre-line' }}>{item.description}</div>
+                                        <div style={{ color: '#fff', fontSize: 'clamp(2rem, 7vw, 2.6rem)', fontFamily: 'var(--font-title)', fontWeight: 700, lineHeight: 1 }}>{item.value}</div>
+                                        <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 'clamp(0.7rem, 2vw, 0.78rem)', fontFamily: 'var(--font-subtitle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: '6px' }}>{item.suffix}</div>
+                                        <div style={{ color: 'rgba(255,255,255,0.82)', fontSize: 'clamp(0.85rem, 2.5vw, 0.95rem)', marginTop: '10px', fontFamily: 'var(--font-body)', fontWeight: 400, whiteSpace: 'pre-line' }}>{item.description}</div>
                                     </div>
                                 );
                             })}
@@ -645,9 +651,9 @@ export const ScrollVideo: React.FC = () => {
                             justifyContent: 'center',
                             opacity: getElementVisibility(0, 3)
                         }}>
-                            <div style={{ color: '#fff', fontSize: '6rem', fontWeight: 800, lineHeight: 0.9 }}>{items[0].value}</div>
-                            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '0.02em', marginTop: '20px' }}>{items[0].suffix}</div>
-                            <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: '1.4rem', marginTop: '30px', fontWeight: 300, maxWidth: '400px' }}>{items[0].description}</div>
+                            <div style={{ color: '#fff', fontSize: '6rem', fontFamily: 'var(--font-title)', fontWeight: 700, lineHeight: 0.9 }}>{items[0].value}</div>
+                            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.1rem', fontFamily: 'var(--font-subtitle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.02em', marginTop: '20px' }}>{items[0].suffix}</div>
+                            <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: '1.4rem', marginTop: '30px', fontFamily: 'var(--font-body)', fontWeight: 400, maxWidth: '400px' }}>{items[0].description}</div>
                         </div>
 
                         {/* Secondary Stats (Stacked Right) */}
@@ -664,9 +670,9 @@ export const ScrollVideo: React.FC = () => {
                                         justifyContent: 'center',
                                         opacity: vis,
                                     }}>
-                                        <div style={{ color: '#fff', fontSize: '3rem', fontWeight: 700, lineHeight: 1 }}>{item.value}</div>
-                                        <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.02em', marginTop: '8px' }}>{item.suffix}</div>
-                                        <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1rem', marginTop: '12px', fontWeight: 300 }}>{item.description}</div>
+                                        <div style={{ color: '#fff', fontSize: '3rem', fontFamily: 'var(--font-title)', fontWeight: 700, lineHeight: 1 }}>{item.value}</div>
+                                        <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', fontFamily: 'var(--font-subtitle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.02em', marginTop: '8px' }}>{item.suffix}</div>
+                                        <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1rem', marginTop: '12px', fontFamily: 'var(--font-body)', fontWeight: 400 }}>{item.description}</div>
                                     </div>
                                 );
                             })}
@@ -681,8 +687,8 @@ export const ScrollVideo: React.FC = () => {
                             const vis = getElementVisibility(i, items.length);
                             return (
                                 <div key={i} style={{ opacity: vis, transform: `translateY(${10 * (1 - vis)}px)`, transition: 'opacity 0.5s ease-out' }}>
-                                    <p style={{ color: '#fff', fontSize: isMobile ? 'clamp(1.2rem, 4.5vw, 1.6rem)' : '1.8rem', fontWeight: 300, fontStyle: 'italic', lineHeight: 1.45 }}>{item.description}</p>
-                                    <div style={{ marginTop: '20px', color: 'rgba(255,255,255,0.6)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: isMobile ? 'clamp(0.78rem, 2.2vw, 0.88rem)' : '0.9rem' }}>— {item.author}</div>
+                                    <p style={{ color: '#fff', fontSize: isMobile ? 'clamp(1.2rem, 4.5vw, 1.6rem)' : '1.8rem', fontFamily: 'var(--font-body)', fontWeight: 400, fontStyle: 'italic', lineHeight: 1.45 }}>{item.description}</p>
+                                    <div style={{ marginTop: '20px', color: 'rgba(255,255,255,0.6)', fontFamily: 'var(--font-subtitle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: isMobile ? 'clamp(0.78rem, 2.2vw, 0.88rem)' : '0.9rem' }}>— {item.author}</div>
                                 </div>
                             );
                         })}
@@ -694,32 +700,33 @@ export const ScrollVideo: React.FC = () => {
                     <div style={{
                         display: 'grid',
                         gridTemplateColumns: 'repeat(2, 1fr)',
-                        gap: isMobile ? 'clamp(10px, 2.5vw, 14px)' : '15px',
-                        marginTop: isMobile ? '12px' : '30px',
+                        gap: isMobile ? '8px' : '12px',
+                        marginTop: isMobile ? '8px' : '20px',
                         width: '100%',
-                        maxWidth: isMobile ? '100%' : '600px',
-                        padding: isMobile ? '0 2px' : '0 4px',
+                        maxWidth: isMobile ? '86vw' : '500px',
+                        padding: 0,
                         alignItems: 'stretch',
                     }}>
                         {items.map((item, i) => {
                             const vis = getElementVisibility(i, items.length);
                             return (
                                 <div key={i} style={{
-                                    background: 'rgba(255,255,255,0.05)',
-                                    borderRadius: isMobile ? '12px' : '12px',
+                                    backgroundColor: 'rgba(255,255,255,0.06)',
+                                    backdropFilter: 'blur(10px)',
+                                    borderRadius: isMobile ? '10px' : '14px',
                                     border: '1px solid rgba(255,255,255,0.1)',
-                                    padding: isMobile ? 'clamp(14px, 4vw, 20px) clamp(12px, 3.5vw, 18px)' : '24px 20px',
+                                    padding: isMobile ? '18px 12px 14px' : '24px 18px 20px',
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
+                                    justifyContent: 'flex-start',
+                                    alignItems: 'flex-start',
                                     opacity: vis,
                                     transform: `translateY(${10 * (1 - vis)}px)`,
                                     height: '100%',
                                     transition: 'all 0.3s ease-out'
                                 }}>
-                                    <div style={{ color: '#fff', fontSize: isMobile ? 'clamp(0.84rem, 2.8vw, 0.96rem)' : '0.9rem', fontWeight: 600, textAlign: 'center', lineHeight: 1.3 }}>{item.title}</div>
-                                    <div style={{ color: 'rgba(255,255,255,0.62)', fontSize: isMobile ? 'clamp(0.74rem, 2.2vw, 0.82rem)' : '0.75rem', textAlign: 'center', marginTop: isMobile ? '6px' : '12px', lineHeight: 1.45 }}>{item.description}</div>
+                                    <div style={{ color: '#fff', fontSize: isMobile ? '0.8rem' : '0.95rem', fontFamily: 'var(--font-subtitle)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'left', lineHeight: 1.2, textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>{item.title}</div>
+                                    <div style={{ color: 'rgba(255,255,255,0.92)', fontSize: isMobile ? '0.72rem' : '0.82rem', fontFamily: 'var(--font-body)', fontWeight: 500, textAlign: 'left', marginTop: isMobile ? '6px' : '14px', lineHeight: 1.4, textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>{item.description}</div>
                                 </div>
                             );
                         })}
@@ -829,6 +836,8 @@ export const ScrollVideo: React.FC = () => {
                             display: 'block',
                             width: '100%',
                             fontSize: isMobile ? '1.8rem' : '4.2rem',
+                            fontFamily: 'var(--font-title)',
+                            fontWeight: 700,
                             textTransform: 'uppercase',
                             letterSpacing: '0.05em'
                         }}>
@@ -836,13 +845,15 @@ export const ScrollVideo: React.FC = () => {
                         </span>
                         <span style={{
                             opacity: typedSubtitle ? introTextOpacity : 0,
+                            fontFamily: 'var(--font-subtitle)',
                             fontWeight: 600,
                             marginTop: isMobile ? '10px' : '20px',
                             fontSize: isMobile ? '1.1rem' : '1.8rem',
-                            color: 'rgba(255,255,255,0.85)',
+                            color: 'rgba(255,255,255,0.95)',
                             minHeight: isMobile ? '1.8rem' : '2.8rem',
                             letterSpacing: '0.02em',
-                            maxWidth: '900px'
+                            maxWidth: '900px',
+                            textShadow: '0 2px 10px rgba(0,0,0,0.5)',
                         }}>
                             {typedSubtitle}
                         </span>
@@ -856,7 +867,8 @@ export const ScrollVideo: React.FC = () => {
                                 border: '1px solid #fff',
                                 borderRadius: '0',
                                 fontSize: isMobile ? '0.7rem' : '0.9rem',
-                                fontWeight: 700,
+                                fontFamily: 'var(--font-subtitle)',
+                                fontWeight: 600,
                                 letterSpacing: '0.12em',
                                 textTransform: 'uppercase',
                                 cursor: 'pointer',
@@ -931,12 +943,15 @@ export const ScrollVideo: React.FC = () => {
                     gap: '8px',
                 }}>
                     <span style={{
-                        color: 'rgba(255,255,255,0.55)',
-                        fontSize: '0.46rem',
+                        color: 'rgba(255,255,255,0.75)',
+                        fontSize: '0.52rem',
                         letterSpacing: '0.22em',
                         textTransform: 'uppercase',
                         writingMode: 'vertical-rl' as const,
                         transform: 'rotate(180deg)',
+                        textShadow: '0 2px 4px rgba(0,0,0,0.4)',
+                        fontFamily: 'var(--font-subtitle)',
+                        fontWeight: 600,
                     }}>scorri</span>
                     <div style={{
                         width: '1px',
@@ -957,20 +972,22 @@ export const ScrollVideo: React.FC = () => {
                         zIndex: 30,
                         background: 'transparent',
                         border: 'none',
-                        color: 'rgba(255,255,255,0.28)',
-                        fontSize: '0.52rem',
+                        color: 'rgba(255,255,255,0.65)',
+                        fontSize: '0.58rem',
                         letterSpacing: '0.18em',
                         textTransform: 'uppercase',
+                        textShadow: '0 2px 4px rgba(0,0,0,0.4)',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '5px',
                         padding: '10px 0 10px 10px',
-                        fontFamily: 'inherit',
+                        fontFamily: 'var(--font-subtitle)',
+                        fontWeight: 600,
                         transition: 'color 0.3s ease',
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.62)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.28)'; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = '#fff'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.65)'; }}
                     onClick={() => {
                         const el = document.getElementById('chi-siamo');
                         if (el) el.scrollIntoView({ behavior: 'instant' });
@@ -1013,15 +1030,19 @@ export const ScrollVideo: React.FC = () => {
                         <h2 style={{
                             color: '#fff',
                             fontSize: isMobile ? 'clamp(1.2rem, 4.5vw, 1.6rem)' : '2.8rem',
-                            fontWeight: 800,
+                            fontFamily: 'var(--font-title)',
+                            fontWeight: 700,
                             lineHeight: isMobile ? 1.25 : 1.1,
                             margin: 0,
                             textShadow: '0 10px 40px rgba(0,0,0,0.8)',
-                            letterSpacing: '-0.03em'
+                            letterSpacing: '0.05em',
+                            textTransform: 'uppercase'
                         }}>
-                            {isMobile && currentService.title.includes('ed E-commerce')
-                                ? <>Sviluppo Piattaforme Web<br />ed E-commerce</>
-                                : currentService.title}
+                            {isMobile && currentService.title.toLowerCase().includes('su misura')
+                                ? <>{currentService.title.replace(/su misura/i, '')}<br />su misura</>
+                                : isMobile && currentService.title.includes(', ')
+                                    ? <>{currentService.title.split(', ')[0]},<br />{currentService.title.split(', ').slice(1).join(', ')}</>
+                                    : currentService.title}
                         </h2>
                         <div style={{
                             height: '2px',
@@ -1033,7 +1054,8 @@ export const ScrollVideo: React.FC = () => {
                         <p style={{
                             color: 'rgba(255,255,255,0.9)',
                             fontSize: isMobile ? 'clamp(0.82rem, 2.8vw, 1rem)' : '1.1rem',
-                            fontWeight: 300,
+                            fontFamily: 'var(--font-body)',
+                            fontWeight: 400,
                             maxWidth: isMobile ? '92vw' : '800px',
                             margin: '0 auto',
                             lineHeight: 1.4,
