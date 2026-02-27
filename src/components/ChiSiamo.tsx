@@ -15,7 +15,7 @@ const TEAM = [
         image: '/founders/Alessia_Amoruso.jpeg',
     },
     {
-        name: 'Asia Franceschi',
+        name: 'Asia Franceschi', 
         role: 'Co-Founder & Strategist – Area Immagine e Contenuti',
         description:
             "Studio il posizionamento della tua azienda e ne curo l'intera veste comunicativa. Dalla linea editoriale fino alla produzione reale di foto e video sul set, mi assicuro che ogni materiale trasmetta l'autorevolezza del tuo brand senza filtri o finzioni.",
