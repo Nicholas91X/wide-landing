@@ -11,10 +11,9 @@ interface UsePreloadReturn extends PreloadResult {
     preloadFrames: (basePath: string, count: number, padLength?: number) => Promise<HTMLImageElement[]>;
 }
 
-// How many frames to load before unlocking scroll.
-// ~80 frames covers the first fast+slow segment so the user can
-// start scrolling immediately while the rest loads in background.
-const INITIAL_CHUNK = 80;
+// Fraction of total frames to load before unlocking scroll (0–1).
+// 0.5 = 50% of the sequence, so the bar reaches exactly 50% at unlock.
+const INITIAL_CHUNK_RATIO = 0.5;
 
 // Background chunks – load in batches to avoid saturating the
 // network with 800+ parallel requests.
@@ -97,7 +96,7 @@ export function usePreload(): UsePreloadReturn {
 
                 // ── Phase 1: initial chunk (blocks scroll) ──────────────────
                 // Frame 0 is already loaded; start from index 1.
-                const initialEnd = Math.min(INITIAL_CHUNK, count);
+                const initialEnd = Math.floor(count * INITIAL_CHUNK_RATIO);
                 const initialPromises = Array.from(
                     { length: initialEnd - 1 },
                     (_, i) => loadImage(i + 1)
