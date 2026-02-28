@@ -17,6 +17,14 @@ if (typeof document !== 'undefined' && !document.getElementById(SV_STYLE_ID)) {
             40%  { opacity: 0.7; transform: translateY(0);    }
             100% { opacity: 0;   transform: translateY(8px);  }
         }
+        @keyframes svIconPulse {
+            0%, 100% { opacity: 0.7; }
+            50%      { opacity: 1;   }
+        }
+        @keyframes svFadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to   { opacity: 1; transform: translateY(0);   }
+        }
     `;
     document.head.appendChild(s);
 }
@@ -117,6 +125,36 @@ const MOBILE_QUERY = '(max-width: 767px)';
 const FAST_FRAME_ALLOCATION = 0.6;
 const SLOW_FRAME_ALLOCATION = 0.4;
 
+// ── Loading overlay: phase icons & labels ────────────────────────────────────
+const SvIconDownload: React.FC = () => (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 3v12"/><path d="M8 11l4 4 4-4"/><path d="M4 19h16"/>
+    </svg>
+);
+const SvIconLayers: React.FC = () => (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 12l10 5 10-5"/><path d="M2 17l10 5 10-5"/>
+    </svg>
+);
+const SvIconPlay: React.FC = () => (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z"/>
+    </svg>
+);
+const SvIconCheck: React.FC = () => (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-5"/>
+    </svg>
+);
+const SvIconWarning: React.FC = () => (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}>
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+    </svg>
+);
+const SV_LOAD_ICONS = [SvIconDownload, SvIconLayers, SvIconPlay, SvIconCheck] as const;
+const SV_PHASE_LABELS = ['Download risorse', 'Preparazione frame', 'Composizione', 'Quasi pronto'] as const;
+
 export const ScrollVideo: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -138,11 +176,13 @@ export const ScrollVideo: React.FC = () => {
 
     const [segmentProgress, setSegmentProgress] = useState<number>(0);
     const [isMobile, setIsMobile] = useState<boolean | null>(null);
+    const [isSlowNetwork, setIsSlowNetwork] = useState(false);
 
     // Canvas + intro text must stay hidden until the user actually scrolls,
     // so the IntroOverlay (WIDE logo) is fully cleared before the first frame appears.
     const [hasScrolled, setHasScrolled] = useState(false);
     const hasScrolledRef = useRef(false);
+    const progressRef = useRef<number>(0);
 
     const prefersReduced = useReducedMotion();
     // Use a ref so the ScrollTrigger closure (created on isLoaded) reads the live value
@@ -168,6 +208,9 @@ export const ScrollVideo: React.FC = () => {
     // Stable ref for the fallback so drawFrame can read it without re-creating
     const fallbackRef = useRef<HTMLImageElement | null>(null);
     useEffect(() => { fallbackRef.current = fallbackImage; }, [fallbackImage]);
+
+    // Keep progressRef in sync so the network-detection timer can read the live value
+    useEffect(() => { progressRef.current = progress; }, [progress]);
 
     const drawFrame = useCallback((frameIndex: number) => {
         const canvas = canvasRef.current;
@@ -235,6 +278,21 @@ export const ScrollVideo: React.FC = () => {
         // framesPath/frameCount are derived from isMobile — re-run only when it changes.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [preloadFrames, isMobile]);
+
+    // Slow network detection: check navigator.connection immediately, then fall
+    // back to a timer-based check (if after 5s progress is still very low).
+    useEffect(() => {
+        const conn = (navigator as unknown as { connection?: { effectiveType?: string } }).connection;
+        if (conn?.effectiveType && ['slow-2g', '2g', '3g'].includes(conn.effectiveType)) {
+            setIsSlowNetwork(true);
+            return;
+        }
+        const timer = setTimeout(() => {
+            if (progressRef.current < 20) setIsSlowNetwork(true);
+        }, 5000);
+        return () => clearTimeout(timer);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // Handle canvas pixel sizing on every resize.
     useEffect(() => {
@@ -749,11 +807,13 @@ export const ScrollVideo: React.FC = () => {
         }
     };
 
+    const loadingPhase = progress < 30 ? 0 : progress < 60 ? 1 : progress < 90 ? 2 : 3;
+
     return (
         <section ref={containerRef} style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden', backgroundColor: '#000' }}>
             {/* Loading overlay — fades out smoothly when ready */}
             <div style={{
-                position: 'absolute', inset: 0, zIndex: 2001, // above IntroOverlay (1999)
+                position: 'absolute', inset: 0, zIndex: 2001,
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
                 backgroundColor: '#000', color: '#fff',
@@ -761,12 +821,70 @@ export const ScrollVideo: React.FC = () => {
                 transition: 'opacity 0.8s ease',
                 pointerEvents: isLoaded ? 'none' : 'all',
             }}>
-                <div style={{ width: '200px', height: '2px', backgroundColor: 'rgba(255,255,255,0.1)', overflow: 'hidden' }}>
+                {/* Phase icon */}
+                <div style={{ position: 'relative', width: 28, height: 28, marginBottom: 24, color: 'rgba(255,255,255,0.8)' }}>
+                    {SV_LOAD_ICONS.map((Icon, i) => (
+                        <div key={i} style={{
+                            position: 'absolute', inset: 0,
+                            opacity: loadingPhase === i ? 1 : 0,
+                            transition: 'opacity 0.6s ease',
+                            animation: loadingPhase === i ? 'svIconPulse 2s ease-in-out infinite' : 'none',
+                        }}>
+                            <Icon />
+                        </div>
+                    ))}
+                </div>
+
+                {/* Progress bar */}
+                <div style={{ width: 200, height: 2, backgroundColor: 'rgba(255,255,255,0.1)', overflow: 'hidden', borderRadius: 1 }}>
                     <div style={{ width: `${progress}%`, height: '100%', backgroundColor: '#fff', transition: 'width 0.2s linear' }} />
                 </div>
-                <span style={{ marginTop: '20px', fontSize: '12px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)' }}>
-                    Loading Sequence {Math.round(progress)}%
-                </span>
+
+                {/* Label row */}
+                <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 11, letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', fontWeight: 600 }}>
+                        Caricamento
+                    </span>
+                    <span style={{ fontSize: 11, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.32)', fontWeight: 400 }}>
+                        {Math.round(progress)}%
+                    </span>
+                </div>
+
+                {/* Phase label */}
+                <div style={{ position: 'relative', height: 14, marginTop: 8, width: 200 }}>
+                    {SV_PHASE_LABELS.map((label, i) => (
+                        <span key={i} style={{
+                            position: 'absolute', left: '50%', transform: 'translateX(-50%)',
+                            fontSize: 9, letterSpacing: '0.18em', textTransform: 'uppercase',
+                            color: 'rgba(255,255,255,0.25)',
+                            opacity: loadingPhase === i ? 1 : 0,
+                            transition: 'opacity 0.6s ease',
+                            whiteSpace: 'nowrap',
+                        }}>
+                            {label}
+                        </span>
+                    ))}
+                </div>
+
+                {/* Slow network warning */}
+                {isSlowNetwork && (
+                    <div style={{
+                        position: 'absolute',
+                        bottom: 'clamp(28px, 5vw, 44px)',
+                        display: 'flex', alignItems: 'flex-start', gap: 7,
+                        animation: 'svFadeIn 0.8s ease forwards',
+                    }}>
+                        <SvIconWarning />
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                            <span style={{ fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600, color: 'rgba(255,255,255,0.38)' }}>
+                                Connessione lenta rilevata
+                            </span>
+                            <span style={{ fontSize: 10, letterSpacing: '0.06em', color: 'rgba(255,255,255,0.22)' }}>
+                                Il caricamento richiede qualche istante in più.
+                            </span>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Canvas — hidden until loading AND first scroll (so IntroOverlay clears first) */}
