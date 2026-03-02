@@ -41,6 +41,10 @@ const PROJECTS: PortfolioProject[] = [
         mediaSrc: '',
         accentColor: 'linear-gradient(135deg, #001a3d, #002a5c)',
         tags: ['Web App', 'Social Media', 'Branding', 'Content Creation'],
+        reels: [
+            'https://iframe.mediadelivery.net/embed/604848/7a1cc3e6-4973-407a-93e4-47937f8ff950?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false',
+            'https://iframe.mediadelivery.net/embed/604848/996c61ce-1752-4adf-b318-c1cfeb7af7ca?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false'
+        ],
     },
     {
         id: 'p3',
