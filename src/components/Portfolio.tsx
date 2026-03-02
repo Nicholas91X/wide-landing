@@ -25,9 +25,10 @@ const PROJECTS: PortfolioProject[] = [
         accentColor: 'linear-gradient(135deg, #1a0a00, #3d1a00)',
         tags: ['Rebranding', 'Gestionale Customizzato', 'Social Media', 'Campagne Ads'],
         reels: [
-            'https://iframe.mediadelivery.net/embed/604848/9545bd9d-deb4-4f3b-984a-cd36f7aa80ab?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false',
-            'https://iframe.mediadelivery.net/embed/604848/752b038f-31c4-4e34-a3ef-e2088fcd0ac6?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false',
-            'https://iframe.mediadelivery.net/embed/604848/8111cf83-982b-4c9b-8c8a-8c69b4a76511?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false'
+            'https://iframe.mediadelivery.net/embed/604848/0e62b759-3d9a-4308-b4e3-dd01d1f715de?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false',
+            'https://iframe.mediadelivery.net/embed/604848/7081352d-7e73-4ba0-b74a-64a6fe453015?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false',
+            'https://iframe.mediadelivery.net/embed/604848/4c128c36-9caf-4fd0-a735-3a8f774b6dc5?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false',
+            'https://iframe.mediadelivery.net/embed/604848/bd750578-cc05-443d-9d15-514d5a12d7c8?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false'
         ],
     },
     {
