@@ -22,7 +22,6 @@ const LEGAL_LINKS = [
 export const Footer: React.FC = () => {
     const footerRef   = useRef<HTMLElement>(null);
     const letterRefs  = useRef<(HTMLSpanElement | null)[]>([]);
-    const hasAnimated = useRef(false);
     const prefersReduced = useReducedMotion();
 
     const [isMobile, setIsMobile] = useState(false);
@@ -35,29 +34,35 @@ export const Footer: React.FC = () => {
         return () => mq.removeEventListener('change', onChange as (e: MediaQueryListEvent) => void);
     }, []);
 
-    // ── Stroke-draw animation on first visibility ──────────────────────────
+    // ── Stroke-draw animation on scroll ─────────────────────────────────────────
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
-                if (!entries[0].isIntersecting || hasAnimated.current) return;
-                hasAnimated.current = true;
-
-                if (prefersReduced) {
+                if (entries[0].isIntersecting) {
+                    if (prefersReduced) {
+                        letterRefs.current.forEach((el) => {
+                            if (el) el.style.clipPath = 'inset(0 0% 0 0)';
+                        });
+                        return;
+                    }
+                    letterRefs.current.forEach((el, i) => {
+                        if (!el) return;
+                        gsap.to(el, {
+                            clipPath: 'inset(0 0% 0 0)',
+                            duration: 1.6,
+                            delay: i * 0.28,
+                            ease: 'power3.inOut',
+                            overwrite: true
+                        });
+                    });
+                } else {
+                    // Reset when out of view
                     letterRefs.current.forEach((el) => {
-                        if (el) el.style.clipPath = 'inset(0 0% 0 0)';
+                        if (!el) return;
+                        gsap.killTweensOf(el);
+                        el.style.clipPath = 'inset(0 100% 0 0)';
                     });
-                    return;
                 }
-
-                letterRefs.current.forEach((el, i) => {
-                    if (!el) return;
-                    gsap.to(el, {
-                        clipPath: 'inset(0 0% 0 0)',
-                        duration: 1.6,
-                        delay: i * 0.28,
-                        ease: 'power3.inOut',
-                    });
-                });
             },
             { threshold: 0.15 }
         );
@@ -154,24 +159,47 @@ export const Footer: React.FC = () => {
 
                 {/* Left column — copyright & P.IVA */}
                 <div style={{ textAlign: isMobile ? 'center' : 'left' }}>
+                    <div style={{ 
+                        display: 'flex', 
+                        flexDirection: isMobile ? 'column' : 'row',
+                        alignItems: isMobile ? 'center' : 'center',
+                        gap: isMobile ? '16px' : '24px',
+                        marginBottom: '12px'
+                    }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <span style={{ color: '#fff', fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.02em' }}>
+                                Alessia Amoruso - WIDE
+                            </span>
+                            <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.65rem', letterSpacing: '0.05em' }}>
+                                P.IVA 13486160966
+                            </span>
+                        </div>
+
+                        <div style={{ 
+                            width: isMobile ? '40px' : '1px', 
+                            height: isMobile ? '1px' : '30px', 
+                            backgroundColor: 'rgba(255,255,255,0.15)',
+                            margin: isMobile ? '0 auto' : '0'
+                        }} />
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <span style={{ color: '#fff', fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.02em' }}>
+                                Asia Franceschi - WIDE
+                            </span>
+                            <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.65rem', letterSpacing: '0.05em' }}>
+                                P.IVA 01566890115
+                            </span>
+                        </div>
+                    </div>
+                    
                     <p style={{
-                        color: 'rgba(255,255,255,0.30)',
-                        fontSize: '0.62rem',
+                        color: 'rgba(255,255,255,0.22)',
+                        fontSize: '0.55rem',
                         letterSpacing: '0.08em',
                         lineHeight: 2,
                         margin: 0,
                     }}>
                         © {new Date().getFullYear()} WIDE Studio Digitale
-                        <br />
-                        <span style={{ color: 'rgba(255,255,255,0.18)' }}>
-                            P.IVA Alessia Amoruso:
-                        </span>
-                        {' '}IT00000000000
-                        <br />
-                        <span style={{ color: 'rgba(255,255,255,0.18)' }}>
-                            P.IVA Asia Franceschi:
-                        </span>
-                        {' '}IT00000000001
                     </p>
                 </div>
 
