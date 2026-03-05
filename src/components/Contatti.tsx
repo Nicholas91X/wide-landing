@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import CalEmbed from './CalEmbed';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -904,33 +905,7 @@ export const Contatti: React.FC = () => {
                                 opacity: 0, pointerEvents: 'none', transition: 'opacity 0.2s',
                             }} />
 
-                            <div style={{
-                                width: 56, height: 56, borderRadius: 14,
-                                backgroundColor: 'rgba(255,255,255,0.08)',
-                                border: '1px solid rgba(255,255,255,0.12)',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                marginBottom: 24,
-                            }}>
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" />
-                                    <line x1="16" y1="2" x2="16" y2="6" />
-                                    <line x1="8" y1="2" x2="8" y2="6" />
-                                    <line x1="3" y1="10" x2="21" y2="10" />
-                                </svg>
-                            </div>
-
-                            <h3 style={{
-                                color: '#fff', fontSize: 'clamp(1.2rem, 3vw, 1.6rem)',
-                                fontWeight: 700, letterSpacing: '-0.02em', margin: '0 0 12px',
-                            }}>
-                                Prenota una call
-                            </h3>
-                            <p style={{
-                                color: 'rgba(255,255,255,0.45)', fontSize: 'clamp(0.85rem, 1.8vw, 1rem)',
-                                fontWeight: 300, lineHeight: 1.6, margin: 0, maxWidth: 320,
-                            }}>
-                                Scegli data e orario per una consulenza gratuita
-                            </p>
+                            <CalEmbed calLink="wide-studiodigitale-jdk11j" eventSlug="30min" domain="cal.eu" />
                         </div>
                     </div>
                 </div>
