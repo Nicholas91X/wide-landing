@@ -5,6 +5,7 @@ import { Contatti } from './components/Contatti';
 import { Footer } from './components/Footer';
 import { NavBubble } from './components/NavBubble';
 import { IntroOverlay } from './components/IntroOverlay';
+import { Analytics } from "@vercel/analytics/next";
 
 function App() {
     return (
@@ -57,6 +58,7 @@ function App() {
                 pointerEvents: 'none',
             }} />
             <Footer />
+            <Analytics />
         </main>
         </>
     );
