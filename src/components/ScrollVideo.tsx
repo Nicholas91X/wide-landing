@@ -793,12 +793,14 @@ export const ScrollVideo: React.FC = () => {
 
             case 'video':
                 return (
-                    <div style={{ marginTop: '30px', position: 'relative', width: isMobile ? '80%' : '500px', aspectRatio: '16/9', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                        <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: '3rem' }}>▶</div>
-                        <div style={{ position: 'absolute', bottom: '15px', left: '20px' }}>
-                            <div style={{ color: '#fff', fontWeight: 600 }}>{items[0].title}</div>
-                            <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem' }}>{items[0].description}</div>
-                        </div>
+                    <div style={{ marginTop: '30px', position: 'relative', width: isMobile ? '90%' : '500px', aspectRatio: '16/9', borderRadius: '20px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <iframe
+                            src="https://iframe.mediadelivery.net/embed/604848/6947a772-4a77-416c-85a6-c0b30154aeea?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false"
+                            loading="lazy"
+                            style={{ border: 'none', position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+                            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+                            allowFullScreen
+                        />
                     </div>
                 );
 
