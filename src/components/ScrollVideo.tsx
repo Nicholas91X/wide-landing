@@ -793,11 +793,11 @@ export const ScrollVideo: React.FC = () => {
 
             case 'video':
                 return (
-                    <div style={{ marginTop: '30px', position: 'relative', width: isMobile ? '90%' : '500px', aspectRatio: '16/9', borderRadius: '20px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <div style={{ marginTop: '30px', position: 'relative', width: isMobile ? '90%' : '500px', aspectRatio: '16/9', borderRadius: '20px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', pointerEvents: 'auto' }}>
                         <iframe
                             src="https://iframe.mediadelivery.net/embed/604848/6947a772-4a77-416c-85a6-c0b30154aeea?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=true"
                             loading="lazy"
-                            style={{ border: 'none', position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+                            style={{ border: 'none', position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'auto' }}
                             allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
                             allowFullScreen
                         />
