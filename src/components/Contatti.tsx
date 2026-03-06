@@ -77,11 +77,7 @@ const InstagramIcon: React.FC<{ size?: number }> = ({ size = 22 }) => (
     </svg>
 );
 
-const LinkedInIcon: React.FC<{ size?: number }> = ({ size = 22 }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8h4V24h-4V8zm7.5 0h3.83v2.18h.05C12.6 8.85 14.28 7.8 16.6 7.8 21.36 7.8 22 10.88 22 14.9V24h-4v-8.06c0-1.92-.04-4.4-2.68-4.4-2.68 0-3.09 2.1-3.09 4.26V24H8V8z" transform="scale(0.9) translate(1.5,1)" />
-    </svg>
-);
+
 
 const TikTokIcon: React.FC<{ size?: number }> = ({ size = 22 }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -96,10 +92,9 @@ const FacebookIcon: React.FC<{ size?: number }> = ({ size = 22 }) => (
 );
 
 const SOCIALS = [
-    { label: 'TikTok', href: '#', Icon: TikTokIcon, color: 'rgba(0,200,210,0.7)' },
-    { label: 'Instagram', href: '#', Icon: InstagramIcon, color: 'rgba(225,48,108,0.7)' },
-    { label: 'Facebook', href: '#', Icon: FacebookIcon, color: 'rgba(24,119,242,0.7)' },
-    { label: 'LinkedIn', href: '#', Icon: LinkedInIcon, color: 'rgba(10,102,194,0.7)' },
+    { label: 'TikTok', href: 'https://www.tiktok.com/@widestudiodigitale?_r=1&_t=ZN-94SxAHBXx2c', Icon: TikTokIcon, color: 'rgba(0,200,210,0.7)' },
+    { label: 'Instagram', href: 'https://www.instagram.com/wide_studiodigitale?igsh=MXR5dWZ6bnk1Y3VidA==', Icon: InstagramIcon, color: 'rgba(225,48,108,0.7)' },
+    { label: 'Facebook', href: 'https://www.facebook.com/share/1AeZgHTqw5/', Icon: FacebookIcon, color: 'rgba(24,119,242,0.7)' },
 ];
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -813,15 +808,11 @@ export const Contatti: React.FC = () => {
                                         e.currentTarget.style.color = social.color.replace('0.7', '1');
                                         e.currentTarget.style.borderColor = 'rgba(0,0,0,0.22)';
                                         e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.90)';
-                                        const label = e.currentTarget.querySelector<HTMLDivElement>('[data-label]');
-                                        if (label) label.style.opacity = '1';
                                     }}
                                     onMouseLeave={(e) => {
                                         e.currentTarget.style.color = social.color;
                                         e.currentTarget.style.borderColor = 'rgba(0,0,0,0.12)';
                                         e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.65)';
-                                        const label = e.currentTarget.querySelector<HTMLDivElement>('[data-label]');
-                                        if (label) label.style.opacity = '0';
                                     }}
                                     title={social.label}
                                 >
@@ -835,30 +826,6 @@ export const Contatti: React.FC = () => {
                                     }} />
 
                                     <social.Icon size={BOAT_ICON_SIZE} />
-
-                                    {/* Floating label (#2) */}
-                                    <div
-                                        data-label
-                                        style={{
-                                            position: 'absolute',
-                                            top: -28,
-                                            left: '50%',
-                                            transform: 'translateX(-50%)',
-                                            backgroundColor: 'rgba(0,0,0,0.75)',
-                                            color: 'rgba(255,255,255,0.85)',
-                                            fontSize: '0.6rem',
-                                            fontWeight: 600,
-                                            letterSpacing: '0.05em',
-                                            padding: '3px 8px',
-                                            borderRadius: 6,
-                                            whiteSpace: 'nowrap',
-                                            opacity: 0,
-                                            transition: 'opacity 0.25s ease',
-                                            pointerEvents: 'none',
-                                        }}
-                                    >
-                                        {social.label}
-                                    </div>
                                 </div>
                             ))}
                         </div>
