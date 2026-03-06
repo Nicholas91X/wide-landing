@@ -346,7 +346,8 @@ export const Portfolio: React.FC = () => {
                                                     transform: 'translate(-50%, -50%)',
                                                     pointerEvents: 'none',
                                                 }}
-                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                                                sandbox="allow-scripts allow-same-origin"
                                                 allowFullScreen
                                             />
                                             {/* Invisible overlay to catch scroll/swipe events over the iframe */}
