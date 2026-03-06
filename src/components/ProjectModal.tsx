@@ -211,17 +211,24 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                     {/* Divider */}
                     <div style={{ height: '1px', backgroundColor: 'rgba(255,255,255,0.08)', marginBottom: '20px' }} />
 
+                    <style>{`
+                        .project-description b {
+                            color: #ffffff;
+                            font-weight: 700;
+                        }
+                    `}</style>
                     {/* Description */}
-                    <p style={{
-                        color: 'rgba(255,255,255,0.7)',
-                        fontSize: '1rem',
-                        lineHeight: 1.7,
-                        fontWeight: 300,
-                        margin: '0 0 24px',
-                        whiteSpace: 'pre-line',
-                    }}>
-                        {project?.description}
-                    </p>
+                    <p
+                        className="project-description"
+                        style={{
+                            color: 'rgba(255,255,255,0.7)',
+                            fontSize: '1rem',
+                            lineHeight: 1.7,
+                            margin: '0 0 24px',
+                            whiteSpace: 'pre-line',
+                        }}
+                        dangerouslySetInnerHTML={{ __html: project?.description || '' }}
+                    />
 
                     {/* Tags */}
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
