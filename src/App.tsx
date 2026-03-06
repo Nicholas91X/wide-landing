@@ -7,7 +7,7 @@ import { Footer } from './components/Footer';
 import { NavBubble } from './components/NavBubble';
 import { IntroOverlay } from './components/IntroOverlay';
 import { LegalPage } from './components/LegalPage';
-import { Analytics } from "@vercel/analytics/next";
+import { Analytics } from "@vercel/analytics/react";
 
 type LegalRoute = 'privacy' | 'cookie' | 'note-legali' | null;
 
