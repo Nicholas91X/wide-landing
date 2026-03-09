@@ -17,6 +17,19 @@ if (typeof document !== 'undefined' && !document.getElementById(SV_STYLE_ID)) {
             40%  { opacity: 0.7; transform: translateY(0);    }
             100% { opacity: 0;   transform: translateY(8px);  }
         }
+        @keyframes svScrollPulse {
+            0%, 100% { opacity: 0.55; }
+            50%      { opacity: 0.9; }
+        }
+        @keyframes svCenterBreathe {
+            0%, 100% { opacity: 0.06; transform: translate(-50%, -50%) scale(0.85); }
+            50%      { opacity: 0.14; transform: translate(-50%, -50%) scale(1.1); }
+        }
+        @keyframes svRingExpand {
+            0%   { opacity: 0.12; transform: translate(-50%, -50%) scale(0.3); }
+            70%  { opacity: 0.04; }
+            100% { opacity: 0;    transform: translate(-50%, -50%) scale(1.2); }
+        }
         @keyframes svIconPulse {
             0%, 100% { opacity: 0.7; }
             50%      { opacity: 1;   }
@@ -112,6 +125,33 @@ const SERVICES: Service[] = [
     },
 ];
 
+// Short labels for the vertical timeline nav
+const SERVICE_LABELS = [
+    'Social',
+    'Content',
+    'Strumenti',
+    'Shooting',
+    'AI Video',
+    'Web',
+];
+
+// ── Animated counter for stats values ────────────────────────────────────────
+// Parses values like "+500K", "+40%", "100%" and animates the number portion
+// based on a 0-1 visibility progress (scroll-driven, so it goes both ways).
+function AnimatedStat({ value, vis, style }: { value: string; vis: number; style: React.CSSProperties }) {
+    // Extract prefix (e.g. "+"), numeric part, and suffix (e.g. "K", "%")
+    const match = value.match(/^([+\-]?)(\d+)(.*)/);
+    if (!match) return <div style={style}>{value}</div>;
+
+    const prefix = match[1];
+    const target = parseInt(match[2], 10);
+    const suffix = match[3];
+
+    const current = Math.round(target * Math.min(vis, 1));
+
+    return <div style={style}>{prefix}{current}{suffix}</div>;
+}
+
 // Frame sets per device type
 const DESKTOP_FRAME_COUNT = 908;
 const DESKTOP_FRAMES_PATH = '/frames/section-2';
@@ -175,6 +215,12 @@ export const ScrollVideo: React.FC = () => {
     const [showCTA, setShowCTA] = useState(false);
 
     const [segmentProgress, setSegmentProgress] = useState<number>(0);
+    // Global scroll progress (0-1) across the entire ScrollVideo section
+    const [globalProgress, setGlobalProgress] = useState<number>(0);
+    // Whether we're in a transition (fast segment) between services
+    const [isTransition, setIsTransition] = useState(false);
+    // The service index that the user is approaching next (shown during transitions)
+    const [upcomingServiceIndex, setUpcomingServiceIndex] = useState<number>(0);
     const [isMobile, setIsMobile] = useState<boolean | null>(null);
     const [isSlowNetwork, setIsSlowNetwork] = useState(false);
 
@@ -514,6 +560,9 @@ export const ScrollVideo: React.FC = () => {
                     setIntroOpacity(0);
                 }
 
+                // Global progress for timeline
+                setGlobalProgress(scrollProgress);
+
                 if (currentSegment.type === 'slow' && currentSegment.serviceIndex !== undefined) {
                     const fadeInEnd = 0.1;
                     const fadeOutStart = 0.9;
@@ -524,7 +573,13 @@ export const ScrollVideo: React.FC = () => {
                     setCurrentServiceIndex(currentSegment.serviceIndex);
                     setServiceOpacity(opacity);
                     setSegmentProgress(segProg);
+                    setIsTransition(false);
                 } else {
+                    // During fast (transition) segments, figure out which service is next
+                    const segIdx = segments.indexOf(currentSegment);
+                    const nextSlowSeg = segments.slice(segIdx + 1).find(s => s.type === 'slow');
+                    setUpcomingServiceIndex(nextSlowSeg?.serviceIndex ?? 0);
+                    setIsTransition(true);
                     setServiceOpacity(0);
                     setCurrentServiceIndex(-1);
                     setSegmentProgress(0);
@@ -679,7 +734,7 @@ export const ScrollVideo: React.FC = () => {
                                         transition: 'all 0.4s ease-out',
                                         transform: `translateY(${15 * (1 - vis)}px)`,
                                     }}>
-                                        <div style={{ color: '#fff', fontSize: 'clamp(2rem, 7vw, 2.6rem)', fontFamily: 'var(--font-title)', fontWeight: 700, lineHeight: 1 }}>{item.value}</div>
+                                        <AnimatedStat value={item.value || ''} vis={vis} style={{ color: '#fff', fontSize: 'clamp(2rem, 7vw, 2.6rem)', fontFamily: 'var(--font-title)', fontWeight: 700, lineHeight: 1 }} />
                                         <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 'clamp(0.7rem, 2vw, 0.78rem)', fontFamily: 'var(--font-subtitle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: '6px' }}>{item.suffix}</div>
                                         <div style={{ color: 'rgba(255,255,255,0.82)', fontSize: 'clamp(0.85rem, 2.5vw, 0.95rem)', marginTop: '10px', fontFamily: 'var(--font-body)', fontWeight: 400, whiteSpace: 'pre-line' }}>{item.description}</div>
                                     </div>
@@ -709,7 +764,7 @@ export const ScrollVideo: React.FC = () => {
                             justifyContent: 'center',
                             opacity: getElementVisibility(0, 3)
                         }}>
-                            <div style={{ color: '#fff', fontSize: '6rem', fontFamily: 'var(--font-title)', fontWeight: 700, lineHeight: 0.9 }}>{items[0].value}</div>
+                            <AnimatedStat value={items[0].value || ''} vis={getElementVisibility(0, 3)} style={{ color: '#fff', fontSize: '6rem', fontFamily: 'var(--font-title)', fontWeight: 700, lineHeight: 0.9 }} />
                             <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.1rem', fontFamily: 'var(--font-subtitle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.02em', marginTop: '20px' }}>{items[0].suffix}</div>
                             <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: '1.4rem', marginTop: '30px', fontFamily: 'var(--font-body)', fontWeight: 400, maxWidth: '400px' }}>{items[0].description}</div>
                         </div>
@@ -728,7 +783,7 @@ export const ScrollVideo: React.FC = () => {
                                         justifyContent: 'center',
                                         opacity: vis,
                                     }}>
-                                        <div style={{ color: '#fff', fontSize: '3rem', fontFamily: 'var(--font-title)', fontWeight: 700, lineHeight: 1 }}>{item.value}</div>
+                                        <AnimatedStat value={item.value || ''} vis={vis} style={{ color: '#fff', fontSize: '3rem', fontFamily: 'var(--font-title)', fontWeight: 700, lineHeight: 1 }} />
                                         <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', fontFamily: 'var(--font-subtitle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.02em', marginTop: '8px' }}>{item.suffix}</div>
                                         <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1rem', marginTop: '12px', fontFamily: 'var(--font-body)', fontWeight: 400 }}>{item.description}</div>
                                     </div>
@@ -1020,64 +1075,170 @@ export const ScrollVideo: React.FC = () => {
                 </div>
             )}
 
-            {/* Service progress dots — visible only during service segments */}
-            {isLoaded && currentServiceIndex >= 0 && (
-                <div style={{
-                    position: 'absolute',
-                    bottom: 'clamp(20px, 4vw, 32px)',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    display: 'flex',
-                    gap: 6,
-                    zIndex: 30,
-                    pointerEvents: 'none',
-                    opacity: serviceOpacity,
-                    transition: 'opacity 0.2s ease-out',
-                }}>
-                    {SERVICES.map((_, i) => (
-                        <div key={i} style={{
-                            height: 5,
-                            width: currentServiceIndex === i ? 18 : 5,
-                            borderRadius: 3,
-                            backgroundColor: currentServiceIndex === i ? '#fff' : 'rgba(255,255,255,0.4)',
-                            transition: 'all 0.35s cubic-bezier(0.4,0,0.2,1)',
-                        }} />
-                    ))}
-                </div>
-            )}
-
-            {/* ── Scroll hint — right side, visible during service cards ──── */}
+            {/* ── Service counter (e.g. "2 / 6") — bottom-left ──── */}
             {isLoaded && hasScrolled && currentServiceIndex >= 0 && (
                 <div style={{
                     position: 'absolute',
-                    right: isMobile ? '10px' : '18px',
+                    bottom: isMobile ? '20px' : 'clamp(20px, 4vw, 32px)',
+                    left: isMobile ? '14px' : '28px',
+                    zIndex: 30,
+                    pointerEvents: 'none',
+                    opacity: serviceOpacity * 0.7,
+                    transition: 'opacity 0.3s ease-out',
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    gap: '3px',
+                    fontFamily: 'var(--font-subtitle)',
+                    letterSpacing: '0.08em',
+                    textShadow: '0 2px 8px rgba(0,0,0,0.6)',
+                }}>
+                    <span style={{
+                        color: '#fff',
+                        fontSize: isMobile ? '0.85rem' : '0.95rem',
+                        fontWeight: 700,
+                    }}>
+                        {currentServiceIndex + 1}
+                    </span>
+                    <span style={{
+                        color: 'rgba(255,255,255,0.3)',
+                        fontSize: isMobile ? '0.6rem' : '0.65rem',
+                        fontWeight: 600,
+                    }}>
+                        / {SERVICES.length}
+                    </span>
+                </div>
+            )}
+
+            {/* ── Vertical timeline nav — left side, visible during transitions ──── */}
+            {isLoaded && hasScrolled && (
+                <div style={{
+                    position: 'absolute',
+                    left: isMobile ? '14px' : '28px',
+                    top: isMobile ? '8%' : '6%',
+                    bottom: isMobile ? '8%' : '6%',
+                    zIndex: 30,
+                    pointerEvents: 'none',
+                    opacity: isTransition && introOpacity === 0 ? 1 : 0,
+                    transition: 'opacity 0.5s ease-out',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'stretch',
+                    gap: isMobile ? '10px' : '14px',
+                }}>
+                    {/* Vertical track with scroll-driven fill */}
+                    <div style={{
+                        position: 'relative',
+                        width: '1.5px',
+                        alignSelf: 'stretch',
+                        backgroundColor: 'rgba(255,255,255,0.06)',
+                        borderRadius: '1px',
+                        overflow: 'hidden',
+                        flexShrink: 0,
+                    }}>
+                        <div style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: `${globalProgress * 100}%`,
+                            backgroundColor: 'rgba(255,255,255,0.35)',
+                            borderRadius: '1px',
+                            transition: 'height 0.15s linear',
+                        }} />
+                    </div>
+
+                    {/* Labels positioned along the track */}
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        height: '100%',
+                    }}>
+                        {SERVICE_LABELS.map((label, i) => {
+                            const isUpcoming = upcomingServiceIndex === i;
+                            // A service is "reached" when global progress has passed its approximate position
+                            const servicePosition = (i + 0.5) / SERVICES.length;
+                            const isPast = globalProgress > servicePosition;
+                            return (
+                                <div key={i} style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: isMobile ? '7px' : '10px',
+                                    transition: 'all 0.4s cubic-bezier(0.4,0,0.2,1)',
+                                }}>
+                                    {/* Dot */}
+                                    <div style={{
+                                        width: isUpcoming ? '8px' : '5px',
+                                        height: isUpcoming ? '8px' : '5px',
+                                        borderRadius: '50%',
+                                        backgroundColor: isUpcoming
+                                            ? '#fff'
+                                            : isPast
+                                                ? 'rgba(255,255,255,0.7)'
+                                                : 'rgba(255,255,255,0.5)',
+                                        transition: 'all 0.4s cubic-bezier(0.4,0,0.2,1)',
+                                        flexShrink: 0,
+                                        boxShadow: isUpcoming ? '0 0 10px rgba(255,255,255,0.35)' : 'none',
+                                    }} />
+                                    {/* Label */}
+                                    <span style={{
+                                        fontSize: isUpcoming
+                                            ? (isMobile ? '0.78rem' : '0.88rem')
+                                            : (isMobile ? '0.62rem' : '0.72rem'),
+                                        fontFamily: 'var(--font-subtitle)',
+                                        fontWeight: isUpcoming ? 700 : 600,
+                                        letterSpacing: '0.1em',
+                                        textTransform: 'uppercase',
+                                        color: isUpcoming
+                                            ? '#fff'
+                                            : isPast
+                                                ? 'rgba(255,255,255,0.7)'
+                                                : 'rgba(255,255,255,0.5)',
+                                        textShadow: isUpcoming ? '0 2px 12px rgba(0,0,0,0.7)' : '0 1px 4px rgba(0,0,0,0.4)',
+                                        transition: 'all 0.4s cubic-bezier(0.4,0,0.2,1)',
+                                        whiteSpace: 'nowrap',
+                                    }}>
+                                        {label}
+                                    </span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {/* ── Scroll hint — right side, always visible with soft pulse ──── */}
+            {isLoaded && hasScrolled && (
+                <div style={{
+                    position: 'absolute',
+                    right: isMobile ? '10px' : '22px',
                     top: '50%',
                     transform: 'translateY(-50%)',
                     zIndex: 30,
                     pointerEvents: 'none',
-                    opacity: serviceOpacity * 0.5,
-                    transition: 'opacity 0.6s ease-out',
+                    transition: 'opacity 0.5s ease-out',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     gap: '8px',
+                    animation: 'svScrollPulse 3s ease-in-out infinite',
                 }}>
                     <span style={{
-                        color: 'rgba(255,255,255,0.75)',
-                        fontSize: '0.52rem',
+                        color: 'rgba(255,255,255,0.85)',
+                        fontSize: isMobile ? '0.5rem' : '0.58rem',
                         letterSpacing: '0.22em',
                         textTransform: 'uppercase',
                         writingMode: 'vertical-rl' as const,
                         transform: 'rotate(180deg)',
-                        textShadow: '0 2px 4px rgba(0,0,0,0.4)',
+                        textShadow: '0 2px 8px rgba(0,0,0,0.6)',
                         fontFamily: 'var(--font-subtitle)',
                         fontWeight: 600,
-                    }}>scorri</span>
+                    }}>scroll</span>
                     <div style={{
                         width: '1px',
-                        height: '28px',
-                        background: 'rgba(255,255,255,0.35)',
-                        animation: 'svScrollDrop 1.8s ease-in-out infinite',
+                        height: '32px',
+                        background: 'linear-gradient(to bottom, rgba(255,255,255,0.5), rgba(255,255,255,0.05))',
+                        animation: 'svScrollDrop 2s ease-in-out infinite',
                     }} />
                 </div>
             )}
