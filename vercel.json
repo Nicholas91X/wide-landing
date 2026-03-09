@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/privacy", "destination": "/index.html" },
+    { "source": "/cookie", "destination": "/index.html" },
+    { "source": "/note-legali", "destination": "/index.html" }
+  ]
+}

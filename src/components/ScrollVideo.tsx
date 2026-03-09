@@ -21,15 +21,6 @@ if (typeof document !== 'undefined' && !document.getElementById(SV_STYLE_ID)) {
             0%, 100% { opacity: 0.55; }
             50%      { opacity: 0.9; }
         }
-        @keyframes svCenterBreathe {
-            0%, 100% { opacity: 0.06; transform: translate(-50%, -50%) scale(0.85); }
-            50%      { opacity: 0.14; transform: translate(-50%, -50%) scale(1.1); }
-        }
-        @keyframes svRingExpand {
-            0%   { opacity: 0.12; transform: translate(-50%, -50%) scale(0.3); }
-            70%  { opacity: 0.04; }
-            100% { opacity: 0;    transform: translate(-50%, -50%) scale(1.2); }
-        }
         @keyframes svIconPulse {
             0%, 100% { opacity: 0.7; }
             50%      { opacity: 1;   }
@@ -221,6 +212,8 @@ export const ScrollVideo: React.FC = () => {
     const [isTransition, setIsTransition] = useState(false);
     // The service index that the user is approaching next (shown during transitions)
     const [upcomingServiceIndex, setUpcomingServiceIndex] = useState<number>(0);
+    // Track if user has ever reached near the video service (index 4) to lazy-load iframe
+    const [videoReached, setVideoReached] = useState(false);
     const [isMobile, setIsMobile] = useState<boolean | null>(null);
     const [isSlowNetwork, setIsSlowNetwork] = useState(false);
 
@@ -574,6 +567,7 @@ export const ScrollVideo: React.FC = () => {
                     setServiceOpacity(opacity);
                     setSegmentProgress(segProg);
                     setIsTransition(false);
+                    if (currentSegment.serviceIndex >= 3) setVideoReached(true);
                 } else {
                     // During fast (transition) segments, figure out which service is next
                     const segIdx = segments.indexOf(currentSegment);
@@ -849,13 +843,15 @@ export const ScrollVideo: React.FC = () => {
             case 'video':
                 return (
                     <div style={{ marginTop: '30px', position: 'relative', width: isMobile ? '90%' : '500px', aspectRatio: '16/9', borderRadius: '20px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', pointerEvents: 'auto' }}>
-                        <iframe
-                            src="https://iframe.mediadelivery.net/embed/604848/6947a772-4a77-416c-85a6-c0b30154aeea?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=true"
-                            loading="lazy"
-                            style={{ border: 'none', position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'auto' }}
-                            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
-                            allowFullScreen
-                        />
+                        {videoReached && (
+                            <iframe
+                                src="https://iframe.mediadelivery.net/embed/604848/6947a772-4a77-416c-85a6-c0b30154aeea?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=true"
+                                loading="lazy"
+                                style={{ border: 'none', position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'auto' }}
+                                allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+                                allowFullScreen
+                            />
+                        )}
                     </div>
                 );
 
@@ -1243,7 +1239,7 @@ export const ScrollVideo: React.FC = () => {
                 </div>
             )}
 
-            {/* ── Skip section button — bottom-right, extremely discreet ──── */}
+            {/* ── Skip section button — bottom-right ──── */}
             {isLoaded && hasScrolled && (
                 <button
                     style={{
@@ -1251,32 +1247,43 @@ export const ScrollVideo: React.FC = () => {
                         bottom: 'clamp(20px, 4vw, 32px)',
                         right: isMobile ? '12px' : '20px',
                         zIndex: 30,
-                        background: 'transparent',
-                        border: 'none',
-                        color: 'rgba(255,255,255,0.65)',
-                        fontSize: '0.58rem',
-                        letterSpacing: '0.18em',
+                        background: 'rgba(255,255,255,0.08)',
+                        backdropFilter: 'blur(8px)',
+                        WebkitBackdropFilter: 'blur(8px)',
+                        border: '1px solid rgba(255,255,255,0.15)',
+                        borderRadius: '20px',
+                        color: 'rgba(255,255,255,0.75)',
+                        fontSize: isMobile ? '0.6rem' : '0.65rem',
+                        letterSpacing: '0.14em',
                         textTransform: 'uppercase',
                         textShadow: '0 2px 4px rgba(0,0,0,0.4)',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '5px',
-                        padding: '10px 0 10px 10px',
+                        gap: '6px',
+                        padding: isMobile ? '8px 14px' : '9px 18px',
                         fontFamily: 'var(--font-subtitle)',
                         fontWeight: 600,
-                        transition: 'color 0.3s ease',
+                        transition: 'all 0.3s ease',
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = '#fff'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.65)'; }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.color = '#fff';
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
+                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.color = 'rgba(255,255,255,0.75)';
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
+                    }}
                     onClick={() => {
                         const el = document.getElementById('chi-siamo');
                         if (el) el.scrollIntoView({ behavior: 'instant' });
                     }}
                     aria-label="Salta la sezione servizi"
                 >
-                    Salta
-                    <svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    Salta sezione
+                    <svg width="10" height="10" viewBox="0 0 9 9" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="2.5,1.5 6.5,4.5 2.5,7.5" />
                         <line x1="7" y1="1.5" x2="7" y2="7.5" />
                     </svg>

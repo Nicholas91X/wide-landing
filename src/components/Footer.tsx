@@ -14,9 +14,9 @@ import { useReducedMotion } from '../hooks/useReducedMotion';
 const LETTERS = ['W', 'I', 'D', 'E'] as const;
 
 const LEGAL_LINKS = [
-    { label: 'Privacy Policy', href: '#privacy' },
-    { label: 'Cookie Policy', href: '#cookie' },
-    { label: 'Note Legali',   href: '#note-legali' },
+    { label: 'Privacy Policy', href: '/privacy' },
+    { label: 'Cookie Policy', href: '/cookie' },
+    { label: 'Note Legali',   href: '/note-legali' },
 ];
 
 export const Footer: React.FC = () => {
@@ -231,6 +231,11 @@ export const Footer: React.FC = () => {
                         <React.Fragment key={link.label}>
                             <a
                                 href={link.href}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    window.history.pushState(null, '', link.href);
+                                    window.dispatchEvent(new PopStateEvent('popstate'));
+                                }}
                                 style={linkStyle}
                                 onMouseEnter={onLinkEnter}
                                 onMouseLeave={onLinkLeave}

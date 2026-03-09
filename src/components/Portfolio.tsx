@@ -120,6 +120,9 @@ export const Portfolio: React.FC = () => {
         const currentIndex = Math.round(reelTouchStartScrollLeft.current / itemWidth);
         const nextIndex = Math.max(0, Math.min(items.length - 1, currentIndex + (dx < 0 ? 1 : -1)));
 
+        if (nextIndex !== currentIndex && navigator.vibrate) {
+            navigator.vibrate(10);
+        }
         container.scrollTo({ left: nextIndex * itemWidth, behavior: 'smooth' });
     };
 
