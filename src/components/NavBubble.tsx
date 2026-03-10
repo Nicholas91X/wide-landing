@@ -28,24 +28,38 @@ const RADIUS_DESK = 190;
 const MARGIN = 16;
 
 
-// ─── Soap Bubble CSS ──────────────────────────────────────────────────────────
+// ─── Soap Bubble CSS — 3D glass sphere effect ────────────────────────────────
 const soap = (extra: React.CSSProperties = {}): React.CSSProperties => ({
     borderRadius: '50%',
     background: [
-        'radial-gradient(circle at 28% 28%, rgba(255,255,255,0.55) 0%, transparent 48%)',
-        'radial-gradient(circle at 70% 72%, rgba(140,200,255,0.18) 0%, transparent 42%)',
+        // Primary specular highlight — top-left, simulates key light
+        'radial-gradient(ellipse at 30% 25%, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0.15) 25%, transparent 50%)',
+        // Secondary rim light — bottom-right, gives volume
+        'radial-gradient(ellipse at 75% 80%, rgba(180,220,255,0.20) 0%, transparent 40%)',
+        // Iridescent color shifts
         'radial-gradient(circle at 65% 18%, rgba(255,140,220,0.12) 0%, transparent 30%)',
         'radial-gradient(circle at 20% 78%, rgba(140,255,200,0.10) 0%, transparent 28%)',
-        'rgba(255,255,255,0.05)',
+        // Base tint — slightly brighter center for depth
+        'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 70%, transparent 100%)',
     ].join(', '),
-    border: '1px solid rgba(255,255,255,0.32)',
+    border: '1px solid rgba(255,255,255,0.35)',
+    // Layered shadows for 3D lift
     boxShadow: [
-        'inset 0 0 18px rgba(255,255,255,0.22)',
-        'inset 0 0 40px rgba(140,180,255,0.10)',
-        '0 8px 32px rgba(0,0,0,0.35)',
+        // Inner highlight — lit edge
+        'inset 0 1px 2px rgba(255,255,255,0.40)',
+        // Inner depth — concavity illusion
+        'inset 0 -2px 6px rgba(0,0,0,0.15)',
+        // Inner ambient glow
+        'inset 0 0 20px rgba(140,180,255,0.12)',
+        // Drop shadow — contact
+        '0 2px 4px rgba(0,0,0,0.25)',
+        // Drop shadow — ambient lift
+        '0 8px 24px rgba(0,0,0,0.30)',
+        // Drop shadow — far diffuse
+        '0 16px 48px rgba(0,0,0,0.15)',
     ].join(', '),
-    backdropFilter: 'blur(8px)',
-    WebkitBackdropFilter: 'blur(8px)',
+    backdropFilter: 'blur(10px)',
+    WebkitBackdropFilter: 'blur(10px)',
     WebkitTapHighlightColor: 'transparent',
     userSelect: 'none',
     cursor: 'pointer',
