@@ -1266,7 +1266,7 @@ export const ScrollVideo: React.FC = () => {
                                             <span style={{ fontSize: isMobile ? '1rem' : '1.15rem', flexShrink: 0, lineHeight: 1.3 }}>{recap.icon}</span>
                                             <p style={{
                                                 color: 'rgba(255,255,255,0.55)',
-                                                fontSize: isMobile ? '0.68rem' : '0.76rem',
+                                                fontSize: isMobile ? '0.78rem' : '0.88rem',
                                                 fontFamily: 'var(--font-body)',
                                                 fontWeight: 400,
                                                 lineHeight: 1.45,
