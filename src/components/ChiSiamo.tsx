@@ -259,11 +259,34 @@ export const ChiSiamo: React.FC = () => {
                     fontFamily: 'var(--font-body)',
                     fontWeight: 400,
                     lineHeight: 1.7,
+                    margin: '0 0 20px',
+                }}>
+                    Non siamo un'agenzia tradizionale, ma un gruppo di liberi professionisti
+                    che ha scelto di collaborare in un contesto di piena responsabilità individuale
+                    e reputazione personale.
+                </p>
+                <p style={{
+                    color: 'rgba(255,255,255,0.5)',
+                    fontSize: 'clamp(0.82rem, 1.8vw, 1rem)',
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 400,
+                    lineHeight: 1.7,
+                    margin: '0 0 20px',
+                }}>
+                    Il nostro modello di lavoro ci permette di rispondere in prima persona a ogni
+                    esigenza: ogni progetto è curato con la massima attenzione, perché ogni
+                    professionista porta avanti il proprio impegno e la propria reputazione.
+                </p>
+                <p style={{
+                    color: 'rgba(255,255,255,0.5)',
+                    fontSize: 'clamp(0.82rem, 1.8vw, 1rem)',
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 400,
+                    lineHeight: 1.7,
                     margin: '0 0 40px',
                 }}>
-                    Per mantenere i nostri standard e gestire personalmente la strategia di ogni cliente,
-                    lavoriamo solo con un numero limitato di aziende ogni anno.<br />Verifica la nostra disponibilità
-                    per capire se possiamo affiancarti in questo momento.
+                    Crediamo fermamente che il valore del territorio e la conoscenza profonda
+                    del contesto locale siano elementi imprescindibili per realizzare lavori di eccellenza.
                 </p>
                 <button
                     onClick={() => window.location.href = '#contatti'}
@@ -444,11 +467,38 @@ export const ChiSiamo: React.FC = () => {
                         fontFamily: 'var(--font-body)',
                         fontWeight: 400,
                         lineHeight: 1.7,
-                        margin: 0,
+                        margin: '0 0 20px',
                     }}
                 >
-                    Analizziamo e pianifichiamo la strategia della tua azienda a quattro mani,
-                    per poi verticalizzare le nostre competenze sull'esecuzione pratica.
+                    Preferiamo concentrarci su pochi, selezionati clienti, anziché puntare alla quantità.
+                    In questo modo, possiamo dedicare il giusto tempo e le risorse necessarie per garantire
+                    risultati che rispecchino le aspettative e la fiducia dei nostri partner.
+                </p>
+                <p
+                    style={{
+                        color: 'rgba(255,255,255,0.5)',
+                        fontSize: 'clamp(0.9rem, 2vw, 1.1rem)',
+                        fontFamily: 'var(--font-body)',
+                        fontWeight: 400,
+                        lineHeight: 1.7,
+                        margin: '0 0 20px',
+                    }}
+                >
+                    Creiamo per te strategie di digital marketing personalizzate, ideali per sfruttare
+                    al meglio i canali social e il tuo sito web, per far crescere la tua attività.
+                </p>
+                <p
+                    style={{
+                        color: '#fff',
+                        fontSize: 'clamp(1rem, 2.5vw, 1.3rem)',
+                        fontFamily: 'var(--font-subtitle)',
+                        fontWeight: 600,
+                        lineHeight: 1.5,
+                        margin: 0,
+                        letterSpacing: '-0.01em',
+                    }}
+                >
+                    Tu concentrati sulla tua attività. Al resto pensiamo noi.
                 </p>
             </div>
         </div>

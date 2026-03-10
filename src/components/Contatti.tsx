@@ -703,7 +703,21 @@ export const Contatti: React.FC = () => {
                         tuo progetto.
                     </span>
                 </h2>
-                <div style={{ width: 30, height: 2, backgroundColor: 'rgba(0,0,0,0.18)' }} />
+                <div style={{ width: 30, height: 2, backgroundColor: 'rgba(0,0,0,0.18)', marginBottom: 24 }} />
+                <p style={{
+                    color: 'rgba(0,0,0,0.6)',
+                    fontSize: 'clamp(0.88rem, 2vw, 1.05rem)',
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 400,
+                    lineHeight: 1.7,
+                    margin: 0,
+                    maxWidth: 520,
+                }}>
+                    Se vuoi scoprire come possiamo aiutarti, scrivici o prenota una consulenza gratuita:
+                    insieme costruiremo una strategia efficace per la tua crescita.
+                    Il tuo lavoro merita di essere conosciuto, e noi siamo qui per farlo arrivare
+                    alle persone giuste.
+                </p>
             </div>
 
             {/* ── Body ───────────────────────────────────────────────────── */}

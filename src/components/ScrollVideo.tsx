@@ -126,6 +126,16 @@ const SERVICE_LABELS = [
     'Web',
 ];
 
+// Recap cards shown during transitions
+const SERVICE_RECAP = [
+    { icon: '📱', title: 'Social', desc: 'Gestione strategica dei tuoi canali social per costruire una community autentica e coinvolta.' },
+    { icon: '✏️', title: 'Content', desc: 'Piani editoriali e contenuti mirati che raccontano il tuo brand con coerenza e impatto.' },
+    { icon: '⚙️', title: 'Strumenti', desc: 'Tool professionali, automazioni e dashboard per ottimizzare ogni processo digitale.' },
+    { icon: '📷', title: 'Shooting', desc: 'Foto e video professionali sul set, pensati per valorizzare prodotti, spazi e persone.' },
+    { icon: '🎬', title: 'AI Video', desc: 'Video generati e potenziati con intelligenza artificiale per contenuti innovativi e scalabili.' },
+    { icon: '🌐', title: 'Web', desc: 'Siti web, landing page e applicativi su misura, veloci, ottimizzati e pronti a convertire.' },
+];
+
 // ── Animated counter for stats values ────────────────────────────────────────
 // Parses values like "+500K", "+40%", "100%" and animates the number portion
 // based on a 0-1 visibility progress (scroll-driven, so it goes both ways).
@@ -417,6 +427,8 @@ export const ScrollVideo: React.FC = () => {
 
     // Ref to track the active ScrollTrigger instance across Strict Mode re-mounts
     const stRef = useRef<ScrollTrigger | null>(null);
+    // Store segments data so click handlers can calculate scroll targets
+    const segmentsDataRef = useRef<{ startProgress: number; endProgress: number; type: string; serviceIndex?: number }[]>([]);
 
     // Main ScrollTrigger logic — depends only on isLoaded (stable boolean)
     // drawFrame reads from imagesRef so it doesn't need to be a dependency.
@@ -488,6 +500,14 @@ export const ScrollVideo: React.FC = () => {
             segments[segments.length - 1].endFrame = totalFrames - 1;
             segments[segments.length - 1].endProgress = 1;
         }
+
+        // Store segments for click-to-scroll
+        segmentsDataRef.current = segments.map(s => ({
+            startProgress: s.startProgress,
+            endProgress: s.endProgress,
+            type: s.type,
+            serviceIndex: s.serviceIndex,
+        }));
 
         const container = containerRef.current;
 
@@ -607,6 +627,24 @@ export const ScrollVideo: React.FC = () => {
 
     const currentService = currentServiceIndex >= 0 ? SERVICES[currentServiceIndex] : null;
     const serviceContentRef = useRef<HTMLDivElement>(null);
+
+    // Click-to-scroll: jump to a specific service's slow segment
+    const scrollToService = useCallback((serviceIdx: number) => {
+        const st = stRef.current;
+        const segments = segmentsDataRef.current;
+        if (!st || segments.length === 0) return;
+
+        const targetSeg = segments.find(s => s.type === 'slow' && s.serviceIndex === serviceIdx);
+        if (!targetSeg) return;
+
+        const DEAD_ZONE = 0.05;
+        // Convert normalized progress back to raw progress
+        const targetNormalized = targetSeg.startProgress + 0.05; // slightly into the segment
+        const rawProgress = targetNormalized * (1 - DEAD_ZONE) + DEAD_ZONE;
+        const targetScrollY = st.start + rawProgress * (st.end - st.start);
+
+        window.scrollTo({ top: targetScrollY, behavior: 'instant' });
+    }, []);
 
     // Drive content scroll on mobile when service content overflows viewport
     useEffect(() => {
@@ -1109,16 +1147,22 @@ export const ScrollVideo: React.FC = () => {
             {isLoaded && hasScrolled && (
                 <div style={{
                     position: 'absolute',
-                    left: isMobile ? '14px' : '28px',
-                    top: isMobile ? '8%' : '6%',
-                    bottom: isMobile ? '8%' : '6%',
+                    left: 0,
+                    top: 0,
+                    bottom: 0,
                     zIndex: 30,
-                    pointerEvents: 'none',
+                    pointerEvents: isTransition && introOpacity === 0 ? 'auto' : 'none',
                     opacity: isTransition && introOpacity === 0 ? 1 : 0,
                     transition: 'opacity 0.5s ease-out',
                     display: 'flex',
                     flexDirection: 'row',
                     alignItems: 'stretch',
+                    // Subtle background for readability
+                    background: 'linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.35) 70%, transparent 100%)',
+                    paddingLeft: isMobile ? '14px' : '28px',
+                    paddingRight: isMobile ? '24px' : '40px',
+                    paddingTop: isMobile ? '8%' : '6%',
+                    paddingBottom: isMobile ? '8%' : '6%',
                     gap: isMobile ? '10px' : '14px',
                 }}>
                     {/* Vertical track with scroll-driven fill */}
@@ -1143,7 +1187,7 @@ export const ScrollVideo: React.FC = () => {
                         }} />
                     </div>
 
-                    {/* Labels positioned along the track */}
+                    {/* Labels + inline recap cards */}
                     <div style={{
                         display: 'flex',
                         flexDirection: 'column',
@@ -1152,50 +1196,86 @@ export const ScrollVideo: React.FC = () => {
                     }}>
                         {SERVICE_LABELS.map((label, i) => {
                             const isUpcoming = upcomingServiceIndex === i;
-                            // A service is "reached" when global progress has passed its approximate position
                             const servicePosition = (i + 0.5) / SERVICES.length;
                             const isPast = globalProgress > servicePosition;
+                            const recap = SERVICE_RECAP[i];
                             return (
-                                <div key={i} style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: isMobile ? '7px' : '10px',
-                                    transition: 'all 0.4s cubic-bezier(0.4,0,0.2,1)',
-                                }}>
-                                    {/* Dot */}
+                                <div
+                                    key={i}
+                                    onClick={() => scrollToService(i)}
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: isUpcoming ? (isMobile ? '5px' : '7px') : 0,
+                                        transition: 'all 0.4s cubic-bezier(0.4,0,0.2,1)',
+                                        cursor: 'pointer',
+                                        padding: '2px 0',
+                                    }}
+                                >
                                     <div style={{
-                                        width: isUpcoming ? '8px' : '5px',
-                                        height: isUpcoming ? '8px' : '5px',
-                                        borderRadius: '50%',
-                                        backgroundColor: isUpcoming
-                                            ? '#fff'
-                                            : isPast
-                                                ? 'rgba(255,255,255,0.7)'
-                                                : 'rgba(255,255,255,0.5)',
-                                        transition: 'all 0.4s cubic-bezier(0.4,0,0.2,1)',
-                                        flexShrink: 0,
-                                        boxShadow: isUpcoming ? '0 0 10px rgba(255,255,255,0.35)' : 'none',
-                                    }} />
-                                    {/* Label */}
-                                    <span style={{
-                                        fontSize: isUpcoming
-                                            ? (isMobile ? '0.78rem' : '0.88rem')
-                                            : (isMobile ? '0.62rem' : '0.72rem'),
-                                        fontFamily: 'var(--font-subtitle)',
-                                        fontWeight: isUpcoming ? 700 : 600,
-                                        letterSpacing: '0.1em',
-                                        textTransform: 'uppercase',
-                                        color: isUpcoming
-                                            ? '#fff'
-                                            : isPast
-                                                ? 'rgba(255,255,255,0.7)'
-                                                : 'rgba(255,255,255,0.5)',
-                                        textShadow: isUpcoming ? '0 2px 12px rgba(0,0,0,0.7)' : '0 1px 4px rgba(0,0,0,0.4)',
-                                        transition: 'all 0.4s cubic-bezier(0.4,0,0.2,1)',
-                                        whiteSpace: 'nowrap',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: isMobile ? '7px' : '10px',
                                     }}>
-                                        {label}
-                                    </span>
+                                        {/* Dot */}
+                                        <div style={{
+                                            width: isUpcoming ? '8px' : '5px',
+                                            height: isUpcoming ? '8px' : '5px',
+                                            borderRadius: '50%',
+                                            backgroundColor: isUpcoming
+                                                ? '#fff'
+                                                : isPast
+                                                    ? 'rgba(255,255,255,0.7)'
+                                                    : 'rgba(255,255,255,0.5)',
+                                            transition: 'all 0.4s cubic-bezier(0.4,0,0.2,1)',
+                                            flexShrink: 0,
+                                            boxShadow: isUpcoming ? '0 0 10px rgba(255,255,255,0.35)' : 'none',
+                                        }} />
+                                        {/* Label */}
+                                        <span style={{
+                                            fontSize: isUpcoming
+                                                ? (isMobile ? '0.92rem' : '1.05rem')
+                                                : (isMobile ? '0.72rem' : '0.82rem'),
+                                            fontFamily: 'var(--font-subtitle)',
+                                            fontWeight: isUpcoming ? 700 : 600,
+                                            letterSpacing: '0.1em',
+                                            textTransform: 'uppercase',
+                                            color: isUpcoming
+                                                ? '#fff'
+                                                : isPast
+                                                    ? 'rgba(255,255,255,0.7)'
+                                                    : 'rgba(255,255,255,0.5)',
+                                            textShadow: isUpcoming ? '0 2px 12px rgba(0,0,0,0.7)' : '0 1px 4px rgba(0,0,0,0.4)',
+                                            transition: 'all 0.4s cubic-bezier(0.4,0,0.2,1)',
+                                            whiteSpace: 'nowrap',
+                                        }}>
+                                            {label}
+                                        </span>
+                                    </div>
+
+                                    {/* Inline recap — icon + description under the upcoming label */}
+                                    {isUpcoming && recap && (
+                                        <div style={{
+                                            display: 'flex',
+                                            alignItems: 'flex-start',
+                                            gap: isMobile ? '6px' : '8px',
+                                            paddingLeft: isMobile ? '14px' : '18px',
+                                            maxWidth: isMobile ? '55vw' : '260px',
+                                            animation: 'svFadeIn 0.4s ease forwards',
+                                        }}>
+                                            <span style={{ fontSize: isMobile ? '1rem' : '1.15rem', flexShrink: 0, lineHeight: 1.3 }}>{recap.icon}</span>
+                                            <p style={{
+                                                color: 'rgba(255,255,255,0.55)',
+                                                fontSize: isMobile ? '0.68rem' : '0.76rem',
+                                                fontFamily: 'var(--font-body)',
+                                                fontWeight: 400,
+                                                lineHeight: 1.45,
+                                                margin: 0,
+                                            }}>
+                                                {recap.desc}
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             );
                         })}
