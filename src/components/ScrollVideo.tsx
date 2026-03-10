@@ -513,7 +513,7 @@ export const ScrollVideo: React.FC = () => {
 
         // On mobile, increase scroll distance so each service requires more physical
         // scrolling — prevents swipe-fling from racing through sections too quickly.
-        const scrollEnd = isMobile ? '+=1400%' : '+=850%';
+        const scrollEnd = isMobile ? '+=1100%' : '+=700%';
 
         const scrollTrigger = ScrollTrigger.create({
             trigger: container,
