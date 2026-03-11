@@ -399,6 +399,7 @@ export const ScrollVideo: React.FC = () => {
   const [hasScrolled, setHasScrolled] = useState(false);
   const hasScrolledRef = useRef(false);
   const progressRef = useRef<number>(0);
+  const lastRawProgressRef = useRef<number>(0);
 
   const prefersReduced = useReducedMotion();
   // Use a ref so the ScrollTrigger closure (created on isLoaded) reads the live value
@@ -739,6 +740,18 @@ export const ScrollVideo: React.FC = () => {
     // scrolling — prevents swipe-fling from racing through sections too quickly.
     const scrollEnd = isMobile ? "+=1100%" : "+=700%";
 
+    // Calculate snap points at the end of every "slow" segment (where a service is shown).
+    // This enforces a pause so users scrolling very fast don't blow past sections.
+    const snapPoints: number[] = [];
+    segments.forEach((seg) => {
+      if (seg.type === "slow") {
+        // Dead zone is 0.05, so we must map the segment's progress back to the raw scroll progress
+        const DEAD_ZONE = 0.05;
+        const rawSnapPoint = seg.endProgress * (1 - DEAD_ZONE) + DEAD_ZONE;
+        snapPoints.push(rawSnapPoint);
+      }
+    });
+
     const scrollTrigger = ScrollTrigger.create({
       trigger: container,
       start: "top top",
@@ -746,9 +759,39 @@ export const ScrollVideo: React.FC = () => {
       pin: true,
       pinSpacing: true,
       scrub: prefersReducedRef.current ? true : isMobile ? 1.2 : 0.8,
+      snap:
+        snapPoints.length > 0
+          ? {
+              snapTo: (dest: number) => {
+                const current = lastRawProgressRef.current;
+                const direction = dest >= current ? 1 : -1;
+
+                if (direction === 1) {
+                  // Find the first snap point we crossed going down
+                  const passedSnap = snapPoints.find(
+                    (p) => p > current && p <= dest,
+                  );
+                  if (passedSnap !== undefined) return passedSnap;
+                } else {
+                  // Find the first snap point we crossed going up
+                  const passedSnap = [...snapPoints]
+                    .reverse()
+                    .find((p) => p < current && p >= dest);
+                  if (passedSnap !== undefined) return passedSnap;
+                }
+
+                // No boundary crossed: don't snap to a grid, let scroll land naturally
+                return dest;
+              },
+              duration: { min: 0.2, max: 0.5 },
+              delay: 0.1,
+              ease: "power2.out",
+            }
+          : undefined,
       invalidateOnRefresh: true,
       onUpdate: (self) => {
         const rawProgress = self.progress;
+        lastRawProgressRef.current = rawProgress;
 
         // Dead zone: first 5% of scroll keeps frame 0 (flower with eye)
         // while the IntroOverlay fades away
