@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
   <head>
     <meta charset="UTF-8" />
@@ -7,13 +7,46 @@
     <title>WIDE Agency</title>
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="preload" as="image" type="image/webp" href="/frames/section-2/frame_0001.webp" />
-    <link rel="preload" as="image" type="image/webp" href="/frames_9_16/section-2/frame_0001.webp" media="(max-width: 767px)" />
+    <!-- Preload critical fonts to avoid render-blocking delay -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/outfit-700-latin.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/manrope-600-latin.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/plus-jakarta-sans-400-latin.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="image"
+      type="image/webp"
+      href="/frames/section-2/frame_0001.webp"
+    />
+    <link
+      rel="preload"
+      as="image"
+      type="image/webp"
+      href="/frames_9_16/section-2/frame_0001.webp"
+      media="(max-width: 767px)"
+    />
     <style>
       :root {
-        --font-title: 'Outfit', sans-serif;
-        --font-subtitle: 'Manrope', sans-serif;
-        --font-body: 'Plus Jakarta Sans', sans-serif;
+        --font-title: "Outfit", sans-serif;
+        --font-subtitle: "Manrope", sans-serif;
+        --font-body: "Plus Jakarta Sans", sans-serif;
       }
       * {
         margin: 0;
@@ -34,7 +67,9 @@
         -webkit-tap-highlight-color: transparent;
       }
       /* Prevent double-tap zoom delay on interactive elements */
-      button, a, [role="button"] {
+      button,
+      a,
+      [role="button"] {
         touch-action: manipulation;
       }
       /* Keep vertical scroll only on the page root — prevents accidental horizontal drift */
@@ -42,12 +77,16 @@
         touch-action: pan-y;
       }
       /* Tactile feedback on tap */
-      button:active, a:active, [role="button"]:active {
+      button:active,
+      a:active,
+      [role="button"]:active {
         opacity: 0.82;
       }
       /* Respect reduced-motion preference */
       @media (prefers-reduced-motion: reduce) {
-        *, ::before, ::after {
+        *,
+        ::before,
+        ::after {
           animation-duration: 0.01ms !important;
           transition-duration: 0.01ms !important;
           animation-iteration-count: 1 !important;
