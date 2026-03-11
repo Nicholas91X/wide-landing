@@ -8,15 +8,4 @@ export default defineConfig({
         port: 3000,
         open: true,
     },
-    build: {
-        // Split vendor libraries into separate cached chunks
-        rollupOptions: {
-            output: {
-                manualChunks: {
-                    'vendor-react': ['react', 'react-dom'],
-                    'vendor-gsap': ['gsap', 'gsap/ScrollTrigger'],
-                },
-            },
-        },
-    },
 });
