@@ -22,6 +22,16 @@ function getRouteFromPath(): LegalRoute {
 
 function App() {
   const [legalPage, setLegalPage] = useState<LegalRoute>(getRouteFromPath);
+  const [hasScrolled, setHasScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setHasScrolled(true);
+    // User already scrolled immediately on load, e.g. refreshed halfway down
+    if (window.scrollY > 10) onScroll();
+
+    window.addEventListener("scroll", onScroll, { passive: true, once: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     const onPopState = () => setLegalPage(getRouteFromPath());
@@ -61,45 +71,49 @@ function App() {
               "linear-gradient(to bottom, #000 0%, #0a0a0a 30%, #111 50%, #0a0a0a 70%, #000 100%)",
           }}
         />
-        {/* Below-the-fold sections — lazy loaded */}
-        <Suspense
-          fallback={<div style={{ background: "#000", minHeight: "100vh" }} />}
-        >
-          <section id="chi-siamo">
-            <ChiSiamo />
-          </section>
-          {/* Gradient fade divider */}
-          <div
-            style={{
-              height: "clamp(80px, 12vw, 160px)",
-              background:
-                "linear-gradient(to bottom, #000 0%, #0a0a0a 30%, #111 50%, #0a0a0a 70%, #000 100%)",
-            }}
-          />
-          <section id="portfolio">
-            <Portfolio />
-          </section>
-          {/* Gradient fade divider */}
-          <div
-            style={{
-              height: "clamp(80px, 12vw, 160px)",
-              background:
-                "linear-gradient(to bottom, #000 0%, #0a0a0a 30%, #111 50%, #0a0a0a 70%, #000 100%)",
-            }}
-          />
-          <section id="contatti">
-            <Contatti />
-          </section>
-          {/* Gradient fade — cream (#ece8e0) → black, bridges Contatti → Footer */}
-          <div
-            style={{
-              height: "clamp(60px, 10vw, 120px)",
-              background: "linear-gradient(to bottom, #ece8e0 0%, #000 100%)",
-              pointerEvents: "none",
-            }}
-          />
-          <Footer />
-        </Suspense>
+        {/* Below-the-fold sections — lazy loaded, deferred until user scrolls */}
+        {hasScrolled && (
+          <Suspense
+            fallback={
+              <div style={{ background: "#000", minHeight: "100vh" }} />
+            }
+          >
+            <section id="chi-siamo">
+              <ChiSiamo />
+            </section>
+            {/* Gradient fade divider */}
+            <div
+              style={{
+                height: "clamp(80px, 12vw, 160px)",
+                background:
+                  "linear-gradient(to bottom, #000 0%, #0a0a0a 30%, #111 50%, #0a0a0a 70%, #000 100%)",
+              }}
+            />
+            <section id="portfolio">
+              <Portfolio />
+            </section>
+            {/* Gradient fade divider */}
+            <div
+              style={{
+                height: "clamp(80px, 12vw, 160px)",
+                background:
+                  "linear-gradient(to bottom, #000 0%, #0a0a0a 30%, #111 50%, #0a0a0a 70%, #000 100%)",
+              }}
+            />
+            <section id="contatti">
+              <Contatti />
+            </section>
+            {/* Gradient fade — cream (#ece8e0) → black, bridges Contatti → Footer */}
+            <div
+              style={{
+                height: "clamp(60px, 10vw, 120px)",
+                background: "linear-gradient(to bottom, #ece8e0 0%, #000 100%)",
+                pointerEvents: "none",
+              }}
+            />
+            <Footer />
+          </Suspense>
+        )}
         <Analytics />
       </main>
 
