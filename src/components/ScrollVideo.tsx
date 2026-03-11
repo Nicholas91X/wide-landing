@@ -447,11 +447,27 @@ export const ScrollVideo: React.FC = () => {
     (frameIndex: number) => {
       const canvas = canvasRef.current;
       const ctx = contextRef.current;
-      const rawImg = imagesRef.current[frameIndex];
-      // If the requested frame hasn't loaded or is broken, fall back to frame 0
-      const img = rawImg?.naturalWidth
-        ? rawImg
-        : (fallbackRef.current ?? rawImg);
+
+      // Find the closest loaded frame looking backwards
+      let targetImg = imagesRef.current[frameIndex];
+
+      if (!targetImg || !targetImg.naturalWidth) {
+        // Search backwards for the most recently loaded frame
+        // This creates a graceful stutter instead of a flashback to frame 0
+        for (let i = frameIndex - 1; i > 0; i--) {
+          const candidate = imagesRef.current[i];
+          if (candidate && candidate.naturalWidth) {
+            targetImg = candidate;
+            break;
+          }
+        }
+      }
+
+      // Final fallback (frame 0) if nothing earlier was found
+      const img = targetImg?.naturalWidth
+        ? targetImg
+        : (fallbackRef.current ?? targetImg);
+
       if (!canvas || !ctx || !img || !img.naturalWidth) return;
 
       // canvas.width/height are in device pixels (innerWidth * dpr).
