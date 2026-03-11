@@ -111,9 +111,12 @@ export function usePreload(): UsePreloadReturn {
                 setIsLoaded(true);
 
                 // ── Phase 2: remaining frames in background chunks ──────────
+                // Use requestIdleCallback / setTimeout to ensure we don't block
+                // the main thread or saturate the network before LCP fires.
                 let cursor = initialEnd;
-                while (cursor < count) {
-                    if (stale()) return loadedImages;
+
+                const loadNextChunk = async () => {
+                    if (stale() || cursor >= count) return;
 
                     const chunkEnd = Math.min(cursor + BG_CHUNK_SIZE, count);
                     const chunkPromises: Promise<HTMLImageElement>[] = [];
@@ -122,11 +125,29 @@ export function usePreload(): UsePreloadReturn {
                     }
                     await Promise.all(chunkPromises);
 
-                    if (stale()) return loadedImages;
+                    if (stale()) return;
 
                     // Publish updated array so canvas can use new frames
                     setImages([...loadedImages]);
                     cursor = chunkEnd;
+
+                    // Schedule next chunk ONLY when the browser is idle again
+                    if (window.requestIdleCallback) {
+                        window.requestIdleCallback(() => {
+                            loadNextChunk();
+                        });
+                    } else {
+                        setTimeout(loadNextChunk, 200);
+                    }
+                };
+
+                // Start the background loading loop AFTER giving the browser time to paint
+                if (window.requestIdleCallback) {
+                    window.requestIdleCallback(() => {
+                        loadNextChunk();
+                    });
+                } else {
+                    setTimeout(loadNextChunk, 500);
                 }
 
                 return loadedImages;
