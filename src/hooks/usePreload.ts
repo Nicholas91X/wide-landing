@@ -8,13 +8,9 @@ interface PreloadResult {
 }
 
 interface UsePreloadReturn extends PreloadResult {
-    preloadFrames: (basePath: string, count: number, padLength?: number) => Promise<HTMLImageElement[]>;
+    preloadFrames: (basePath: string, count: number, initialFramesCount: number, padLength?: number) => Promise<HTMLImageElement[]>;
+    resumeBackgroundLoading: () => void;
 }
-
-// Fraction of total frames to load before unlocking scroll (0–1).
-// 0.15 ≈ 136 frames on desktop (~5 MB) — enough for intro + first service.
-// Lower = faster initial load (LCP), remaining frames stream in background.
-const INITIAL_CHUNK_RATIO = 0.15;
 
 // Background chunks – load in batches to avoid saturating the
 // network with 800+ parallel requests.
@@ -40,9 +36,17 @@ export function usePreload(): UsePreloadReturn {
     const [isLoaded, setIsLoaded] = useState(false);
 
     const generationRef = useRef(0);
+    const backgroundLoadingRef = useRef<{
+        cursor: number,
+        count: number,
+        loadedImages: HTMLImageElement[],
+        loadImage: (index: number) => Promise<HTMLImageElement>,
+        stale: () => boolean,
+        myGeneration: number
+    } | null>(null);
 
     const preloadFrames = useCallback(
-        async (basePath: string, count: number, padLength: number = 4): Promise<HTMLImageElement[]> => {
+        async (basePath: string, count: number, initialFramesCount: number, padLength: number = 4): Promise<HTMLImageElement[]> => {
             const myGeneration = ++generationRef.current;
 
             setIsLoaded(false);
@@ -97,7 +101,8 @@ export function usePreload(): UsePreloadReturn {
 
                 // ── Phase 1: initial chunk (blocks scroll) ──────────────────
                 // Frame 0 is already loaded; start from index 1.
-                const initialEnd = Math.floor(count * INITIAL_CHUNK_RATIO);
+                // Use the explicit `initialFramesCount`.
+                const initialEnd = Math.min(initialFramesCount, count);
                 const initialPromises = Array.from(
                     { length: initialEnd - 1 },
                     (_, i) => loadImage(i + 1)
@@ -110,45 +115,15 @@ export function usePreload(): UsePreloadReturn {
                 setImages([...loadedImages]);
                 setIsLoaded(true);
 
-                // ── Phase 2: remaining frames in background chunks ──────────
-                // Use requestIdleCallback / setTimeout to ensure we don't block
-                // the main thread or saturate the network before LCP fires.
-                let cursor = initialEnd;
-
-                const loadNextChunk = async () => {
-                    if (stale() || cursor >= count) return;
-
-                    const chunkEnd = Math.min(cursor + BG_CHUNK_SIZE, count);
-                    const chunkPromises: Promise<HTMLImageElement>[] = [];
-                    for (let i = cursor; i < chunkEnd; i++) {
-                        chunkPromises.push(loadImage(i));
-                    }
-                    await Promise.all(chunkPromises);
-
-                    if (stale()) return;
-
-                    // Publish updated array so canvas can use new frames
-                    setImages([...loadedImages]);
-                    cursor = chunkEnd;
-
-                    // Schedule next chunk ONLY when the browser is idle again
-                    if (window.requestIdleCallback) {
-                        window.requestIdleCallback(() => {
-                            loadNextChunk();
-                        });
-                    } else {
-                        setTimeout(loadNextChunk, 200);
-                    }
+                // ── Phase 2: Save state to allow background loading to be triggered later
+                backgroundLoadingRef.current = {
+                    cursor: initialEnd,
+                    count,
+                    loadedImages,
+                    loadImage,
+                    stale,
+                    myGeneration
                 };
-
-                // Start the background loading loop AFTER giving the browser time to paint
-                if (window.requestIdleCallback) {
-                    window.requestIdleCallback(() => {
-                        loadNextChunk();
-                    });
-                } else {
-                    setTimeout(loadNextChunk, 500);
-                }
 
                 return loadedImages;
             } catch (error) {
@@ -161,12 +136,55 @@ export function usePreload(): UsePreloadReturn {
         []
     );
 
+    const resumeBackgroundLoading = useCallback(() => {
+        const bgState = backgroundLoadingRef.current;
+        if (!bgState || bgState.stale() || bgState.cursor >= bgState.count) return;
+
+        const { loadImage, stale, loadedImages, count } = bgState;
+
+        const loadNextChunk = async () => {
+            if (stale() || bgState.cursor >= count) return;
+
+            const chunkEnd = Math.min(bgState.cursor + BG_CHUNK_SIZE, count);
+            const chunkPromises: Promise<HTMLImageElement>[] = [];
+            for (let i = bgState.cursor; i < chunkEnd; i++) {
+                chunkPromises.push(loadImage(i));
+            }
+            await Promise.all(chunkPromises);
+
+            if (stale()) return;
+
+            // Publish updated array so canvas can use new frames
+            setImages([...loadedImages]);
+            bgState.cursor = chunkEnd;
+
+            // Schedule next chunk ONLY when the browser is idle again
+            if (window.requestIdleCallback) {
+                window.requestIdleCallback(() => {
+                    loadNextChunk();
+                });
+            } else {
+                setTimeout(loadNextChunk, 200);
+            }
+        };
+
+        // Start the background loading loop
+        if (window.requestIdleCallback) {
+            window.requestIdleCallback(() => {
+                loadNextChunk();
+            });
+        } else {
+            setTimeout(loadNextChunk, 500);
+        }
+    }, []);
+
     return {
         images,
         fallbackImage,
         progress,
         isLoaded,
         preloadFrames,
+        resumeBackgroundLoading,
     };
 }
 
