@@ -172,7 +172,7 @@ export const IntroOverlay: React.FC = () => {
         >
           Studio Digitale
         </p>
-        <h1
+        <div
           style={{
             display: "flex",
             gap: "clamp(0.01em, 0.5vw, 0.05em)",
@@ -196,7 +196,7 @@ export const IntroOverlay: React.FC = () => {
               {ch}
             </span>
           ))}
-        </h1>
+        </div>
       </div>
 
       {/* ── Flowing waves — top to bottom, suggesting downward scroll ──── */}

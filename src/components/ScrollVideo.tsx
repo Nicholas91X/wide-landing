@@ -1024,7 +1024,7 @@ export const ScrollVideo: React.FC = () => {
                       }}
                     />
                   )}
-                  <h3
+                  <h4
                     style={{
                       color: "#fff",
                       fontSize: isMobile ? "1.1rem" : "1.3rem",
@@ -1036,7 +1036,7 @@ export const ScrollVideo: React.FC = () => {
                     }}
                   >
                     {item.title}
-                  </h3>
+                  </h4>
                   <p
                     style={{
                       color: "rgba(255,255,255,0.92)",
@@ -1433,6 +1433,36 @@ export const ScrollVideo: React.FC = () => {
         backgroundColor: "#000",
       }}
     >
+      {/* Visually hidden but SEO-critical primary heading */}
+      <h1
+        style={{
+          position: "absolute",
+          width: "1px",
+          height: "1px",
+          padding: "0",
+          margin: "-1px",
+          overflow: "hidden",
+          clip: "rect(0, 0, 0, 0)",
+          border: "0",
+        }}
+      >
+        WIDE Agency | Sviluppo Web, Social Media Marketing & Digital Branding
+      </h1>
+
+      <h2
+        style={{
+          position: "absolute",
+          width: "1px",
+          height: "1px",
+          padding: "0",
+          margin: "-1px",
+          overflow: "hidden",
+          clip: "rect(0, 0, 0, 0)",
+          border: "0",
+        }}
+      >
+        I nostri servizi e soluzioni digitali
+      </h2>
       {/* Loading overlay — fades out smoothly when ready */}
       <div
         style={{
@@ -1650,7 +1680,7 @@ export const ScrollVideo: React.FC = () => {
               transition: "opacity 0.3s ease-out",
             }}
           >
-            <h1
+            <h2
               style={{
                 color: "#fff",
                 fontSize: isMobile ? "1.2rem" : "2.2rem",
@@ -1747,7 +1777,7 @@ export const ScrollVideo: React.FC = () => {
               >
                 Prenota una chiamata conoscitiva
               </button>
-            </h1>
+            </h2>
           </div>
         )}
 
@@ -2100,7 +2130,7 @@ export const ScrollVideo: React.FC = () => {
               flexShrink: 0,
             }}
           >
-            <h2
+            <h3
               style={{
                 color: "#fff",
                 fontSize: isMobile ? "clamp(1.2rem, 4.5vw, 1.6rem)" : "2.8rem",
@@ -2128,7 +2158,7 @@ export const ScrollVideo: React.FC = () => {
               ) : (
                 currentService.title
               )}
-            </h2>
+            </h3>
             <div
               style={{
                 height: "2px",
