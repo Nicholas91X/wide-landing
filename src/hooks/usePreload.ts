@@ -38,6 +38,7 @@ export function usePreload(): UsePreloadReturn {
     const generationRef = useRef(0);
     const backgroundLoadingRef = useRef<{
         cursor: number,
+        indices: number[],
         count: number,
         loadedImages: HTMLImageElement[],
         loadImage: (index: number) => Promise<HTMLImageElement>,
@@ -116,8 +117,24 @@ export function usePreload(): UsePreloadReturn {
                 setIsLoaded(true);
 
                 // ── Phase 2: Save state to allow background loading to be triggered later
+                const bgIndices: number[] = [];
+                const STEP = 10;
+                
+                // Pass 1: Sparse frames covering the whole video
+                for (let i = initialEnd; i < count; i += STEP) {
+                    bgIndices.push(i);
+                }
+                
+                // Pass 2: Remaining frames
+                for (let i = initialEnd; i < count; i++) {
+                    if ((i - initialEnd) % STEP !== 0) {
+                        bgIndices.push(i);
+                    }
+                }
+
                 backgroundLoadingRef.current = {
-                    cursor: initialEnd,
+                    cursor: 0,
+                    indices: bgIndices,
                     count,
                     loadedImages,
                     loadImage,
@@ -138,17 +155,17 @@ export function usePreload(): UsePreloadReturn {
 
     const resumeBackgroundLoading = useCallback(() => {
         const bgState = backgroundLoadingRef.current;
-        if (!bgState || bgState.stale() || bgState.cursor >= bgState.count) return;
+        if (!bgState || bgState.stale() || bgState.cursor >= bgState.indices.length) return;
 
-        const { loadImage, stale, loadedImages, count } = bgState;
+        const { loadImage, stale, loadedImages } = bgState;
 
         const loadNextChunk = async () => {
-            if (stale() || bgState.cursor >= count) return;
+            if (stale() || bgState.cursor >= bgState.indices.length) return;
 
-            const chunkEnd = Math.min(bgState.cursor + BG_CHUNK_SIZE, count);
+            const chunkEnd = Math.min(bgState.cursor + BG_CHUNK_SIZE, bgState.indices.length);
             const chunkPromises: Promise<HTMLImageElement>[] = [];
             for (let i = bgState.cursor; i < chunkEnd; i++) {
-                chunkPromises.push(loadImage(i));
+                chunkPromises.push(loadImage(bgState.indices[i]));
             }
             await Promise.all(chunkPromises);
 
