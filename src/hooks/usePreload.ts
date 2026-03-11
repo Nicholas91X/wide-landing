@@ -12,12 +12,13 @@ interface UsePreloadReturn extends PreloadResult {
 }
 
 // Fraction of total frames to load before unlocking scroll (0–1).
-// 0.5 = 50% of the sequence, so the bar reaches exactly 50% at unlock.
-const INITIAL_CHUNK_RATIO = 0.5;
+// 0.15 ≈ 136 frames on desktop (~5 MB) — enough for intro + first service.
+// Lower = faster initial load (LCP), remaining frames stream in background.
+const INITIAL_CHUNK_RATIO = 0.15;
 
 // Background chunks – load in batches to avoid saturating the
 // network with 800+ parallel requests.
-const BG_CHUNK_SIZE = 40;
+const BG_CHUNK_SIZE = 80;
 
 /**
  * Hook for preloading a sequence of frame images with progress tracking.
