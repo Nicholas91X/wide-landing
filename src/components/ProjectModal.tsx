@@ -123,6 +123,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                 zIndex: 1000,
                 backgroundColor: 'rgba(0,0,0,0.6)',
                 backdropFilter: 'blur(6px)',
+                WebkitBackdropFilter: 'blur(6px)',
                 display: 'flex',
                 alignItems: 'flex-end',
             }}

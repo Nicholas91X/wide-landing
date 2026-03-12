@@ -3,7 +3,10 @@
     "allow": [
       "Bash(npx tsc:*)",
       "Bash(npx vite build)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(grep -n \"inset\\\\|backdrop-filter\" \"C:\\\\Users\\\\Principale\\\\Desktop\\\\Progetti\\\\wide-landing\\\\wide-landing\\\\src\\\\components\"/*.tsx 2>/dev/null | wc -l)",
+      "Bash(find \"C:\\\\Users\\\\Principale\\\\Desktop\\\\Progetti\\\\wide-landing\\\\wide-landing\\\\src\" -name \"*.tsx\" -type f -exec grep -n \"inset:\" {} + | head -50)",
+      "Bash(find \"C:\\\\Users\\\\Principale\\\\Desktop\\\\Progetti\\\\wide-landing\\\\wide-landing\\\\src\" -name \"*.tsx\" -type f -exec grep -n \"backdropFilter\\\\|backdrop-filter\" {} + 2>/dev/null)"
     ]
   }
 }

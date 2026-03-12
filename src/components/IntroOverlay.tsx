@@ -199,132 +199,69 @@ export const IntroOverlay: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Flowing waves — top to bottom, suggesting downward scroll ──── */}
+      {/* ── Finger scroll hint — swipe up gesture ──── */}
       {showWaves && (
         <div
           style={{
             position: "absolute",
             inset: 0,
             pointerEvents: "none",
-            overflow: "hidden",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           <style>{`
-                        @keyframes introWaveDown1 {
-                            from { transform: translateY(0); }                                              
-                            to   { transform: translateY(-50%); }
-                        }
-                        @keyframes introWaveDown2 {
-                            from { transform: translateY(0); }                                              
-                            to   { transform: translateY(-50%); }
-                        }
-                        @keyframes introWaveFadeIn {
-                            from { opacity: 0; }
-                            to   { opacity: 1; }
-                        }
-                    `}</style>
+            @keyframes introFingerFadeIn {
+              from { opacity: 0; }
+              to   { opacity: 1; }
+            }
+            @keyframes introSwipeVertical {
+              0%, 100% { transform: translateY(8px) rotate(0deg); opacity: 0.5; }
+              50% { transform: translateY(-18px) rotate(0deg); opacity: 1; }
+            }
+          `}</style>
           <div
             style={{
-              animation: "introWaveFadeIn 1.5s ease forwards",
+              animation: "introFingerFadeIn 1s ease forwards",
               opacity: 0,
-              position: "absolute",
-              inset: 0,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 10,
             }}
           >
-            {/* Layer A — primary waves, 3 crests per tile × 2 tiles */}
-            <div
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="rgba(255,255,255,0.6)"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               style={{
-                position: "absolute",
-                left: 0,
-                top: 0,
-                width: "100%",
-                height: "200%",
-                animation: "introWaveDown1 7s linear infinite",
+                display: "block",
+                animation: "introSwipeVertical 3s infinite ease-in-out",
               }}
             >
-              {[0, 100].map((tileOffset) =>
-                [8, 35, 62].map((y, i) => (
-                  <React.Fragment key={`a-${tileOffset}-${i}`}>
-                    {/* Main crest */}
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: `${(tileOffset + y) / 2}%`,
-                        left: "-15%",
-                        width: "130%",
-                        height: "4%",
-                        background:
-                          "radial-gradient(ellipse 100% 100% at 50% 50%, rgba(255,255,255,0.055) 0%, transparent 65%)",
-                        borderRadius: "50%",
-                        transform: `rotate(${i % 2 === 0 ? -1.5 : 1.5}deg)`,
-                        filter: "blur(8px)",
-                      }}
-                    />
-                    {/* Secondary crest — offset for wave thickness */}
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: `${(tileOffset + y + 4) / 2}%`,
-                        left: i % 2 === 0 ? "-5%" : "-25%",
-                        width: "130%",
-                        height: "3%",
-                        background:
-                          "radial-gradient(ellipse 100% 100% at 50% 50%, rgba(255,255,255,0.035) 0%, transparent 60%)",
-                        borderRadius: "50%",
-                        transform: `rotate(${i % 2 === 0 ? 1 : -1}deg)`,
-                        filter: "blur(12px)",
-                      }}
-                    />
-                  </React.Fragment>
-                )),
-              )}
-            </div>
-            {/* Layer B — secondary waves, slower, offset rhythm */}
-            <div
+              <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
+              <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
+              <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2-2v0" />
+              <path d="M6 14v-1a2 2 0 0 0-2-2v0a2 2 0 0 0-2-2v0" />
+              <path d="M18 11h2a2 2 0 0 1 2 2v3.7c0 3.3-2.3 6.3-5.5 7L12 24l-6.5-6.5M6 14v4l-3-1.5" />
+            </svg>
+            <span
               style={{
-                position: "absolute",
-                left: 0,
-                top: 0,
-                width: "100%",
-                height: "200%",
-                animation: "introWaveDown2 11s linear infinite",
+                color: "rgba(255,255,255,0.45)",
+                fontSize: "0.7rem",
+                fontWeight: 600,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
               }}
             >
-              {[0, 100].map((tileOffset) =>
-                [20, 52, 80].map((y, i) => (
-                  <React.Fragment key={`b-${tileOffset}-${i}`}>
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: `${(tileOffset + y) / 2}%`,
-                        left: "-20%",
-                        width: "140%",
-                        height: "3.5%",
-                        background:
-                          "radial-gradient(ellipse 100% 100% at 50% 50%, rgba(255,255,255,0.04) 0%, transparent 60%)",
-                        borderRadius: "50%",
-                        transform: `rotate(${i % 2 === 0 ? 2 : -1.8}deg)`,
-                        filter: "blur(14px)",
-                      }}
-                    />
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: `${(tileOffset + y + 5) / 2}%`,
-                        left: i % 2 === 0 ? "-30%" : "-10%",
-                        width: "140%",
-                        height: "2.5%",
-                        background:
-                          "radial-gradient(ellipse 100% 100% at 50% 50%, rgba(255,255,255,0.025) 0%, transparent 55%)",
-                        borderRadius: "50%",
-                        transform: `rotate(${i % 2 === 0 ? -1.2 : 2.2}deg)`,
-                        filter: "blur(16px)",
-                      }}
-                    />
-                  </React.Fragment>
-                )),
-              )}
-            </div>
+              Scorri
+            </span>
           </div>
         </div>
       )}

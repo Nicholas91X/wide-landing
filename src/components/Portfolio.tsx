@@ -467,6 +467,7 @@ export const Portfolio: React.FC = () => {
                                     padding: '10px 20px',
                                     borderRadius: '0',
                                     backdropFilter: 'blur(8px)',
+                                    WebkitBackdropFilter: 'blur(8px)',
                                     backgroundColor: '#fff',
                                 }}>
                                     Scopri il progetto

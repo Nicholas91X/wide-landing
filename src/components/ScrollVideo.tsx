@@ -1003,6 +1003,7 @@ export const ScrollVideo: React.FC = () => {
                       : "24px",
                     backgroundColor: "rgba(255,255,255,0.06)",
                     backdropFilter: "blur(10px)",
+                    WebkitBackdropFilter: "blur(10px)",
                     borderRadius: isMobile ? "14px" : "16px",
                     border: "1px solid rgba(255,255,255,0.1)",
                     opacity: vis,
@@ -1084,6 +1085,7 @@ export const ScrollVideo: React.FC = () => {
                       padding: "clamp(18px, 5vw, 28px) clamp(16px, 4vw, 24px)",
                       backgroundColor: "rgba(255,255,255,0.06)",
                       backdropFilter: "blur(10px)",
+                      WebkitBackdropFilter: "blur(10px)",
                       border: "1px solid rgba(255,255,255,0.1)",
                       borderRadius: "14px",
                       transition: "all 0.4s ease-out",
@@ -1332,6 +1334,7 @@ export const ScrollVideo: React.FC = () => {
                   style={{
                     backgroundColor: "rgba(255,255,255,0.06)",
                     backdropFilter: "blur(10px)",
+                    WebkitBackdropFilter: "blur(10px)",
                     borderRadius: isMobile ? "10px" : "14px",
                     border: "1px solid rgba(255,255,255,0.1)",
                     padding: isMobile ? "14px 10px 12px" : "24px 18px 20px",
