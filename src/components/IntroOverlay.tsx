@@ -1,17 +1,16 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 
 // ─── IntroOverlay ─────────────────────────────────────────────────────────────
 // Behavior:
 //   • On mount: overlay appears, WIDE animates in letter-by-letter (blur→clear)
-//   • After AUTO_DISMISS_MS: only WIDE text + kicker fade out.
-//     The scroll indicator stays visible.
+//   • WIDE text + kicker loop: fade in → hold → fade out → repeat
+//   • Swipe hand icon at bottom replaces old scroll indicator
 //   • Scroll-reactive: overlay hides when scrollY > THRESHOLD,
 //     reappears when scrollY returns to top. No DOM removal — just opacity.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const AUTO_DISMISS_MS = 4200;
 const SCROLL_THRESHOLD = 20; // px: hide overlay when scrolled past this
 
 export const IntroOverlay: React.FC = () => {
@@ -19,76 +18,89 @@ export const IntroOverlay: React.FC = () => {
   const textAreaRef = useRef<HTMLDivElement>(null);
   const lettersRef = useRef<(HTMLSpanElement | null)[]>([]);
   const kickerRef = useRef<HTMLParagraphElement>(null);
-  const scrollIndRef = useRef<HTMLDivElement>(null);
+  const swipeRef = useRef<HTMLDivElement>(null);
 
-  const textFadedRef = useRef(false);
-  const overlayShownRef = useRef(true); // tracks current visibility
-  const [showWaves, setShowWaves] = useState(false);
+  const overlayShownRef = useRef(true);
 
   const prefersReduced = useReducedMotion();
 
-  // ── Text-only fade (timer-driven) ─────────────────────────────────────────
-  const fadeOutText = () => {
-    if (textFadedRef.current) return;
-    textFadedRef.current = true;
-    const area = textAreaRef.current;
-    if (!area) return;
-    gsap.to(area, {
-      opacity: 0,
-      y: -14,
-      duration: 0.9,
-      ease: "power2.inOut",
-      onComplete: () => setShowWaves(true),
-    });
-  };
-
-  // ── Entry animation ───────────────────────────────────────────────────────
+  // ── Looping WIDE animation ──────────────────────────────────────────────
   useEffect(() => {
     const letters = lettersRef.current.filter(Boolean) as HTMLSpanElement[];
     const kicker = kickerRef.current;
-    const scrollInd = scrollIndRef.current;
+    const swipe = swipeRef.current;
 
     if (prefersReduced) {
-      // Show everything immediately — no motion
       gsap.set(letters, { opacity: 1, y: 0, filter: "blur(0px)" });
       if (kicker) gsap.set(kicker, { opacity: 1 });
-      if (scrollInd) gsap.set(scrollInd, { opacity: 1 });
+      if (swipe) gsap.set(swipe, { opacity: 1 });
       return;
     }
 
+    // Initial state
     gsap.set(letters, { opacity: 0, y: 16, filter: "blur(10px)" });
     if (kicker) gsap.set(kicker, { opacity: 0 });
-    if (scrollInd) gsap.set(scrollInd, { opacity: 0 });
+    if (swipe) gsap.set(swipe, { opacity: 0 });
 
-    const tl = gsap.timeline({ delay: 0.4 });
+    // Swipe indicator — fade in once, stays forever (separate from loop)
+    if (swipe)
+      gsap.to(swipe, { opacity: 1, duration: 0.8, ease: "power2.out", delay: 1.6 });
+
+    // Looping timeline: fade in → hold → fade out → pause → repeat
+    const tl = gsap.timeline({ repeat: -1, delay: 0.4 });
+
+    // Phase 1: letters appear one by one (1.5s)
     tl.to(
       letters,
       {
         opacity: 1,
         y: 0,
         filter: "blur(0px)",
-        duration: 1.0,
+        duration: 1.5,
         ease: "power3.out",
-        stagger: { each: 0.12 },
+        stagger: { each: 0.18 },
       },
       0,
     );
+    // Kicker fades in
     if (kicker)
-      tl.to(kicker, { opacity: 1, duration: 0.7, ease: "power2.out" }, 0.85);
-    if (scrollInd)
-      tl.to(scrollInd, { opacity: 1, duration: 0.6, ease: "power2.out" }, 1.2);
+      tl.to(kicker, { opacity: 1, duration: 1.0, ease: "power2.out" }, 1.0);
+
+    // Phase 2: hold visible
+    tl.to({}, { duration: 5.0 });
+
+    // Phase 3: fade out text + kicker (slower)
+    const fadeOutTime = tl.duration();
+    tl.to(
+      letters,
+      {
+        opacity: 0,
+        y: -14,
+        filter: "blur(8px)",
+        duration: 1.2,
+        ease: "power2.inOut",
+        stagger: { each: 0.08 },
+      },
+      fadeOutTime,
+    );
+    if (kicker)
+      tl.to(
+        kicker,
+        { opacity: 0, duration: 0.9, ease: "power2.inOut" },
+        fadeOutTime,
+      );
+
+    // Phase 4: pause before restarting
+    tl.to({}, { duration: 2.5 });
+
+    // Reset letters for next loop iteration
+    const resetTime = tl.duration();
+    tl.set(letters, { y: 16, filter: "blur(10px)" }, resetTime);
 
     return () => {
       tl.kill();
     };
   }, [prefersReduced]);
-
-  // ── Auto-fade text after timer ────────────────────────────────────────────
-  useEffect(() => {
-    const timer = setTimeout(fadeOutText, AUTO_DISMISS_MS);
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // ── Scroll-reactive visibility ────────────────────────────────────────────
   useEffect(() => {
@@ -98,7 +110,6 @@ export const IntroOverlay: React.FC = () => {
       const atTop = window.scrollY <= SCROLL_THRESHOLD;
 
       if (atTop && !overlayShownRef.current) {
-        // Reappear when back at top
         overlayShownRef.current = true;
         overlay.style.pointerEvents = "all";
         gsap.killTweensOf(overlay);
@@ -109,7 +120,6 @@ export const IntroOverlay: React.FC = () => {
           ease: "power2.out",
         });
       } else if (!atTop && overlayShownRef.current) {
-        // Hide when scrolled away
         overlayShownRef.current = false;
         gsap.killTweensOf(overlay);
         gsap.to(overlay, {
@@ -149,7 +159,7 @@ export const IntroOverlay: React.FC = () => {
           "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E\")",
       }}
     >
-      {/* Text content — auto-fades after timer, does not return */}
+      {/* Text content — loops: fade in → hold → fade out → repeat */}
       <div
         ref={textAreaRef}
         style={{
@@ -199,76 +209,9 @@ export const IntroOverlay: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Finger scroll hint — swipe up gesture ──── */}
-      {showWaves && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            pointerEvents: "none",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <style>{`
-            @keyframes introFingerFadeIn {
-              from { opacity: 0; }
-              to   { opacity: 1; }
-            }
-            @keyframes introSwipeVertical {
-              0%, 100% { transform: translateY(8px) rotate(0deg); opacity: 0.5; }
-              50% { transform: translateY(-18px) rotate(0deg); opacity: 1; }
-            }
-          `}</style>
-          <div
-            style={{
-              animation: "introFingerFadeIn 1s ease forwards",
-              opacity: 0,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 10,
-            }}
-          >
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="rgba(255,255,255,0.6)"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              style={{
-                display: "block",
-                animation: "introSwipeVertical 3s infinite ease-in-out",
-              }}
-            >
-              <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
-              <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
-              <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2-2v0" />
-              <path d="M6 14v-1a2 2 0 0 0-2-2v0a2 2 0 0 0-2-2v0" />
-              <path d="M18 11h2a2 2 0 0 1 2 2v3.7c0 3.3-2.3 6.3-5.5 7L12 24l-6.5-6.5M6 14v4l-3-1.5" />
-            </svg>
-            <span
-              style={{
-                color: "rgba(255,255,255,0.45)",
-                fontSize: "0.7rem",
-                fontWeight: 600,
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-              }}
-            >
-              Scorri
-            </span>
-          </div>
-        </div>
-      )}
-
-      {/* Scroll indicator — stays with overlay, reappears with it */}
+      {/* Swipe hand indicator — bottom, replaces old Scroll + line */}
       <div
-        ref={scrollIndRef}
+        ref={swipeRef}
         style={{
           position: "absolute",
           bottom: "clamp(32px, 6vw, 56px)",
@@ -277,54 +220,47 @@ export const IntroOverlay: React.FC = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: "12px",
+          gap: 10,
           opacity: 0,
         }}
       >
+        <style>{`
+          @keyframes introSwipeVertical {
+            0%, 100% { transform: translateY(8px); opacity: 0.5; }
+            50% { transform: translateY(-18px); opacity: 1; }
+          }
+        `}</style>
+        <svg
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="rgba(255,255,255,0.6)"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{
+            display: "block",
+            animation: "introSwipeVertical 3s infinite ease-in-out",
+          }}
+        >
+          <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
+          <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
+          <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2-2v0" />
+          <path d="M6 14v-1a2 2 0 0 0-2-2v0a2 2 0 0 0-2-2v0" />
+          <path d="M18 11h2a2 2 0 0 1 2 2v3.7c0 3.3-2.3 6.3-5.5 7L12 24l-6.5-6.5M6 14v4l-3-1.5" />
+        </svg>
         <span
           style={{
-            color: "rgba(255,255,255,0.50)", // brighter
-            fontSize: "0.75rem", // larger
+            color: "rgba(255,255,255,0.45)",
+            fontSize: "0.7rem",
             fontWeight: 600,
-            letterSpacing: "0.26em",
+            letterSpacing: "0.18em",
             textTransform: "uppercase",
           }}
         >
-          Scroll
+          Scorri
         </span>
-        {/* Animated flowing line */}
-        <div
-          style={{
-            position: "relative",
-            width: "1.5px",
-            height: 52, // larger
-            backgroundColor: "rgba(255,255,255,0.22)",
-            overflow: "hidden",
-            borderRadius: 2,
-          }}
-        >
-          <style>{`
-                        @keyframes introScrollLine {
-                            0%   { transform: translateY(-100%); }
-                            100% { transform: translateY(250%); }
-                        }
-                        .intro-scroll-line {
-                            animation: introScrollLine 1.7s cubic-bezier(0.4,0,0.2,1) infinite;
-                        }
-                    `}</style>
-          <div
-            className="intro-scroll-line"
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "45%",
-              background:
-                "linear-gradient(to bottom, transparent, rgba(255,255,255,0.85), transparent)",
-            }}
-          />
-        </div>
       </div>
     </div>
   );
