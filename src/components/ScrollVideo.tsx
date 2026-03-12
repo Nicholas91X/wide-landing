@@ -583,9 +583,27 @@ export const ScrollVideo: React.FC = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, [hasScrolled, resumeBackgroundLoading]);
 
-  // Intro text sequence — waits for scroll so the video frame appears first
+  // Track when ScrollVideo section enters viewport
+  const [sectionVisible, setSectionVisible] = useState(false);
   useEffect(() => {
-    if (!isLoaded || !hasScrolled) return;
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setSectionVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Intro text sequence — waits until section is visible in viewport
+  useEffect(() => {
+    if (!isLoaded || !sectionVisible) return;
 
     let subtitleTypingTimeout: number;
     let typingInterval: number;
@@ -611,7 +629,7 @@ export const ScrollVideo: React.FC = () => {
       window.clearTimeout(subtitleTypingTimeout);
       window.clearInterval(typingInterval);
     };
-  }, [isLoaded, hasScrolled, subtitleText]);
+  }, [isLoaded, sectionVisible, subtitleText]);
 
   // Scroll lock until loaded
   useEffect(() => {
