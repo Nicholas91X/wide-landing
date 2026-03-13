@@ -375,6 +375,7 @@ export const ScrollVideo: React.FC = () => {
   const [serviceOpacity, setServiceOpacity] = useState<number>(0);
   const [introOpacity, setIntroOpacity] = useState<number>(1);
   const [introTextOpacity, setIntroTextOpacity] = useState<number>(1);
+  const [headerOpacity, setHeaderOpacity] = useState<number>(1);
 
   const [showFirstPhrase, setShowFirstPhrase] = useState(false);
   const subtitleText =
@@ -806,14 +807,22 @@ export const ScrollVideo: React.FC = () => {
               ease: "power2.out",
             }
           : undefined,
-      invalidateOnRefresh: true,
       onUpdate: (self) => {
         const rawProgress = self.progress;
         lastRawProgressRef.current = rawProgress;
 
-        // Dead zone: first 5% of scroll keeps frame 0 (flower with eye)
-        // while the IntroOverlay fades away
-        const DEAD_ZONE = 0.05;
+        // Global progress for title fade (independent of DEAD_ZONE mapping)
+        // Title fades out completely by 6% into the pinned section
+        const TITLE_FADE_END = 0.06;
+        if (rawProgress < TITLE_FADE_END) {
+          setHeaderOpacity(1 - rawProgress / TITLE_FADE_END);
+        } else {
+          setHeaderOpacity(0);
+        }
+
+        // Dead zone: first 8% of scroll keeps frame 0 (flower with eye)
+        // while the header and IntroOverlay (if still visible) clear out.
+        const DEAD_ZONE = 0.08;
         const scrollProgress =
           rawProgress <= DEAD_ZONE
             ? 0
@@ -1661,6 +1670,55 @@ export const ScrollVideo: React.FC = () => {
         }}
       />
 
+      {/* ── Section Title (Fades out on scroll) ── */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+          backgroundColor: "#000",
+          padding:
+            "clamp(60px, 10vw, 120px) clamp(24px, 5vw, 80px) clamp(40px, 6vw, 80px)",
+          opacity: headerOpacity,
+          pointerEvents: headerOpacity < 0.1 ? "none" : "auto",
+          transform: `translateY(${-20 * (1 - headerOpacity)}px)`,
+          transition: "transform 0.4s ease-out",
+        }}
+      >
+        <p
+          style={{
+            color: "rgba(255,255,255,0.35)",
+            fontSize: "0.75rem",
+            fontFamily: "var(--font-subtitle)",
+            fontWeight: 600,
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+            margin: "0 0 16px",
+          }}
+        >
+          Servizi
+        </p>
+        <h2
+          style={{
+            color: "#fff",
+            fontSize: "clamp(2.2rem, 7vw, 5rem)",
+            fontFamily: "var(--font-title)",
+            fontWeight: 700,
+            textTransform: "uppercase",
+            letterSpacing: "0.02em",
+            lineHeight: 1.05,
+            margin: 0,
+          }}
+        >
+          I nostri
+          <br />
+          servizi.
+        </h2>
+      </div>
+
+      {/* ── Intro Text Overlay (Wait until first phrase typed) ── */}
       {/* Contrast Overlay (Vignette) */}
       <div
         style={{

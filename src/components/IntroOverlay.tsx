@@ -11,8 +11,6 @@ import { useReducedMotion } from "../hooks/useReducedMotion";
 //     reappears when scrollY returns to top. No DOM removal — just opacity.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const SCROLL_THRESHOLD = 20; // px: hide overlay when scrolled past this
-
 export const IntroOverlay: React.FC = () => {
   const overlayRef = useRef<HTMLDivElement>(null);
   const textAreaRef = useRef<HTMLDivElement>(null);
@@ -44,7 +42,12 @@ export const IntroOverlay: React.FC = () => {
 
     // Swipe indicator — fade in once, stays forever (separate from loop)
     if (swipe)
-      gsap.to(swipe, { opacity: 1, duration: 0.8, ease: "power2.out", delay: 1.6 });
+      gsap.to(swipe, {
+        opacity: 1,
+        duration: 0.8,
+        ease: "power2.out",
+        delay: 1.6,
+      });
 
     // Looping timeline: fade in → hold → fade out → pause → repeat
     const tl = gsap.timeline({ repeat: -1, delay: 0.4 });
@@ -102,39 +105,32 @@ export const IntroOverlay: React.FC = () => {
     };
   }, [prefersReduced]);
 
-  // ── Scroll-reactive visibility ────────────────────────────────────────────
+  // ── Scroll-reactive visibility (Proportional Fade) ───────────────────────
   useEffect(() => {
     const updateVisibility = () => {
       const overlay = overlayRef.current;
       if (!overlay) return;
-      const atTop = window.scrollY <= SCROLL_THRESHOLD;
 
-      if (atTop && !overlayShownRef.current) {
-        overlayShownRef.current = true;
-        overlay.style.pointerEvents = "all";
-        gsap.killTweensOf(overlay);
-        gsap.to(overlay, {
-          opacity: 1,
-          scale: 1,
-          duration: 0.55,
-          ease: "power2.out",
-        });
-      } else if (!atTop && overlayShownRef.current) {
-        overlayShownRef.current = false;
-        gsap.killTweensOf(overlay);
-        gsap.to(overlay, {
-          opacity: 0,
-          scale: 1.012,
-          duration: 0.45,
-          ease: "power2.in",
-          onComplete: () => {
-            if (overlay) overlay.style.pointerEvents = "none";
-          },
-        });
-      }
+      // Fades out from 0px to 120px scroll
+      const FADE_END = 120;
+      const progress = Math.min(window.scrollY / FADE_END, 1);
+      const opacity = 1 - progress;
+
+      // Scale up slightly as we scroll for a "zoom into the content" feel
+      const scale = 1 + progress * 0.015;
+
+      overlay.style.opacity = opacity.toString();
+      overlay.style.transform = `scale(${scale})`;
+      overlay.style.pointerEvents = opacity < 0.1 ? "none" : "all";
+
+      // Also track the ref for logic that doesn't need re-renders
+      overlayShownRef.current = opacity > 0;
     };
 
     window.addEventListener("scroll", updateVisibility, { passive: true });
+    // Run once at mount in case of refresh halfway
+    updateVisibility();
+
     return () => window.removeEventListener("scroll", updateVisibility);
   }, []);
 

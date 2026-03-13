@@ -63,40 +63,6 @@ function App() {
       <main style={{ overflowX: "hidden" }}>
         <SocialProof />
         <section id="servizi">
-          <div
-            style={{
-              backgroundColor: "#000",
-              padding: "clamp(60px, 10vw, 120px) clamp(24px, 5vw, 80px) clamp(40px, 6vw, 80px)",
-            }}
-          >
-            <p
-              style={{
-                color: "rgba(255,255,255,0.35)",
-                fontSize: "0.75rem",
-                fontFamily: "var(--font-subtitle)",
-                fontWeight: 600,
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                margin: "0 0 16px",
-              }}
-            >
-              Servizi
-            </p>
-            <h2
-              style={{
-                color: "#fff",
-                fontSize: "clamp(2.2rem, 7vw, 5rem)",
-                fontFamily: "var(--font-title)",
-                fontWeight: 700,
-                textTransform: "uppercase",
-                letterSpacing: "0.02em",
-                lineHeight: 1.05,
-                margin: 0,
-              }}
-            >
-              I nostri<br />servizi.
-            </h2>
-          </div>
           <ScrollVideo />
         </section>
         {/* Gradient fade divider */}
