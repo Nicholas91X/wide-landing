@@ -6,9 +6,9 @@ gsap.registerPlugin(ScrollTrigger);
 
 // ─── Metrics Data ────────────────────────────────────────────────────────────
 const METRICS = [
-  { value: "+320%", label: "Crescita follower organica" },
-  { value: "47", label: "Contenuti pubblicati al mese" },
-  { value: "x4.2", label: "Aumento delle interazioni medie" },
+  { value: "520000", suffix: "", label: "Visualizzazioni dei post" },
+  { value: "100", suffix: "+", label: "Contatti generati in organico" },
+  { value: "1000", suffix: "+", label: "Condivisioni" },
 ];
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -16,6 +16,7 @@ export const SocialProof: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const caseRef = useRef<HTMLDivElement>(null);
+  const metricRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -76,6 +77,55 @@ export const SocialProof: React.FC = () => {
       tl1.kill();
       tl2.kill();
     };
+  }, []);
+
+  // ── Count-up animation for metrics ──────────────────────────────────────
+  useEffect(() => {
+    const refs = metricRefs.current.filter(Boolean) as HTMLDivElement[];
+    if (!refs.length) return;
+
+    const counters = METRICS.map((m) => ({ target: parseInt(m.value.replace(/\D/g, ''), 10) }));
+    const triggered = { done: false };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0].isIntersecting || triggered.done) return;
+        triggered.done = true;
+        observer.disconnect();
+
+        refs.forEach((el, i) => {
+          const target = counters[i].target;
+          const suffix = METRICS[i].suffix;
+          const duration = 1.4;
+          const obj = { val: 0 };
+
+          gsap.to(obj, {
+            val: target,
+            duration,
+            ease: "power2.out",
+            delay: i * 0.12,
+            onUpdate() {
+              const v = Math.round(obj.val);
+              el.textContent = v >= 1000
+                ? (v >= 10000 ? (v >= 100000 ? v.toLocaleString('it-IT') : v.toLocaleString('it-IT')) : v.toLocaleString('it-IT'))
+                : String(v);
+              el.textContent += suffix;
+            },
+            onComplete() {
+              // Ensure final value is exact
+              el.textContent = target >= 1000 ? target.toLocaleString('it-IT') : String(target);
+              el.textContent += suffix;
+            },
+          });
+        });
+      },
+      { threshold: 0.4 }
+    );
+
+    // Observe the metrics container (caseRef)
+    if (caseRef.current) observer.observe(caseRef.current);
+
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -331,34 +381,64 @@ export const SocialProof: React.FC = () => {
             className="sp-anim"
             style={{
               display: "flex",
-              gap: isMobile ? 24 : 40,
-              flexWrap: "wrap",
+              flexDirection: isMobile ? "column" : "row",
+              gap: isMobile ? 0 : 0,
               marginBottom: 28,
+              border: "1px solid rgba(255,255,255,0.08)",
             }}
           >
             {METRICS.map((m, i) => (
-              <div key={i} style={{ minWidth: isMobile ? 80 : 100 }}>
+              <div
+                key={i}
+                style={{
+                  flex: isMobile ? "none" : "1 1 0",
+                  padding: isMobile ? "20px 24px" : "24px 28px",
+                  borderRight: !isMobile && i < METRICS.length - 1
+                    ? "1px solid rgba(255,255,255,0.08)"
+                    : "none",
+                  borderBottom: isMobile && i < METRICS.length - 1
+                    ? "1px solid rgba(255,255,255,0.08)"
+                    : "none",
+                  position: "relative",
+                }}
+              >
+                {/* Accent line top */}
+                {i === 0 && (
+                  <div style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: isMobile ? 0 : "auto",
+                    bottom: isMobile ? "auto" : 0,
+                    width: isMobile ? "100%" : 2,
+                    height: isMobile ? 2 : "100%",
+                    background: "rgba(255,255,255,0.5)",
+                  }} />
+                )}
                 <div
+                  ref={(el) => { metricRefs.current[i] = el; }}
                   style={{
                     fontSize: isMobile
-                      ? "clamp(1.6rem, 7vw, 2rem)"
+                      ? "clamp(2rem, 9vw, 2.6rem)"
                       : "clamp(1.8rem, 3vw, 2.4rem)",
                     fontFamily: "var(--font-title)",
                     fontWeight: 700,
-                    lineHeight: 1.1,
-                    marginBottom: 6,
+                    lineHeight: 1,
+                    marginBottom: 8,
+                    letterSpacing: "-0.02em",
                   }}
                 >
-                  {m.value}
+                  0{m.suffix}
                 </div>
                 <div
                   style={{
-                    color: "rgba(255,255,255,0.4)",
-                    fontSize: "0.72rem",
+                    color: "rgba(255,255,255,0.38)",
+                    fontSize: "0.7rem",
                     fontFamily: "var(--font-subtitle)",
-                    fontWeight: 500,
+                    fontWeight: 600,
                     lineHeight: 1.4,
-                    letterSpacing: "0.02em",
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
                   }}
                 >
                   {m.label}
