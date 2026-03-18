@@ -109,6 +109,11 @@ export const SocialProof: React.FC = () => {
             letterSpacing: "0.22em",
             textTransform: "uppercase",
             margin: "0 0 20px",
+            // Snap anchor: forces fast scrolls from the IntroOverlay to stop here.
+            // This element sits at ~160-300px from the top (heroRef padding),
+            // which is safely past the IntroOverlay fade range (0-120px).
+            scrollSnapAlign: "start",
+            scrollSnapStop: "always",
           }}
         >
           Wide Studio Digitale

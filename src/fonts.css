@@ -1,3 +1,10 @@
+/* Scroll snap: prevents SocialProof from being skipped on fast swipes.
+   proximity = only snaps when naturally landing close to a snap point,
+   so it doesn't interfere with normal reading or GSAP-controlled sections. */
+html {
+  scroll-snap-type: y proximity;
+}
+
 /* Outfit 700 */
 @font-face {
   font-family: 'Outfit';
