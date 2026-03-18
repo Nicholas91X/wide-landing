@@ -105,34 +105,75 @@ export const IntroOverlay: React.FC = () => {
     };
   }, [prefersReduced]);
 
-  // ── Scroll-reactive visibility (Proportional Fade) ───────────────────────
+  // ── Gesture-triggered dismissal ────────────────────────────────────────────
+  // Lock scroll on mount. On first wheel/touch, animate overlay out,
+  // then unlock scroll and reset scrollY to 0 so SocialProof is fully visible.
   useEffect(() => {
-    const updateVisibility = () => {
-      const overlay = overlayRef.current;
-      if (!overlay) return;
+    const overlay = overlayRef.current;
+    if (!overlay) return;
 
-      // Fades out from 0px to 120px scroll
-      const FADE_END = 120;
-      const progress = Math.min(window.scrollY / FADE_END, 1);
-      const opacity = 1 - progress;
+    // Lock scroll immediately
+    document.body.style.overflow = "hidden";
 
-      // Scale up slightly as we scroll for a "zoom into the content" feel
-      const scale = 1 + progress * 0.015;
+    let dismissed = false;
 
-      overlay.style.opacity = opacity.toString();
-      overlay.style.transform = `scale(${scale})`;
-      overlay.style.pointerEvents = opacity < 0.1 ? "none" : "all";
+    const dismiss = () => {
+      if (dismissed) return;
+      dismissed = true;
 
-      // Also track the ref for logic that doesn't need re-renders
-      overlayShownRef.current = opacity > 0;
+      // Remove listeners immediately
+      window.removeEventListener("wheel", dismiss);
+      window.removeEventListener("touchstart", dismiss);
+      window.removeEventListener("keydown", onKey);
+
+      if (prefersReduced) {
+        // Skip animation for reduced-motion users
+        overlay.style.opacity = "0";
+        overlay.style.pointerEvents = "none";
+        overlayShownRef.current = false;
+        document.body.style.overflow = "";
+        window.scrollTo({ top: 0, behavior: "instant" });
+        return;
+      }
+
+      // Animate overlay out
+      gsap.to(overlay, {
+        opacity: 0,
+        scale: 1.02,
+        duration: 0.7,
+        ease: "power2.inOut",
+        onComplete: () => {
+          overlay.style.pointerEvents = "none";
+          overlayShownRef.current = false;
+          // Unlock scroll and reset to top
+          document.body.style.overflow = "";
+          window.scrollTo({ top: 0, behavior: "instant" });
+        },
+      });
     };
 
-    window.addEventListener("scroll", updateVisibility, { passive: true });
-    // Run once at mount in case of refresh halfway
-    updateVisibility();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowDown" || e.key === " ") dismiss();
+    };
 
-    return () => window.removeEventListener("scroll", updateVisibility);
-  }, []);
+    // Wait a short moment so the intro animation is visible before allowing dismiss
+    const timer = setTimeout(() => {
+      window.addEventListener("wheel", dismiss, { once: true, passive: true });
+      window.addEventListener("touchstart", dismiss, {
+        once: true,
+        passive: true,
+      });
+      window.addEventListener("keydown", onKey);
+    }, 800);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("wheel", dismiss);
+      window.removeEventListener("touchstart", dismiss);
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [prefersReduced]);
 
   const TITLE = "WIDE";
 

@@ -632,13 +632,6 @@ export const ScrollVideo: React.FC = () => {
     };
   }, [isLoaded, sectionVisible, subtitleText]);
 
-  // Reset scroll position when loading completes so user starts at SocialProof
-  useEffect(() => {
-    if (isLoaded && window.scrollY < 10) {
-      window.scrollTo({ top: 0, behavior: "instant" });
-    }
-  }, [isLoaded]);
-
   // Reveal canvas + intro text on first scroll — keeps them hidden while
   // the IntroOverlay (WIDE logo) is covering the screen.
   useEffect(() => {

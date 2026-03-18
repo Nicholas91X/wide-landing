@@ -399,8 +399,8 @@ export const Portfolio: React.FC = () => {
                         overflow: "hidden",
                       }}
                     >
-                      {/* Only render iframe for the active card ± 1 neighbor */}
-                      {Math.abs(i - currentCardIndex) <= 1 ? (
+                      {/* Only render iframe for the currently active card */}
+                      {i === currentCardIndex ? (
                         <iframe
                           src={reelUrl}
                           loading="lazy"
