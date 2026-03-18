@@ -1041,17 +1041,6 @@ export const ScrollVideo: React.FC = () => {
                     height: "100%",
                   }}
                 >
-                  {!isMobile && (
-                    <div
-                      style={{
-                        width: "100%",
-                        height: "100px",
-                        backgroundColor: "rgba(255,255,255,0.08)",
-                        borderRadius: "8px",
-                        marginBottom: "16px",
-                      }}
-                    />
-                  )}
                   <h4
                     style={{
                       color: "#fff",
