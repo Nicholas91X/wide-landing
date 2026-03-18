@@ -418,7 +418,7 @@ export const ScrollVideo: React.FC = () => {
   const framesPath = isMobile ? MOBILE_FRAMES_PATH : DESKTOP_FRAMES_PATH;
   const frameCount = isMobile ? MOBILE_FRAME_COUNT : DESKTOP_FRAME_COUNT;
   // Request only a tiny fraction of frames on mobile to ensure LCP happens fast.
-  const initialFrameCount = isMobile ? 8 : 15;
+  const initialFrameCount = isMobile ? 40 : 15;
 
   const {
     images,
@@ -450,17 +450,30 @@ export const ScrollVideo: React.FC = () => {
       const canvas = canvasRef.current;
       const ctx = contextRef.current;
 
-      // Find the closest loaded frame looking backwards
+      // Find the closest loaded frame (search both directions)
       let targetImg = imagesRef.current[frameIndex];
 
       if (!targetImg || !targetImg.naturalWidth) {
-        // Search backwards for the most recently loaded frame
-        // This creates a graceful stutter instead of a flashback to frame 0
-        for (let i = frameIndex - 1; i > 0; i--) {
-          const candidate = imagesRef.current[i];
-          if (candidate && candidate.naturalWidth) {
-            targetImg = candidate;
-            break;
+        // Search bidirectionally for the nearest loaded frame
+        const maxSearch = imagesRef.current.length;
+        for (let offset = 1; offset < maxSearch; offset++) {
+          // Check backwards first (more natural for scroll-down)
+          const back = frameIndex - offset;
+          if (back >= 0) {
+            const b = imagesRef.current[back];
+            if (b && b.naturalWidth) {
+              targetImg = b;
+              break;
+            }
+          }
+          // Then forwards
+          const fwd = frameIndex + offset;
+          if (fwd < maxSearch) {
+            const f = imagesRef.current[fwd];
+            if (f && f.naturalWidth) {
+              targetImg = f;
+              break;
+            }
           }
         }
       }
@@ -571,18 +584,25 @@ export const ScrollVideo: React.FC = () => {
     }
   }, [isLoaded, drawFrame]);
 
-  // Detect when the user starts scrolling (IntroOverlay fades at 20px)
+  // Start background loading as soon as initial frames are ready.
+  // Don't wait for scroll — IntroOverlay locks scroll, so scrollY stays 0.
+  useEffect(() => {
+    if (isLoaded && !hasScrolled) {
+      resumeBackgroundLoading();
+    }
+  }, [isLoaded, hasScrolled, resumeBackgroundLoading]);
+
+  // Detect when the user actually starts scrolling (for canvas/intro reveal)
   useEffect(() => {
     if (hasScrolled) return;
     const onScroll = () => {
-      if (window.scrollY > 20) {
+      if (window.scrollY > 5) {
         setHasScrolled(true);
-        resumeBackgroundLoading();
       }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [hasScrolled, resumeBackgroundLoading]);
+  }, [hasScrolled]);
 
   // Track when ScrollVideo section enters viewport
   const [sectionVisible, setSectionVisible] = useState(false);
