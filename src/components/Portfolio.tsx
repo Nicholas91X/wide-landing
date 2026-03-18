@@ -69,20 +69,6 @@ const PROJECTS: PortfolioProject[] = [
             'https://iframe.mediadelivery.net/embed/604848/0fa6efb4-a0d1-49d7-b691-356f9fd3704f?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false',
         ],
     },
-    {
-        id: 'p6',
-        title: 'E-commerce Fashion',
-        category: 'Web + Social',
-        year: '2024',
-        description: 'Gestione completa di un e-commerce fashion: sito Shopify, fotografia prodotti, contenuti social mensili e campagne paid per 18 mesi consecutivi.',
-        mediaType: 'image',
-        mediaSrc: '',
-        accentColor: 'linear-gradient(135deg, #1a0010, #3d0025)',
-        tags: ['Shopify', 'Fotografia', 'Paid Ads', 'Social'],
-        reels: [
-            'https://iframe.mediadelivery.net/embed/604848/190f2414-cf0a-42e9-906d-54043db89fce?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false',
-        ],
-    },
 ];
 
 // ─── Palette for numbered indicator ──────────────────────────────────────────
