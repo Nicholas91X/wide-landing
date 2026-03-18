@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { gsap } from 'gsap';
 
 export interface Project {
@@ -11,6 +11,7 @@ export interface Project {
     mediaSrc: string;
     accentColor: string;
     tags: string[];
+    gallery?: string[]; // Optional photo gallery shown in the modal
 }
 
 interface ProjectModalProps {
@@ -22,6 +23,26 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
     const overlayRef = useRef<HTMLDivElement>(null);
     const sheetRef = useRef<HTMLDivElement>(null);
     const isVisible = project !== null;
+
+    // ── Gallery state ─────────────────────────────────────────────────────────
+    const [galleryIdx, setGalleryIdx] = useState(0);
+    const galleryRef = useRef<HTMLDivElement>(null);
+
+    // Reset gallery index whenever a new project opens
+    useEffect(() => { setGalleryIdx(0); }, [project?.id]);
+
+    const handleGalleryScroll = useCallback(() => {
+        const el = galleryRef.current;
+        if (!el) return;
+        setGalleryIdx(Math.round(el.scrollLeft / el.clientWidth));
+    }, []);
+
+    const scrollGallery = useCallback((dir: -1 | 1) => {
+        const el = galleryRef.current;
+        if (!el) return;
+        const next = Math.max(0, Math.min((project?.gallery?.length ?? 1) - 1, galleryIdx + dir));
+        el.scrollTo({ left: next * el.clientWidth, behavior: 'smooth' });
+    }, [galleryIdx, project?.gallery?.length]);
 
     useEffect(() => {
         if (!overlayRef.current || !sheetRef.current) return;
@@ -147,7 +168,130 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                     <div style={{ width: '40px', height: '4px', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: '2px' }} />
                 </div>
 
-                {/* Media preview */}
+                {/* Photo gallery — shown when project.gallery is provided */}
+                {project?.gallery && project.gallery.length > 0 ? (
+                    <div style={{ position: 'relative', backgroundColor: '#000' }}>
+                        {/* Slides */}
+                        <div
+                            ref={galleryRef}
+                            onScroll={handleGalleryScroll}
+                            style={{
+                                display: 'flex',
+                                overflowX: 'auto',
+                                overflowY: 'hidden',
+                                scrollSnapType: 'x mandatory',
+                                scrollbarWidth: 'none',
+                                msOverflowStyle: 'none',
+                                overscrollBehaviorX: 'contain',
+                                aspectRatio: '16/9',
+                            }}
+                        >
+                            <style>{`.pm-gallery::-webkit-scrollbar { display: none; }`}</style>
+                            {project.gallery.map((src, i) => (
+                                <div
+                                    key={i}
+                                    className="pm-gallery"
+                                    style={{
+                                        flex: '0 0 100%',
+                                        scrollSnapAlign: 'start',
+                                        scrollSnapStop: 'always',
+                                        position: 'relative',
+                                    }}
+                                >
+                                    <img
+                                        src={src}
+                                        alt={`${project.title} — ${i + 1}`}
+                                        loading={i === 0 ? 'eager' : 'lazy'}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Prev / Next arrows (desktop) */}
+                        {project.gallery.length > 1 && <>
+                            <button
+                                onClick={() => scrollGallery(-1)}
+                                aria-label="Immagine precedente"
+                                style={{
+                                    position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
+                                    width: 36, height: 36, borderRadius: '50%',
+                                    background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(6px)',
+                                    border: '1px solid rgba(255,255,255,0.15)',
+                                    color: '#fff', cursor: 'pointer', display: 'flex',
+                                    alignItems: 'center', justifyContent: 'center',
+                                    opacity: galleryIdx === 0 ? 0.25 : 1,
+                                    transition: 'opacity 0.2s ease',
+                                    pointerEvents: galleryIdx === 0 ? 'none' : 'auto',
+                                    zIndex: 2,
+                                }}
+                            >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="15 18 9 12 15 6" />
+                                </svg>
+                            </button>
+                            <button
+                                onClick={() => scrollGallery(1)}
+                                aria-label="Immagine successiva"
+                                style={{
+                                    position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
+                                    width: 36, height: 36, borderRadius: '50%',
+                                    background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(6px)',
+                                    border: '1px solid rgba(255,255,255,0.15)',
+                                    color: '#fff', cursor: 'pointer', display: 'flex',
+                                    alignItems: 'center', justifyContent: 'center',
+                                    opacity: galleryIdx === project.gallery.length - 1 ? 0.25 : 1,
+                                    transition: 'opacity 0.2s ease',
+                                    pointerEvents: galleryIdx === project.gallery.length - 1 ? 'none' : 'auto',
+                                    zIndex: 2,
+                                }}
+                            >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="9 18 15 12 9 6" />
+                                </svg>
+                            </button>
+                        </>}
+
+                        {/* Counter top-right */}
+                        {project.gallery.length > 1 && (
+                            <div style={{
+                                position: 'absolute', top: 10, right: 12,
+                                background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)',
+                                border: '1px solid rgba(255,255,255,0.12)',
+                                borderRadius: 20, padding: '3px 10px',
+                                color: 'rgba(255,255,255,0.8)',
+                                fontSize: '0.7rem', fontFamily: 'var(--font-subtitle)',
+                                fontWeight: 600, letterSpacing: '0.08em',
+                                zIndex: 2,
+                            }}>
+                                {galleryIdx + 1} / {project.gallery.length}
+                            </div>
+                        )}
+
+                        {/* Dot indicators */}
+                        {project.gallery.length > 1 && (
+                            <div style={{
+                                display: 'flex', justifyContent: 'center',
+                                alignItems: 'center', gap: 6, padding: '10px 0 4px',
+                            }}>
+                                {project.gallery.map((_, i) => (
+                                    <div
+                                        key={i}
+                                        onClick={() => galleryRef.current?.scrollTo({ left: i * galleryRef.current.clientWidth, behavior: 'smooth' })}
+                                        style={{
+                                            width: galleryIdx === i ? 20 : 6,
+                                            height: 4, borderRadius: 2,
+                                            backgroundColor: galleryIdx === i ? '#fff' : 'rgba(255,255,255,0.25)',
+                                            transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
+                                            cursor: 'pointer',
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                /* Fallback media preview (video / image / accent) */
                 <div style={{
                     width: '100%',
                     aspectRatio: '16/9',
@@ -176,6 +320,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                         </div>
                     )}
                 </div>
+                )}
 
                 {/* Content */}
                 <div style={{ padding: '28px 24px 48px' }}>

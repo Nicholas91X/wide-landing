@@ -30,6 +30,15 @@ const PROJECTS: PortfolioProject[] = [
             'https://iframe.mediadelivery.net/embed/604848/4c128c36-9caf-4fd0-a735-3a8f774b6dc5?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false',
             'https://iframe.mediadelivery.net/embed/604848/bd750578-cc05-443d-9d15-514d5a12d7c8?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false'
         ],
+        // Gallery shown inside the project drawer.
+        // Place images in /public/portfolio/auto2g/ and list them here.
+        gallery: [
+            '/portfolio/auto2g/img-01.webp',
+            '/portfolio/auto2g/img-02.webp',
+            '/portfolio/auto2g/img-03.webp',
+            '/portfolio/auto2g/img-04.webp',
+            '/portfolio/auto2g/img-05.webp',
+        ],
     },
     {
         id: 'p2',
