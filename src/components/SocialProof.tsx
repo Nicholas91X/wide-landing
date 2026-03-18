@@ -176,7 +176,8 @@ export const SocialProof: React.FC = () => {
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = "translateY(-2px)";
-            e.currentTarget.style.boxShadow = "0 8px 30px rgba(255,255,255,0.15)";
+            e.currentTarget.style.boxShadow =
+              "0 8px 30px rgba(255,255,255,0.15)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = "translateY(0)";
@@ -208,12 +209,27 @@ export const SocialProof: React.FC = () => {
           style={{
             flex: isMobile ? "none" : "1 1 45%",
             position: "relative",
-            minHeight: isMobile ? 260 : 400,
-            background:
-              "linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%)",
+            aspectRatio: "16 / 9", // Cinematic format for the car
             overflow: "hidden",
+            backgroundColor: "#000",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
+          {/* Background Image - Real zoom out via contain and scale */}
+          <img
+            src="/assets/mustang_mach_1.jpg"
+            alt="Automotive Client 2025 - Mustang Mach 1"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              transform: "scale(0.95)", // Extra safety margin to show everything
+              filter: "brightness(0.8)",
+            }}
+          />
+
           {/* Overlay label */}
           <div
             style={{
@@ -224,6 +240,7 @@ export const SocialProof: React.FC = () => {
               padding: isMobile ? "16px 20px" : "20px 28px",
               background:
                 "linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)",
+              zIndex: 1,
             }}
           >
             <span
@@ -236,7 +253,7 @@ export const SocialProof: React.FC = () => {
                 textTransform: "uppercase",
               }}
             >
-              Automotive Client — 2024
+              Automotive Client — 2025
             </span>
           </div>
         </div>
@@ -245,7 +262,9 @@ export const SocialProof: React.FC = () => {
         <div
           style={{
             flex: isMobile ? "none" : "1 1 55%",
-            padding: isMobile ? "32px 24px 0" : "clamp(24px, 4vw, 48px) clamp(32px, 5vw, 60px)",
+            padding: isMobile
+              ? "32px 24px 0"
+              : "clamp(24px, 4vw, 48px) clamp(32px, 5vw, 60px)",
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
