@@ -259,7 +259,7 @@ function AnimatedStat({
 // Frame sets per device type
 const DESKTOP_FRAME_COUNT = 908;
 const DESKTOP_FRAMES_PATH = "/frames/section-2";
-const MOBILE_FRAME_COUNT = 889;
+const MOBILE_FRAME_COUNT = 445;
 const MOBILE_FRAMES_PATH = "/frames_9_16/section-2";
 
 // Mobile breakpoint for matchMedia checks
@@ -632,16 +632,11 @@ export const ScrollVideo: React.FC = () => {
     };
   }, [isLoaded, sectionVisible, subtitleText]);
 
-  // Scroll lock until loaded
+  // Reset scroll position when loading completes so user starts at SocialProof
   useEffect(() => {
-    if (!isLoaded) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
+    if (isLoaded && window.scrollY < 10) {
+      window.scrollTo({ top: 0, behavior: "instant" });
     }
-    return () => {
-      document.body.style.overflow = "";
-    };
   }, [isLoaded]);
 
   // Reveal canvas + intro text on first scroll — keeps them hidden while

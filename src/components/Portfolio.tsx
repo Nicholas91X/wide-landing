@@ -399,26 +399,29 @@ export const Portfolio: React.FC = () => {
                         overflow: "hidden",
                       }}
                     >
-                      <iframe
-                        src={reelUrl}
-                        loading="lazy"
-                        style={{
-                          border: "none",
-                          position: "absolute",
-                          top: "50%",
-                          left: "50%",
-                          // Force iframe to 9:16 ratio based on viewport height,
-                          // then clip overflow — eliminates black bars for portrait reels
-                          height: "100dvh",
-                          width: "calc(100dvh * 9 / 16)",
-                          minWidth: "100%",
-                          transform: "translate(-50%, -50%)",
-                          pointerEvents: "none",
-                        }}
-                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                        sandbox="allow-scripts allow-same-origin"
-                        allowFullScreen
-                      />
+                      {/* Only render iframe for the active card ± 1 neighbor */}
+                      {Math.abs(i - currentCardIndex) <= 1 ? (
+                        <iframe
+                          src={reelUrl}
+                          loading="lazy"
+                          style={{
+                            border: "none",
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            // Force iframe to 9:16 ratio based on viewport height,
+                            // then clip overflow — eliminates black bars for portrait reels
+                            height: "100dvh",
+                            width: "calc(100dvh * 9 / 16)",
+                            minWidth: "100%",
+                            transform: "translate(-50%, -50%)",
+                            pointerEvents: "none",
+                          }}
+                          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                          sandbox="allow-scripts allow-same-origin"
+                          allowFullScreen
+                        />
+                      ) : null}
                       {/* Invisible overlay to catch scroll/swipe events over the iframe */}
                       <div
                         style={{ position: "absolute", inset: 0, zIndex: 1 }}

@@ -14,7 +14,7 @@ interface UsePreloadReturn extends PreloadResult {
 
 // Background chunks – load in batches to avoid saturating the
 // network with 800+ parallel requests.
-const BG_CHUNK_SIZE = 80;
+const BG_CHUNK_SIZE = 30;
 
 /**
  * Hook for preloading a sequence of frame images with progress tracking.
