@@ -54,6 +54,14 @@ const PROJECTS: PortfolioProject[] = [
             'https://iframe.mediadelivery.net/embed/604848/996c61ce-1752-4adf-b318-c1cfeb7af7ca?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false',
             'https://iframe.mediadelivery.net/embed/604848/7a1cc3e6-4973-407a-93e4-47937f8ff950?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false'
         ],
+        gallery: [
+            '/portfolio/fitandsmile/img-01.webp',
+            '/portfolio/fitandsmile/img-02.webp',
+            '/portfolio/fitandsmile/img-03.webp',
+            '/portfolio/fitandsmile/img-04.webp',
+            '/portfolio/fitandsmile/img-05.webp',
+        ],
+        galleryAspectRatio: '4/5',
     },
     {
         id: 'p5',

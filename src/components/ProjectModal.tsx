@@ -11,7 +11,8 @@ export interface Project {
     mediaSrc: string;
     accentColor: string;
     tags: string[];
-    gallery?: string[]; // Optional photo gallery shown in the modal
+    gallery?: string[];          // Optional photo gallery shown in the modal
+    galleryAspectRatio?: string; // e.g. '16/9' (default) or '9/16' for portrait shots
 }
 
 interface ProjectModalProps {
@@ -183,7 +184,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                                 scrollbarWidth: 'none',
                                 msOverflowStyle: 'none',
                                 overscrollBehaviorX: 'contain',
-                                aspectRatio: '16/9',
+                                aspectRatio: project.galleryAspectRatio ?? '16/9',
                             }}
                         >
                             <style>{`.pm-gallery::-webkit-scrollbar { display: none; }`}</style>
