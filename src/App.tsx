@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback, lazy, Suspense } from "react";
-import { ScrollVideo } from "./components/ScrollVideo";
 import { NavBubble } from "./components/NavBubble";
 import { IntroOverlay } from "./components/IntroOverlay";
 import { LegalPage } from "./components/LegalPage";
 import { SocialProof } from "./components/SocialProof";
 import { Analytics } from "@vercel/analytics/react";
 
-// Lazy-load below-the-fold sections to reduce initial JS payload
+// Lazy-load all sections below SocialProof to reduce initial JS payload
+const ScrollVideo = lazy(() =>
+  import("./components/ScrollVideo").then((m) => ({ default: m.ScrollVideo })),
+);
 const Portfolio = lazy(() => import("./components/Portfolio"));
 const ChiSiamo = lazy(() => import("./components/ChiSiamo"));
 const Contatti = lazy(() => import("./components/Contatti"));
@@ -60,11 +62,34 @@ function App() {
                 from creating a containing block that breaks position:fixed */}
       <NavBubble />
       <IntroOverlay />
+      {/* LCP hint: browser registers this as LCP candidate eagerly */}
+      <img
+        src={
+          window.matchMedia("(max-width: 767px)").matches
+            ? "/frames_9_16/section-2/frame_0001.webp"
+            : "/frames/section-2/frame_0001.webp"
+        }
+        fetchPriority="high"
+        decoding="sync"
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          width: 1,
+          height: 1,
+          opacity: 0,
+          pointerEvents: "none",
+        }}
+        alt=""
+      />
       <main style={{ overflowX: "hidden" }}>
         <SocialProof />
-        <section id="servizi">
-          <ScrollVideo />
-        </section>
+        <Suspense
+          fallback={<div style={{ background: "#000", minHeight: "100vh" }} />}
+        >
+          <section id="servizi">
+            <ScrollVideo />
+          </section>
+        </Suspense>
         {/* Gradient fade divider */}
         <div
           style={{
