@@ -259,7 +259,7 @@ function AnimatedStat({
 // Frame sets per device type
 const DESKTOP_FRAME_COUNT = 908;
 const DESKTOP_FRAMES_PATH = "/frames/section-2";
-const MOBILE_FRAME_COUNT = 445;
+const MOBILE_FRAME_COUNT = 223;
 const MOBILE_FRAMES_PATH = "/frames_9_16/section-2";
 
 // Mobile breakpoint for matchMedia checks
@@ -785,7 +785,9 @@ export const ScrollVideo: React.FC = () => {
       end: scrollEnd,
       pin: true,
       pinSpacing: true,
-      scrub: prefersReducedRef.current ? true : isMobile ? 1.2 : 0.8,
+      scrub: prefersReducedRef.current ? true : isMobile ? 1.4 : 1.0,
+      fastScrollEnd: true,
+      preventOverlaps: "scrollVideo",
       snap:
         snapPoints.length > 0
           ? {

@@ -150,7 +150,11 @@ export const Portfolio: React.FC = () => {
     if (nextIndex !== currentIndex && navigator.vibrate) {
       navigator.vibrate(10);
     }
-    container.scrollTo({ left: nextIndex * itemWidth, behavior: "smooth" });
+    gsap.to(container, {
+      scrollLeft: nextIndex * itemWidth,
+      duration: 0.6,
+      ease: "power2.out",
+    });
   };
 
   useEffect(() => {
@@ -173,7 +177,7 @@ export const Portfolio: React.FC = () => {
         end: `+=${count * 100}%`,
         pin: true,
         pinSpacing: true,
-        scrub: prefersReduced ? true : 1,
+        scrub: prefersReduced ? true : 0.8,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         // Ensures Portfolio recalculates AFTER ScrollVideo (which has default priority 0)
