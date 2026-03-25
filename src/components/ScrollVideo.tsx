@@ -418,7 +418,7 @@ export const ScrollVideo: React.FC = () => {
   const framesPath = isMobile ? MOBILE_FRAMES_PATH : DESKTOP_FRAMES_PATH;
   const frameCount = isMobile ? MOBILE_FRAME_COUNT : DESKTOP_FRAME_COUNT;
   // Request only a tiny fraction of frames on mobile to ensure LCP happens fast.
-  const initialFrameCount = isMobile ? 40 : 15;
+
 
   const {
     images,
@@ -545,10 +545,10 @@ export const ScrollVideo: React.FC = () => {
   // Wait until isMobile is definitively detected (not null).
   useEffect(() => {
     if (isMobile === null) return;
-    preloadFrames(framesPath, frameCount, initialFrameCount);
+    preloadFrames(framesPath, frameCount, frameCount);
     // framesPath/frameCount are derived from isMobile — re-run only when it changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [preloadFrames, isMobile, initialFrameCount]);
+  }, [preloadFrames, isMobile]);
 
   // Slow network detection: check navigator.connection immediately, then fall
   // back to a timer-based check (if after 5s progress is still very low).
@@ -830,9 +830,10 @@ export const ScrollVideo: React.FC = () => {
           setHeaderOpacity(0);
         }
 
-        // Dead zone: first 8% of scroll keeps frame 0 (flower with eye)
+        // Dead zone: first 4% of scroll keeps frame 0 (flower with eye)
         // while the header and IntroOverlay (if still visible) clear out.
-        const DEAD_ZONE = 0.08;
+        // Reduced from 8% to make it feel less like an "anchor".
+        const DEAD_ZONE = 0.04;
         const scrollProgress =
           rawProgress <= DEAD_ZONE
             ? 0
@@ -869,8 +870,9 @@ export const ScrollVideo: React.FC = () => {
         }
 
         // Intro text fades out early (girl's eye appears ~40% into first segment)
-        const textFadeStart = segments[0].endProgress * 0.25;
-        const textFadeEnd = segments[0].endProgress * 0.45;
+        // Refined timings to make it disappear faster as requested
+        const textFadeStart = segments[0].endProgress * 0.15;
+        const textFadeEnd = segments[0].endProgress * 0.30;
         if (scrollProgress < textFadeStart) {
           setIntroTextOpacity(1);
         } else if (scrollProgress < textFadeEnd) {
@@ -883,8 +885,9 @@ export const ScrollVideo: React.FC = () => {
         }
 
         // CTA + vignette stay visible longer, fade out at end of first segment
-        const introHoldEnd = segments[0].endProgress * 0.8;
-        const introFadeEnd = segments[0].endProgress;
+        // Refined to fade out sooner for better flow
+        const introHoldEnd = segments[0].endProgress * 0.4;
+        const introFadeEnd = segments[0].endProgress * 0.7;
         if (scrollProgress < introHoldEnd) {
           setIntroOpacity(1);
         } else if (scrollProgress < introFadeEnd) {

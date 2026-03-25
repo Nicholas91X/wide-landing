@@ -116,46 +116,7 @@ export const Portfolio: React.FC = () => {
 
   const prefersReduced = useReducedMotion();
 
-  // ── Reel swipe: one-item-at-a-time on mobile ──────────────────────────────
-  // Capture scroll position at touchstart so momentum between start→end
-  // doesn't affect which index we target.
-  const reelTouchStartX = useRef(0);
-  const reelTouchStartScrollLeft = useRef(0);
 
-  const handleReelTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    reelTouchStartX.current = e.touches[0].clientX;
-    reelTouchStartScrollLeft.current = e.currentTarget.scrollLeft;
-  };
-
-  const handleReelTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
-    const dx = e.changedTouches[0].clientX - reelTouchStartX.current;
-    if (Math.abs(dx) < 15) return; // ignore micro-swipes
-
-    const container = e.currentTarget;
-    const itemWidth = container.offsetWidth;
-    if (!itemWidth) return;
-
-    const items = container.querySelectorAll<HTMLElement>(
-      ".portfolio-reel-item",
-    );
-    // Use scroll position recorded at touchstart — immune to momentum drift
-    const currentIndex = Math.round(
-      reelTouchStartScrollLeft.current / itemWidth,
-    );
-    const nextIndex = Math.max(
-      0,
-      Math.min(items.length - 1, currentIndex + (dx < 0 ? 1 : -1)),
-    );
-
-    if (nextIndex !== currentIndex && navigator.vibrate) {
-      navigator.vibrate(10);
-    }
-    gsap.to(container, {
-      scrollLeft: nextIndex * itemWidth,
-      duration: 0.6,
-      ease: "power2.out",
-    });
-  };
 
   useEffect(() => {
     const container = containerRef.current;
@@ -178,7 +139,6 @@ export const Portfolio: React.FC = () => {
         pin: true,
         pinSpacing: true,
         scrub: prefersReduced ? true : 0.8,
-        anticipatePin: 1,
         invalidateOnRefresh: true,
         // Ensures Portfolio recalculates AFTER ScrollVideo (which has default priority 0)
         refreshPriority: -1,
@@ -368,12 +328,6 @@ export const Portfolio: React.FC = () => {
             >
               {project.reels && project.reels.length > 0 ? (
                 <div
-                  onClick={(e) => {
-                    // Prevent modal opening when clicking on the videos
-                    e.stopPropagation();
-                  }}
-                  onTouchStart={handleReelTouchStart}
-                  onTouchEnd={handleReelTouchEnd}
                   className="portfolio-reels-bg"
                   style={{
                     display: "flex",
