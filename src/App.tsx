@@ -234,7 +234,6 @@ function FloatingCTA() {
             cursor: "pointer",
             whiteSpace: "nowrap",
             boxShadow: "0 6px 24px rgba(0,0,0,0.4)",
-            WebkitTapHighlightColor: "transparent",
           }}
         >
           Prenota una call gratuita

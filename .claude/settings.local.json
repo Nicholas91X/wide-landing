@@ -10,7 +10,8 @@
       "Bash(echo \"EXIT:$?\")",
       "Bash(echo \"TS_EXIT:$?\")",
       "Bash(echo \"BUILD_EXIT:$?\")",
-      "Bash(echo \"BUILD:$?\")"
+      "Bash(echo \"BUILD:$?\")",
+      "Bash(echo \"TS:$?\")"
     ]
   }
 }

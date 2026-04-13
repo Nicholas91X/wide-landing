@@ -5,6 +5,34 @@ html {
   scroll-snap-type: y proximity;
 }
 
+/* ── Accessibility: keyboard focus indicator ───────────────────────────────
+   Two-ring outline (white + dark halo) stays visible on both the dark
+   canvas sections and the light Contatti/Footer backgrounds.
+   :focus-visible fires only for keyboard/assistive-tech focus — mouse
+   clicks are unaffected. */
+:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.9);
+  outline-offset: 3px;
+  border-radius: 2px;
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.55);
+}
+
+/* Remove browser default outline for pointer users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ── Tap / active feedback for all button-like elements ────────────────────
+   Prevents the "dead click" feeling on touch devices where hover states
+   don't exist. The scale + opacity dip gives instant visual confirmation. */
+button:active,
+[role="button"]:active,
+a:active {
+  opacity: 0.78;
+  transform: scale(0.97);
+  transition: opacity 0.08s, transform 0.08s;
+}
+
 /* Outfit 700 */
 @font-face {
   font-family: 'Outfit';

@@ -185,6 +185,9 @@ export const IntroOverlay: React.FC = () => {
   return (
     <div
       ref={overlayRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Introduzione Wide Studio Digitale — scorri per iniziare"
       style={{
         position: "fixed",
         inset: 0,
@@ -201,6 +204,47 @@ export const IntroOverlay: React.FC = () => {
           "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E\")",
       }}
     >
+      {/* Visually-hidden dismiss button — reachable via Tab for keyboard/AT users */}
+      <button
+        onClick={() => {
+          const overlay = overlayRef.current;
+          if (!overlay) return;
+          if (prefersReduced) {
+            overlay.style.opacity = "0";
+            overlay.style.pointerEvents = "none";
+            document.body.style.overflow = "";
+            window.scrollTo({ top: 0, behavior: "instant" });
+          } else {
+            import("gsap").then(({ gsap }) => {
+              gsap.to(overlay, {
+                opacity: 0,
+                scale: 1.02,
+                duration: 0.7,
+                ease: "power2.inOut",
+                onComplete: () => {
+                  overlay.style.pointerEvents = "none";
+                  document.body.style.overflow = "";
+                  window.scrollTo({ top: 0, behavior: "instant" });
+                },
+              });
+            });
+          }
+        }}
+        style={{
+          position: "absolute",
+          width: 1,
+          height: 1,
+          padding: 0,
+          margin: -1,
+          overflow: "hidden",
+          clip: "rect(0,0,0,0)",
+          whiteSpace: "nowrap",
+          border: 0,
+        }}
+      >
+        Inizia a esplorare il sito
+      </button>
+
       {/* Text content — loops: fade in → hold → fade out → repeat */}
       <div
         ref={textAreaRef}
