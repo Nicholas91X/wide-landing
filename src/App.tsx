@@ -14,12 +14,19 @@ const ChiSiamo = lazy(() => import("./components/ChiSiamo"));
 const Contatti = lazy(() => import("./components/Contatti"));
 const Footer = lazy(() => import("./components/Footer"));
 
-type LegalRoute = "privacy" | "cookie" | "note-legali" | null;
+type LegalRoute = "privacy" | "cookie" | "note-legali" | "audit-privacy" | "audit-termini" | null;
 
 function getRouteFromPath(): LegalRoute {
   const path = window.location.pathname.replace(/^\//, "");
-  if (path === "privacy" || path === "cookie" || path === "note-legali")
-    return path;
+  
+  if (path === "audit") {
+    window.location.href = "/audit/";
+    return null;
+  }
+  
+  if (path === "privacy" || path === "cookie" || path === "note-legali" || path === "audit-privacy" || path === "audit-termini")
+    return path as LegalRoute;
+    
   return null;
 }
 

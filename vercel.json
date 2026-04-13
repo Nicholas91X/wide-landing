@@ -2,6 +2,8 @@
   "rewrites": [
     { "source": "/privacy", "destination": "/index.html" },
     { "source": "/cookie", "destination": "/index.html" },
-    { "source": "/note-legali", "destination": "/index.html" }
+    { "source": "/note-legali", "destination": "/index.html" },
+    { "source": "/audit-privacy", "destination": "/index.html" },
+    { "source": "/audit-termini", "destination": "/index.html" }
   ]
 }

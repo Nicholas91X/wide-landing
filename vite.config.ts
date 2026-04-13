@@ -12,6 +12,10 @@ export default defineConfig({
         chunkSizeWarningLimit: 600,
         cssCodeSplit: true,
         rollupOptions: {
+            input: {
+                main: 'index.html',
+                audit: 'audit/index.html',
+            },
             output: {
                 manualChunks(id) {
                     // React core — smallest possible first-paint bundle
