@@ -153,7 +153,6 @@ function App() {
 function FloatingCTA() {
   const [visible, setVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
@@ -170,120 +169,77 @@ function FloatingCTA() {
 
   useEffect(() => {
     const onScroll = () => {
-      const threshold = window.innerHeight * 1.5;
-      const contatti = document.getElementById("contatti");
-      const contattiVisible = contatti
-        ? contatti.getBoundingClientRect().top < window.innerHeight * 0.8
+      // Show only after ScrollVideo ends — "chi-siamo" entering viewport
+      // confirms the user has cleared the entire pinned scroll section.
+      const chiSiamo = document.getElementById("chi-siamo");
+      const pastScrollVideo = chiSiamo
+        ? chiSiamo.getBoundingClientRect().top <= window.innerHeight * 0.7
         : false;
-      setVisible(window.scrollY > threshold && !contattiVisible);
-      if (!visible) setDrawerOpen(false);
+
+      // Hide as soon as Contatti section starts entering the viewport
+      // so the CTA never obscures the booking form.
+      const contatti = document.getElementById("contatti");
+      const contattiApproaching = contatti
+        ? contatti.getBoundingClientRect().top < window.innerHeight * 1.1
+        : false;
+
+      // Also hide when near the very bottom (footer area).
+      const nearBottom =
+        window.scrollY + window.innerHeight >=
+        document.documentElement.scrollHeight - 120;
+
+      setVisible(pastScrollVideo && !contattiApproaching && !nearBottom);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [visible]);
+  }, []);
+
+  const goToContatti = () => {
+    document.getElementById("contatti")?.scrollIntoView({ behavior: "instant" });
+  };
 
   if (isMobile) {
-    // Mobile: top drawer tab
+    // Mobile: bottom pill — single tap, thumb-reachable zone.
+    // Slides up from below rather than dropping from the top.
     return (
       <div
         style={{
           position: "fixed",
-          top: 0,
+          bottom: "clamp(16px, 5vw, 28px)",
           left: "50%",
-          transform: "translateX(-50%)",
+          transform: `translateX(-50%) translateY(${visible ? "0" : "100px"})`,
           zIndex: 2000,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
           opacity: visible ? 1 : 0,
           pointerEvents: visible ? "auto" : "none",
-          transition: "opacity 0.4s ease",
+          transition:
+            "transform 0.45s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease",
         }}
       >
-        {/* Drawer content — slides down */}
-        <div
+        <button
+          onClick={goToContatti}
           style={{
-            backgroundColor: "#fff",
-            overflow: "hidden",
-            maxHeight: drawerOpen ? "60px" : "0",
-            opacity: drawerOpen ? 1 : 0,
-            transition:
-              "max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
-            width: "100vw",
-          }}
-        >
-          <button
-            onClick={() => {
-              setDrawerOpen(false);
-              document
-                .getElementById("contatti")
-                ?.scrollIntoView({ behavior: "instant" });
-            }}
-            style={{
-              background: "none",
-              border: "none",
-              color: "#000",
-              fontSize: "0.7rem",
-              fontFamily: "var(--font-subtitle)",
-              fontWeight: 600,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              cursor: "pointer",
-              padding: "18px 28px",
-              whiteSpace: "nowrap",
-            }}
-          >
-            Prenota una call
-          </button>
-        </div>
-
-        {/* Tab handle — always visible when CTA is active */}
-        <div
-          onClick={() => setDrawerOpen((prev) => !prev)}
-          style={{
+            gap: "8px",
+            padding: "15px 32px",
             backgroundColor: "#fff",
             color: "#000",
-            padding: "6px 20px 8px",
-            borderRadius: "0 0 12px 12px",
+            border: "none",
+            borderRadius: "0",
+            fontSize: "0.72rem",
+            fontFamily: "var(--font-subtitle)",
+            fontWeight: 600,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
             cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
-            transition: "transform 0.3s ease",
+            whiteSpace: "nowrap",
+            boxShadow: "0 6px 24px rgba(0,0,0,0.4)",
+            WebkitTapHighlightColor: "transparent",
           }}
         >
-          <span
-            style={{
-              fontSize: "0.55rem",
-              fontFamily: "var(--font-subtitle)",
-              fontWeight: 700,
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-            }}
-          >
-            Contattaci
-          </span>
-          <svg
-            width="10"
-            height="10"
-            viewBox="0 0 10 10"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={{
-              transition: "transform 0.3s ease",
-              transform: drawerOpen ? "rotate(180deg)" : "rotate(0deg)",
-            }}
-          >
-            <polyline points="2,3.5 5,6.5 8,3.5" />
-          </svg>
-        </div>
+          Prenota una call gratuita
+          <span style={{ fontSize: "0.9rem" }}>→</span>
+        </button>
       </div>
     );
   }
@@ -291,11 +247,7 @@ function FloatingCTA() {
   // Desktop: bottom center button
   return (
     <button
-      onClick={() => {
-        document
-          .getElementById("contatti")
-          ?.scrollIntoView({ behavior: "instant" });
-      }}
+      onClick={goToContatti}
       style={{
         position: "fixed",
         bottom: "clamp(20px, 4vw, 32px)",
@@ -328,7 +280,7 @@ function FloatingCTA() {
         e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.4)";
       }}
     >
-      Prenota una call
+      Prenota una call gratuita
     </button>
   );
 }

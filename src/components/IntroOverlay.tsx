@@ -153,10 +153,12 @@ export const IntroOverlay: React.FC = () => {
     };
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowDown" || e.key === " ") dismiss();
+      if (e.key === "ArrowDown" || e.key === " " || e.key === "Enter") dismiss();
     };
 
-    // Wait a short moment so the intro animation is visible before allowing dismiss
+    // Register dismiss handlers immediately — no artificial delay.
+    // A 100ms micro-delay is the only guard against page-load scroll inertia
+    // accidentally firing on the very first paint.
     const timer = setTimeout(() => {
       window.addEventListener("wheel", dismiss, { once: true, passive: true });
       window.addEventListener("touchstart", dismiss, {
@@ -164,13 +166,16 @@ export const IntroOverlay: React.FC = () => {
         passive: true,
       });
       window.addEventListener("keydown", onKey);
-    }, 800);
+      // Direct click/tap on the overlay itself also dismisses
+      overlay.addEventListener("click", dismiss, { once: true });
+    }, 100);
 
     return () => {
       clearTimeout(timer);
       window.removeEventListener("wheel", dismiss);
       window.removeEventListener("touchstart", dismiss);
       window.removeEventListener("keydown", onKey);
+      overlay.removeEventListener("click", dismiss);
       document.body.style.overflow = "";
     };
   }, [prefersReduced]);
@@ -246,57 +251,72 @@ export const IntroOverlay: React.FC = () => {
         </div>
       </div>
 
-      {/* Swipe hand indicator — bottom, replaces old Scroll + line */}
+      {/* Dismiss hint — bottom center, fades in after the logo animation */}
       <div
         ref={swipeRef}
         style={{
           position: "absolute",
-          bottom: "clamp(32px, 6vw, 56px)",
+          bottom: "clamp(28px, 5vw, 48px)",
           left: "50%",
           transform: "translateX(-50%)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: 10,
+          gap: 12,
           opacity: 0,
+          cursor: "pointer",
         }}
       >
         <style>{`
-          @keyframes introSwipeVertical {
-            0%, 100% { transform: translateY(8px); opacity: 0.5; }
-            50% { transform: translateY(-18px); opacity: 1; }
+          @keyframes introScrollDrop {
+            0%   { opacity: 0;   transform: translateY(-4px); }
+            40%  { opacity: 0.8; transform: translateY(0);    }
+            100% { opacity: 0;   transform: translateY(7px);  }
+          }
+          @keyframes introPulse {
+            0%, 100% { opacity: 0.55; }
+            50%      { opacity: 1; }
           }
         `}</style>
-        <svg
-          width="32"
-          height="32"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="rgba(255,255,255,0.6)"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          style={{
-            display: "block",
-            animation: "introSwipeVertical 3s infinite ease-in-out",
-          }}
-        >
-          <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
-          <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
-          <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2-2v0" />
-          <path d="M6 14v-1a2 2 0 0 0-2-2v0a2 2 0 0 0-2-2v0" />
-          <path d="M18 11h2a2 2 0 0 1 2 2v3.7c0 3.3-2.3 6.3-5.5 7L12 24l-6.5-6.5M6 14v4l-3-1.5" />
-        </svg>
+
+        {/* Animated vertical line + arrow */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+          <div
+            style={{
+              width: 1,
+              height: 28,
+              background: "linear-gradient(to bottom, rgba(255,255,255,0.5), rgba(255,255,255,0.05))",
+              animation: "introScrollDrop 2s ease-in-out infinite",
+            }}
+          />
+          <svg
+            width="12"
+            height="7"
+            viewBox="0 0 12 7"
+            fill="none"
+            stroke="rgba(255,255,255,0.5)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polyline points="1,1 6,6 11,1" />
+          </svg>
+        </div>
+
+        {/* Label — explicit and actionable */}
         <span
           style={{
-            color: "rgba(255,255,255,0.45)",
-            fontSize: "0.7rem",
+            color: "rgba(255,255,255,0.5)",
+            fontSize: "0.65rem",
+            fontFamily: "var(--font-subtitle)",
             fontWeight: 600,
-            letterSpacing: "0.18em",
+            letterSpacing: "0.22em",
             textTransform: "uppercase",
+            animation: "introPulse 3s ease-in-out infinite",
+            whiteSpace: "nowrap",
           }}
         >
-          Scorri
+          Scorri o tocca per iniziare
         </span>
       </div>
     </div>

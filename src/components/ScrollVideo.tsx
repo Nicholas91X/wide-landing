@@ -1862,7 +1862,7 @@ export const ScrollVideo: React.FC = () => {
                     "0 10px 30px rgba(0,0,0,0.3)";
                 }}
               >
-                Prenota una chiamata conoscitiva
+                Prenota una call gratuita
               </button>
             </h2>
           </div>
