@@ -142,8 +142,8 @@ export const SocialProof: React.FC = () => {
           alignItems: "center",
           textAlign: "center",
           padding: isMobile
-            ? "clamp(160px, 30vw, 240px) 24px clamp(60px, 14vw, 120px)"
-            : "clamp(180px, 22vw, 300px) clamp(40px, 8vw, 120px) clamp(80px, 12vw, 160px)",
+            ? "clamp(80px, 15vw, 120px) 24px clamp(60px, 12vw, 100px)"
+            : "clamp(100px, 14vw, 180px) clamp(40px, 8vw, 120px) clamp(80px, 12vw, 160px)",
           maxWidth: 900,
           margin: "0 auto",
         }}

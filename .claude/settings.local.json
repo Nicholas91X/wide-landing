@@ -9,7 +9,8 @@
       "Bash(find \"C:\\\\Users\\\\Principale\\\\Desktop\\\\Progetti\\\\wide-landing\\\\wide-landing\\\\src\" -name \"*.tsx\" -type f -exec grep -n \"backdropFilter\\\\|backdrop-filter\" {} + 2>/dev/null)",
       "Bash(echo \"EXIT:$?\")",
       "Bash(echo \"TS_EXIT:$?\")",
-      "Bash(echo \"BUILD_EXIT:$?\")"
+      "Bash(echo \"BUILD_EXIT:$?\")",
+      "Bash(echo \"BUILD:$?\")"
     ]
   }
 }

@@ -2128,42 +2128,45 @@ export const ScrollVideo: React.FC = () => {
         </div>
       )}
 
-      {/* ── Skip section button — bottom-right ──── */}
-      {isLoaded && hasScrolled && (
+      {/* ── Skip section button — bottom-center ──── */}
+      {hasScrolled && (
         <button
           style={{
             position: "absolute",
-            bottom: "clamp(20px, 4vw, 32px)",
-            right: isMobile ? "12px" : "20px",
+            bottom: "clamp(18px, 4vw, 28px)",
+            left: "50%",
+            transform: "translateX(-50%)",
             zIndex: 30,
-            background: "rgba(255,255,255,0.08)",
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
-            border: "1px solid rgba(255,255,255,0.15)",
+            background: "rgba(255,255,255,0.12)",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
+            border: "1px solid rgba(255,255,255,0.28)",
             borderRadius: "20px",
-            color: "rgba(255,255,255,0.75)",
-            fontSize: isMobile ? "0.6rem" : "0.65rem",
+            color: "rgba(255,255,255,0.92)",
+            fontSize: isMobile ? "0.65rem" : "0.68rem",
             letterSpacing: "0.14em",
             textTransform: "uppercase",
-            textShadow: "0 2px 4px rgba(0,0,0,0.4)",
+            textShadow: "0 2px 6px rgba(0,0,0,0.5)",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
-            gap: "6px",
-            padding: isMobile ? "8px 14px" : "9px 18px",
+            gap: "7px",
+            padding: isMobile ? "10px 20px" : "10px 22px",
             fontFamily: "var(--font-subtitle)",
             fontWeight: 600,
             transition: "all 0.3s ease",
+            whiteSpace: "nowrap",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.color = "#fff";
-            e.currentTarget.style.background = "rgba(255,255,255,0.15)";
-            e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)";
+            e.currentTarget.style.background = "rgba(255,255,255,0.22)";
+            e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.color = "rgba(255,255,255,0.75)";
-            e.currentTarget.style.background = "rgba(255,255,255,0.08)";
-            e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+            e.currentTarget.style.color = "rgba(255,255,255,0.92)";
+            e.currentTarget.style.background = "rgba(255,255,255,0.12)";
+            e.currentTarget.style.borderColor = "rgba(255,255,255,0.28)";
           }}
           onClick={() => {
             const el = document.getElementById("chi-siamo");

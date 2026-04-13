@@ -1,6 +1,20 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import { gsap } from "gsap";
 
+// Inject NavBubble keyframes once
+const NB_STYLE_ID = "navbubble-styles";
+if (typeof document !== "undefined" && !document.getElementById(NB_STYLE_ID)) {
+  const s = document.createElement("style");
+  s.id = NB_STYLE_ID;
+  s.textContent = `
+    @keyframes nbRing {
+      0%   { opacity: 0.7; transform: scale(1);   }
+      100% { opacity: 0;   transform: scale(1.65); }
+    }
+  `;
+  document.head.appendChild(s);
+}
+
 // ─── Config ───────────────────────────────────────────────────────────────────
 interface NavItem {
   label: string;
@@ -88,14 +102,15 @@ export const NavBubble: React.FC = () => {
   const [scrollPct, setScrollPct] = useState(0);
   const [activeSection, setActiveSection] = useState("home");
 
-  // Logo fades out after frame 100 of the scroll-video section
+  // Logo fades out during ScrollVideo, restores once the user scrolls past it
   const videoFrameRef = useRef(0);
   const [logoVisible, setLogoVisible] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
 
-  // ── Logo visibility: track scroll-video frame progress ───────────────────
+  // ── Logo visibility ───────────────────────────────────────────────────────
   useEffect(() => {
+    // Hide when ScrollVideo canvas is actively animating (frame > 100)
     const onFrame = (e: Event) => {
       const frame = (e as CustomEvent<{ frame: number }>).detail.frame;
       const wasVisible = videoFrameRef.current <= 100;
@@ -104,7 +119,27 @@ export const NavBubble: React.FC = () => {
       if (wasVisible !== isNowVisible) setLogoVisible(isNowVisible);
     };
     window.addEventListener("scrollvideo-frame", onFrame);
-    return () => window.removeEventListener("scrollvideo-frame", onFrame);
+
+    // Restore when the #servizi section leaves the viewport entirely
+    // (user has scrolled past all of ScrollVideo)
+    const servizi = document.getElementById("servizi");
+    let observer: IntersectionObserver | null = null;
+    if (servizi) {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry.isIntersecting && videoFrameRef.current > 100) {
+            setLogoVisible(true);
+          }
+        },
+        { threshold: 0 },
+      );
+      observer.observe(servizi);
+    }
+
+    return () => {
+      window.removeEventListener("scrollvideo-frame", onFrame);
+      observer?.disconnect();
+    };
   }, []);
 
   // ── Scroll progress ───────────────────────────────────────────────────────
@@ -491,6 +526,16 @@ export const NavBubble: React.FC = () => {
       {/* ── MENU bubble — top-right with child bubbles ───────────────── */}
       <div
         ref={mainRef}
+        role="button"
+        aria-label={isOpen ? "Chiudi navigazione" : "Apri navigazione"}
+        aria-expanded={isOpen}
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            isOpen ? closeMenu() : openMenu();
+          }
+        }}
         style={{
           position: "fixed",
           top: MARGIN,
@@ -506,6 +551,21 @@ export const NavBubble: React.FC = () => {
         }}
         onClick={isOpen ? closeMenu : openMenu}
       >
+        {/* Attention ping — plays twice on mount to draw eye to the nav */}
+        {!isOpen && (
+          <div
+            aria-hidden
+            style={{
+              position: "absolute",
+              inset: -3,
+              borderRadius: "50%",
+              border: "1.5px solid rgba(255,255,255,0.55)",
+              animation: "nbRing 0.9s cubic-bezier(0,0,0.2,1) 2.8s 2 forwards",
+              opacity: 0,
+              pointerEvents: "none",
+            }}
+          />
+        )}
         {/* Progress ring */}
         <svg
           width={BUBBLE_SIZE + 10}
@@ -541,10 +601,10 @@ export const NavBubble: React.FC = () => {
         {/* Label */}
         <span
           style={{
-            color: "rgba(255,255,255,0.85)",
-            fontSize: isOpen ? "1rem" : "0.5rem",
+            color: "rgba(255,255,255,0.92)",
+            fontSize: isOpen ? "1rem" : "0.65rem",
             fontWeight: 700,
-            letterSpacing: "0.12em",
+            letterSpacing: "0.1em",
             textTransform: "uppercase",
             pointerEvents: "none",
             transition: "font-size 0.3s",
