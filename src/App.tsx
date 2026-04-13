@@ -4,6 +4,7 @@ import { IntroOverlay } from "./components/IntroOverlay";
 import { LegalPage } from "./components/LegalPage";
 import { SocialProof } from "./components/SocialProof";
 import { Analytics } from "@vercel/analytics/react";
+import { trackCTAClick } from "./utils/analytics";
 
 // Lazy-load all sections below SocialProof to reduce initial JS payload
 const ScrollVideo = lazy(() =>
@@ -202,6 +203,7 @@ function FloatingCTA() {
   }, []);
 
   const goToContatti = () => {
+    trackCTAClick('floating-cta');
     document.getElementById("contatti")?.scrollIntoView({ behavior: "instant" });
   };
 

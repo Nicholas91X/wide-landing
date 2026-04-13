@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useReducedMotion } from "../hooks/useReducedMotion";
+import { trackSectionView } from "../utils/analytics";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -51,6 +52,18 @@ export const ChiSiamo: React.FC = () => {
         "change",
         onChange as (e: MediaQueryListEvent) => void,
       );
+  }, []);
+
+  // ── Track section visibility ───────────────────────────────────────────
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { trackSectionView('chi-siamo'); obs.disconnect(); } },
+      { threshold: 0.2 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
   }, []);
 
   // ── Card dimensions — sized to fit longer descriptions ────────────────

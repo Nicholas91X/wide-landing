@@ -9,6 +9,13 @@
     content="Scopri quanti potenziali clienti stai lasciando ai concorrenti. Calcola il tuo Indice di Dispersione del Mercato con WIDE." />
   <title>Indice di Dispersione del Mercato | WIDE Studio Digitale</title>
 
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+
   <!-- Preload critical fonts -->
   <link rel="preload" as="font" type="font/woff2" href="/fonts/outfit-700-latin.woff2" crossorigin />
   <link rel="preload" as="font" type="font/woff2" href="/fonts/manrope-600-latin.woff2" crossorigin />
@@ -464,6 +471,9 @@
 </head>
 
 <body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="main-container">
     <div class="quiz-wrap">
@@ -528,7 +538,7 @@
               <p class="cta-sub">Analizziamo insieme la tua situazione in una sessione gratuita di 30 minuti.</p>
             </div>
             <a class="btn-cta" href="https://cal.eu/wide-studiodigitale-jdk11j/30min" target="_blank" rel="noopener"
-              id="cta-link">Prenota l'Audit Gratuito &rarr;</a>
+              id="cta-link" onclick="gtmPush('audit_booking_click')">Prenota l'Audit Gratuito &rarr;</a>
           </div>
 
           <button class="btn-restart" onclick="restart()">&#x21A9; Ricomincia il test</button>
@@ -623,6 +633,12 @@
 
     let current = 0, answers = [], selected = null;
 
+    // ── DataLayer helper ──────────────────────────────────────
+    window.dataLayer = window.dataLayer || [];
+    function gtmPush(event, params) {
+      window.dataLayer.push(Object.assign({ event: event }, params || {}));
+    }
+
     function render() {
       const q = questions[current];
       document.getElementById('q-number').textContent = 'Domanda ' + (current + 1);
@@ -655,6 +671,12 @@
     document.getElementById('btn-next').addEventListener('click', () => {
       if (selected === null) return;
       answers[current] = questions[current].options[selected].score;
+      // Track step completion
+      gtmPush('audit_step_complete', {
+        audit_step: current + 1,
+        audit_total_steps: questions.length,
+        audit_progress: Math.round(((current + 1) / questions.length) * 100)
+      });
       current++;
       selected = null;
       if (current < questions.length) {
@@ -690,6 +712,13 @@
       document.getElementById('score-desc').textContent = "Stai perdendo " + article + percentage + "% delle opportunità.";
       
       document.getElementById('risk-label').textContent = profile.risk;
+
+      // Track form completion
+      gtmPush('audit_complete', {
+        audit_result: profile.badge,
+        audit_score: percentage,
+        audit_risk: profile.risk
+      });
     }
 
     function restart() {

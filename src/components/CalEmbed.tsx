@@ -1,5 +1,6 @@
 import { getCalApi } from "@calcom/embed-react";
 import { useEffect } from "react";
+import { trackBookingStart } from "../utils/analytics";
 
 interface CalEmbedProps {
   calLink: string;
@@ -46,6 +47,7 @@ export const CalEmbed = ({ calLink, eventSlug, domain = "cal.com", buttonText = 
       <button
         data-cal-link={`${calLink}/${eventSlug}`}
         data-cal-config='{"layout":"month_view"}'
+        onClick={() => trackBookingStart()}
         style={{
           backgroundColor: '#fff',
           color: '#000',

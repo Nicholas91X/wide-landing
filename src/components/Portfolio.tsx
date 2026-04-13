@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ProjectModal } from "./ProjectModal";
 import type { Project } from "./ProjectModal";
 import { useReducedMotion } from "../hooks/useReducedMotion";
+import { trackSectionView } from "../utils/analytics";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -116,7 +117,17 @@ export const Portfolio: React.FC = () => {
 
   const prefersReduced = useReducedMotion();
 
-
+  // ── Track section visibility ───────────────────────────────────────────
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { trackSectionView('portfolio'); obs.disconnect(); } },
+      { threshold: 0.15 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;

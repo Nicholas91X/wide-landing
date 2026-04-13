@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import CalEmbed from './CalEmbed';
+import { trackSectionView } from '../utils/analytics';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -178,6 +179,18 @@ export const Contatti: React.FC = () => {
         onChange(mq);
         mq.addEventListener('change', onChange as (e: MediaQueryListEvent) => void);
         return () => mq.removeEventListener('change', onChange as (e: MediaQueryListEvent) => void);
+    }, []);
+
+    /* ── Track section visibility ───────────────────────────────────────── */
+    useEffect(() => {
+        const el = sectionRef.current;
+        if (!el) return;
+        const obs = new IntersectionObserver(
+            ([entry]) => { if (entry.isIntersecting) { trackSectionView('contatti'); obs.disconnect(); } },
+            { threshold: 0.2 },
+        );
+        obs.observe(el);
+        return () => obs.disconnect();
     }, []);
 
     /* ── Collect perturbable elements ────────────────────────────────────── */

@@ -9,6 +9,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { usePreload } from "../hooks/usePreload";
 import { useReducedMotion } from "../hooks/useReducedMotion";
+import { trackSectionView } from "../utils/analytics";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -613,6 +614,7 @@ export const ScrollVideo: React.FC = () => {
       ([entry]) => {
         if (entry.isIntersecting) {
           setSectionVisible(true);
+          trackSectionView('servizi');
           observer.disconnect();
         }
       },

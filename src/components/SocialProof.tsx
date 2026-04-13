@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { trackSectionView, trackCTAClick } from "../utils/analytics";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -128,6 +129,18 @@ export const SocialProof: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
+  // ── Track section visibility for analytics ─────────────────────────────
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { trackSectionView('social-proof'); obs.disconnect(); } },
+      { threshold: 0.3 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
   return (
     <div
       ref={sectionRef}
@@ -207,11 +220,12 @@ export const SocialProof: React.FC = () => {
         {/* CTA */}
         <button
           className="sp-anim"
-          onClick={() =>
+          onClick={() => {
+            trackCTAClick('hero');
             document
               .getElementById("contatti")
-              ?.scrollIntoView({ behavior: "instant" })
-          }
+              ?.scrollIntoView({ behavior: "instant" });
+          }}
           style={{
             display: "inline-flex",
             alignItems: "center",
