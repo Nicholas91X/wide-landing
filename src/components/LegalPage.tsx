@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-type PageType = 'privacy' | 'cookie' | 'note-legali';
+type PageType = 'privacy' | 'cookie' | 'note-legali' | 'audit-privacy' | 'audit-termini';
 
 interface LegalPageProps {
     page: PageType;
@@ -11,6 +11,8 @@ const TITLES: Record<PageType, string> = {
     'privacy': 'Privacy Policy',
     'cookie': 'Cookie Policy',
     'note-legali': 'Note Legali',
+    'audit-privacy': 'Privacy Policy (Audit)',
+    'audit-termini': 'Termini e Condizioni (Audit)',
 };
 
 function PrivacyContent() {
@@ -196,10 +198,79 @@ function NoteLegaliContent() {
     );
 }
 
+function AuditPrivacyContent() {
+    return (
+        <>
+            <p>Ultimo aggiornamento: marzo 2026</p>
+
+            <h2>1. Contesto e Dati raccolti</h2>
+            <p>
+                Questa informativa è specifica per lo strumento "Indice di Dispersione del Mercato". 
+                I Titolari del trattamento sono Alessia Amoruso e Asia Franceschi (WIDE Studio Digitale).
+                Attraverso il questionario e l'eventuale successiva prenotazione raccogliamo:
+            </p>
+            <ul>
+                <li><strong>Dati di navigazione:</strong> analizzati in forma anonima tramite Vercel Analytics.</li>
+                <li><strong>Risposte al quiz:</strong> memorizzate localmente nel browser dell'utente (non salvate sui nostri server web in questa fase).</li>
+                <li><strong>Dati di prenotazione:</strong> se si sceglie di prenotare la consulenza finale, i dati (nome, email, scelte espresse) verranno raccolti tramite il widget di Cal.com.</li>
+            </ul>
+
+            <h2>2. Finalità del trattamento</h2>
+            <p>I dati condivisi durante la prenotazione verranno usati esclusivamente per:</p>
+            <ul>
+                <li>Studiare il posizionamento e le risposte fornite per preparare la consulenza strategica gratuita.</li>
+                <li>Inviare comunicazioni di servizio relative all'appuntamento fissato.</li>
+            </ul>
+
+            <h2>3. Sicurezza e Conservazione</h2>
+            <p>
+                Non vendiamo o cediamo a terzi i vostri dati per scopi di marketing. I dati restano custoditi secondo i più rigidi standard di sicurezza dai nostri partner tecnologici (Cal.com, Vercel) e conservati solo per il periodo strettamente necessario a erogare il servizio di consulenza.
+            </p>
+
+            <h2>4. Diritti dell'utente</h2>
+            <p>
+                L'utente detiene gli stessi diritti specificati nella <a href="/privacy" target="_blank">Privacy Policy generale</a> ai sensi del GDPR, tra cui diritto di accesso, cancellazione e opposizione. Per qualsiasi richiesta, scrivere a: <a href="mailto:info@wideagency.it">info@wideagency.it</a>.
+            </p>
+        </>
+    );
+}
+
+function AuditTerminiContent() {
+    return (
+        <>
+            <p>Ultimo aggiornamento: marzo 2026</p>
+
+            <h2>1. Natura dello Strumento</h2>
+            <p>
+                Il questionario "Indice di Dispersione del Mercato" è uno strumento di autovalutazione indicativo. 
+                I profili risultanti (Verde, Giallo, Rosso) sono stime basate su parametri standard di mercato e non costituiscono in alcun modo diagnosi finanziaria, contabile o legale vincolante.
+            </p>
+
+            <h2>2. Consulenza Gratuita</h2>
+            <p>
+                La prenotazione della sessione gratuita successiva al completamento del quiz è soggetta alla disponibilità d'agenda di WIDE Studio Digitale.
+                La sessione ha lo scopo di esplorare le opportunità di collaborazione e analizzare le criticità emerse, ma non obbliga né l'utente all'acquisto di servizi, né WIDE all'erogazione di garanzie di risultato specifiche pre-contrattuali.
+            </p>
+
+            <h2>3. Proprietà intellettuale</h2>
+            <p>
+                La struttura, la logica e i testi del questionario sono di proprietà esclusiva di WIDE Studio Digitale. È severamente vietata la riproduzione, la copia o l'utilizzo concorrenziale di questo strumento senza autorizzazione esplicita.
+            </p>
+
+            <h2>4. Limitazione di Responsabilità</h2>
+            <p>
+                WIDE Studio Digitale non è responsabile per eventuali decisioni di business prese dall'utente basandosi esclusivamente sull'esito automatizzato di questo quiz. Qualsiasi strategia aziendale richiede sempre un'analisi approfondita su misura. Per le altre condizioni d'uso, fa fede il generale documento di <a href="/note-legali" target="_blank">Note Legali</a>.
+            </p>
+        </>
+    );
+}
+
 const CONTENT: Record<PageType, React.FC> = {
     'privacy': PrivacyContent,
     'cookie': CookieContent,
     'note-legali': NoteLegaliContent,
+    'audit-privacy': AuditPrivacyContent,
+    'audit-termini': AuditTerminiContent,
 };
 
 export const LegalPage: React.FC<LegalPageProps> = ({ page, onBack }) => {
@@ -218,7 +289,13 @@ export const LegalPage: React.FC<LegalPageProps> = ({ page, onBack }) => {
         }}>
             <div style={{ maxWidth: '720px', margin: '0 auto' }}>
                 <button
-                    onClick={onBack}
+                    onClick={() => {
+                        if (page === 'audit-privacy' || page === 'audit-termini') {
+                            window.location.href = '/audit/';
+                        } else {
+                            onBack();
+                        }
+                    }}
                     style={{
                         background: 'none',
                         border: '1px solid rgba(255,255,255,0.15)',
@@ -240,7 +317,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({ page, onBack }) => {
                         e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
                     }}
                 >
-                    &larr; Torna al sito
+                    &larr; {(page === 'audit-privacy' || page === 'audit-termini') ? 'Torna al quiz' : 'Torna al sito'}
                 </button>
 
                 <h1 style={{

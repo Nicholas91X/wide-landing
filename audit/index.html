@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow" />
+  <meta name="description" content="Scopri quanti potenziali clienti stai lasciando ai concorrenti. Calcola il tuo Indice di Dispersione del Mercato con WIDE." />
+  <title>Indice di Dispersione del Mercato | WIDE Studio Digitale</title>
+  
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: #fdfdfd;
+      color: #111;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .main-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 2rem 1rem;
+    }
+
+    .quiz-wrap {
+      max-width: 640px;
+      width: 100%;
+    }
+
+    .quiz-header {
+      margin-bottom: 2rem;
+    }
+
+    .quiz-header h1 {
+      font-size: 22px;
+      font-weight: 600;
+      color: #111;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .quiz-header p {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .progress-bar-wrap {
+      margin-bottom: 1.5rem;
+    }
+
+    .progress-label {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 6px;
+    }
+
+    .progress-track {
+      height: 4px;
+      background: #e5e5e5;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #111;
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+
+    .question-card {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    }
+
+    .q-number {
+      font-size: 11px;
+      color: #aaa;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 8px;
+    }
+
+    .q-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 8px;
+    }
+
+    .q-text {
+      font-size: 15px;
+      color: #111;
+      line-height: 1.65;
+      margin-bottom: 1.5rem;
+    }
+
+    .option-btn {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      width: 100%;
+      background: #fbfbfb;
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    }
+
+    .option-btn:last-child { margin-bottom: 0; }
+
+    .option-btn:hover {
+      border-color: #ccc;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    .option-btn.selected {
+      border-color: #111;
+      background: #f0f0f0;
+    }
+
+    .option-btn.selected .opt-label {
+      background: #111;
+      color: #fff;
+      border-color: #111;
+    }
+
+    .opt-label {
+      min-width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: #888;
+      flex-shrink: 0;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .opt-text {
+      font-size: 14px;
+      color: #111;
+      line-height: 1.5;
+      padding-top: 3px;
+    }
+
+    .nav-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 1.25rem;
+    }
+
+    .btn-next {
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 26px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      opacity: 0.3;
+      pointer-events: none;
+      transition: opacity 0.2s, background 0.15s, transform 0.1s;
+    }
+
+    .btn-next.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .btn-next.active:hover { background: #333; }
+    .btn-next.active:active { transform: translateY(1px); }
+
+    /* Result */
+    .result-card {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+    }
+
+    .result-badge {
+      display: inline-block;
+      padding: 5px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .badge-red   { background: #FCEBEB; color: #A32D2D; }
+    .badge-yellow{ background: #FAEEDA; color: #854F0B; }
+    .badge-green { background: #EAF3DE; color: #3B6D11; }
+
+    .result-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #111;
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+
+    .result-text {
+      font-size: 15px;
+      color: #444;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .score-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .score-pill {
+      background: #f9f9f9;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 13px;
+      color: #666;
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .score-pill strong {
+      display: block;
+      font-size: 22px;
+      font-weight: 600;
+      color: #111;
+      margin-bottom: 2px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #eee;
+      margin: 1.5rem 0;
+    }
+
+    /* CTA Block */
+    .cta-block {
+      background: #111;
+      border-radius: 10px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .cta-block .cta-label {
+      font-size: 17px;
+      font-weight: 600;
+      color: #fff;
+      display: block;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+
+    .cta-block .cta-sub {
+      font-size: 14px;
+      color: #aaa;
+      line-height: 1.6;
+    }
+
+    .btn-cta {
+      display: inline-block;
+      background: #fff;
+      color: #111;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 28px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s, transform 0.1s;
+      align-self: flex-start;
+    }
+
+    .btn-cta:hover { background: #e8e8e8; }
+    .btn-cta:active { transform: translateY(1px); }
+
+    .btn-restart {
+      display: block;
+      margin-top: 16px;
+      background: transparent;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 13px;
+      color: #555;
+      cursor: pointer;
+      transition: background 0.15s;
+      width: 100%;
+    }
+
+    .btn-restart:hover { background: #f5f5f5; }
+
+    .hidden { display: none; }
+
+    .legal-footer {
+      width: 100%;
+      padding: 2rem 1rem;
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+      border-top: 1px solid #eaeaea;
+      background: #fff;
+    }
+
+    .legal-footer a {
+      color: #666;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+
+    .legal-footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .quiz-header h1 { font-size: 18px; }
+      .q-text { font-size: 14px; }
+      .result-title { font-size: 20px; }
+      .btn-cta { width: 100%; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="main-container">
+  <div class="quiz-wrap">
+
+    <!-- QUIZ SECTION -->
+    <div id="quiz-section">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <!-- Simple logo text to tie back to the brand -->
+        <a href="/" style="text-decoration: none; color: #111; font-weight: 700; font-family: 'Outfit', sans-serif; font-size: 20px; letter-spacing: -0.02em;">WIDE</a>
+      </div>
+      <div class="quiz-header">
+        <h1>Indice di Dispersione del Mercato</h1>
+        <p>Scopri quanti potenziali clienti stai involontariamente lasciando ai tuoi concorrenti — anche a quelli che lavorano peggio di te.</p>
+      </div>
+
+      <div class="progress-bar-wrap">
+        <div class="progress-label" id="progress-label">Domanda 1 di 5</div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill" style="width: 20%"></div>
+        </div>
+      </div>
+
+      <div class="question-card">
+        <div class="q-number" id="q-number">Domanda 1</div>
+        <div class="q-title" id="q-title"></div>
+        <p class="q-text" id="q-text"></p>
+        <div id="options-list"></div>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn-next" id="btn-next">Prossima domanda &rarr;</button>
+      </div>
+    </div>
+
+    <!-- RESULT SECTION -->
+    <div id="result-section" class="hidden">
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <a href="/" style="text-decoration: none; color: #111; font-weight: 700; font-family: 'Outfit', sans-serif; font-size: 20px; letter-spacing: -0.02em;">WIDE</a>
+      </div>
+      <div class="result-card">
+        <div class="result-badge" id="result-badge"></div>
+        <div class="result-title" id="result-title"></div>
+        <p class="result-text" id="result-text"></p>
+
+        <div class="score-row">
+          <div class="score-pill"><strong id="score-val"></strong>Punteggio totale</div>
+          <div class="score-pill"><strong id="risk-label"></strong>Livello di rischio</div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="cta-block">
+          <div>
+            <span class="cta-label">Vuoi sapere esattamente quante opportunità stai perdendo?</span>
+            <p class="cta-sub">Analizziamo insieme la tua situazione in una sessione gratuita di 30 minuti. Zero impegno, tutto valore.</p>
+          </div>
+          <a class="btn-cta" href="https://cal.eu/wide-studiodigitale-jdk11j/30min" target="_blank" rel="noopener" id="cta-link">Prenota l'Audit Gratuito &rarr;</a>
+        </div>
+
+        <button class="btn-restart" onclick="restart()">&#x21A9; Ricomincia il test</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="legal-footer">
+  &copy; 2026 WIDE Studio Digitale. Tutti i diritti riservati.<br><br>
+  <a href="/audit-privacy">Privacy Policy</a> | 
+  <a href="/audit-termini">Termini e Condizioni</a> | 
+  <a href="/">Torna al sito principale</a>
+</footer>
+
+<script>
+  const questions = [
+    {
+      title: "Il limite del passaparola",
+      text: "Negli ultimi anni hai consolidato il fatturato grazie al passaparola e ai clienti storici. Ma se oggi 3 dei tuoi migliori clienti chiudessero, hai in azienda un sistema per rimpiazzarli entro 60 giorni?",
+      options: [
+        { label: "A", text: "Assolutamente sì, con calcoli alla mano.", score: 0 },
+        { label: "B", text: "Forse, ci metteremmo a cercare.", score: 1 },
+        { label: "C", text: "No, subiremmo un duro colpo.", score: 2 }
+      ]
+    },
+    {
+      title: "La percezione del tuo \"Status\"",
+      text: "Immagina un nuovo fornitore o un partner bancario che cerca la tua azienda oggi. L'immagine esterna che proietti rispecchia fedelmente la solidità, i milioni di fatturato e i 20 anni di storia che hai costruito?",
+      options: [
+        { label: "A", text: "Sì, comunichiamo vera autorevolezza.", score: 0 },
+        { label: "B", text: "È un po' datata, ma ci conoscono tutti.", score: 1 },
+        { label: "C", text: "No, sembriamo un'azienda molto più piccola di quello che siamo.", score: 2 }
+      ]
+    },
+    {
+      title: "Il paradosso della concorrenza",
+      text: "Ti è mai capitato negli ultimi 12 mesi di scoprire che un potenziale cliente ha firmato con un tuo concorrente — che sai avere una qualità inferiore alla tua — solo perché si \"vendeva meglio\"?",
+      options: [
+        { label: "A", text: "Mai successo.", score: 0 },
+        { label: "B", text: "È capitato, ed è frustrante.", score: 1 },
+        { label: "C", text: "Succede sempre più spesso.", score: 2 }
+      ]
+    },
+    {
+      title: "Lo spreco di risorse",
+      text: "Hai già provato ad affidare la \"pubblicità\" a dipendenti interni o agenzie esterne in passato, ma alla fine ti è sembrato solo un costo fisso senza un ritorno reale in termini di nuovi contratti chiusi?",
+      options: [
+        { label: "A", text: "No, so esattamente quanto mi rende ogni euro investito.", score: 0 },
+        { label: "B", text: "Sì, facciamo \"cose\", ma è difficile misurarle.", score: 1 },
+        { label: "C", text: "Sì, ho speso soldi per non ottenere nulla.", score: 2 }
+      ]
+    },
+    {
+      title: "Il passaggio generazionale e il futuro",
+      text: "Pensando ai prossimi 3–5 anni, hai la certezza che la tua azienda rimarrà il leader intoccabile del settore, o temi che aziende più giovani e aggressive possano rubarti fette di mercato in Liguria e Toscana?",
+      options: [
+        { label: "A", text: "Nessun timore, controlliamo il mercato.", score: 0 },
+        { label: "B", text: "Qualche preoccupazione c'è.", score: 1 },
+        { label: "C", text: "È un rischio concreto che sento ogni giorno.", score: 2 }
+      ]
+    }
+  ];
+
+  const results = [
+    {
+      range: [0, 3],
+      badge: "Profilo Verde — Dominio",
+      badgeClass: "badge-green",
+      title: "Leader Consolidato",
+      text: "Hai il pieno controllo. Sei nella posizione ideale per smettere di difenderti e iniziare ad attaccare, espandendoti per prenderti anche le quote di mercato di quei competitor che sono rimasti indietro.",
+      risk: "Basso"
+    },
+    {
+      range: [4, 6],
+      badge: "Profilo Giallo — Rischio Stallo",
+      badgeClass: "badge-yellow",
+      title: "Motore in Rallentamento",
+      text: "Hai un'azienda solida, ma stai camminando sul ghiaccio sottile. Il passaparola ti tiene a galla, ma hai perso il controllo proattivo su come acquisire nuove commesse. Se non aggiorni le tue logiche di mercato, presto il gap con i competitor più aggressivi diventerà un problema.",
+      risk: "Medio"
+    },
+    {
+      range: [7, 10],
+      badge: "Profilo Rosso — Alta Vulnerabilità",
+      badgeClass: "badge-red",
+      title: "Emorragia di Fatturato",
+      text: "La tua azienda lavora benissimo, ma il mercato non lo sta percependo. Stai vivendo di rendita sul passato, mentre i concorrenti (spesso meno bravi di te) stanno rubando i clienti che dovrebbero essere tuoi. Hai bisogno di un intervento per blindare la tua quota di mercato prima che l'erosione diventi incolmabile.",
+      risk: "Alto"
+    }
+  ];
+
+  let current = 0, answers = [], selected = null;
+
+  function render() {
+    const q = questions[current];
+    document.getElementById('q-number').textContent = 'Domanda ' + (current + 1);
+    document.getElementById('q-title').textContent = q.title;
+    document.getElementById('q-text').textContent = q.text;
+    document.getElementById('progress-label').textContent = 'Domanda ' + (current + 1) + ' di ' + questions.length;
+    document.getElementById('progress-fill').style.width = ((current + 1) / questions.length * 100) + '%';
+
+    const list = document.getElementById('options-list');
+    list.innerHTML = '';
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn' + (selected === i ? ' selected' : '');
+      btn.innerHTML = '<span class="opt-label">' + opt.label + '</span><span class="opt-text">' + opt.text + '</span>';
+      
+      btn.addEventListener('click', () => { 
+        selected = i; 
+        render(); 
+        // Auto-advance slightly after selection for better UX
+        setTimeout(() => document.getElementById('btn-next').click(), 300);
+      });
+      list.appendChild(btn);
+    });
+
+    const nextBtn = document.getElementById('btn-next');
+    nextBtn.innerHTML = current < questions.length - 1 ? 'Prossima domanda &rarr;' : 'Vedi il tuo profilo &rarr;';
+    nextBtn.className = 'btn-next' + (selected !== null ? ' active' : '');
+  }
+
+  document.getElementById('btn-next').addEventListener('click', () => {
+    if (selected === null) return;
+    answers[current] = questions[current].options[selected].score;
+    current++;
+    selected = null;
+    if (current < questions.length) {
+      render();
+    } else {
+      showResult();
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  function showResult() {
+    document.getElementById('quiz-section').classList.add('hidden');
+    document.getElementById('result-section').classList.remove('hidden');
+    const total = answers.reduce((a, b) => a + b, 0);
+    const profile = results.find(r => total >= r.range[0] && total <= r.range[1]);
+    document.getElementById('result-badge').textContent = profile.badge;
+    document.getElementById('result-badge').className = 'result-badge ' + profile.badgeClass;
+    document.getElementById('result-title').textContent = profile.title;
+    document.getElementById('result-text').textContent = profile.text;
+    document.getElementById('score-val').textContent = total + '/10';
+    document.getElementById('risk-label').textContent = profile.risk;
+  }
+
+  function restart() {
+    current = 0; answers = []; selected = null;
+    document.getElementById('result-section').classList.add('hidden');
+    document.getElementById('quiz-section').classList.remove('hidden');
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  render();
+</script>
+
+</body>
+</html>
