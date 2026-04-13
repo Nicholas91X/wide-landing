@@ -387,7 +387,20 @@ export const SocialProof: React.FC = () => {
               border: "1px solid rgba(255,255,255,0.08)",
             }}
           >
-            {METRICS.map((m, i) => (
+            {METRICS.map((m, i) => {
+              // Pre-compute the final formatted value so the ghost element can
+              // reserve the exact space needed — prevents any layout shift during
+              // the count-up animation.
+              const target = parseInt(m.value.replace(/\D/g, ""), 10);
+              const formattedFinal =
+                target >= 1000 ? target.toLocaleString("it-IT") : String(target);
+              const finalDisplay = formattedFinal + m.suffix;
+
+              const counterFontSize = isMobile
+                ? "clamp(2rem, 9vw, 2.6rem)"
+                : "clamp(1.8rem, 3vw, 2.4rem)";
+
+              return (
               <div
                 key={i}
                 style={{
@@ -415,21 +428,58 @@ export const SocialProof: React.FC = () => {
                     background: "rgba(255,255,255,0.5)",
                   }} />
                 )}
+
+                {/*
+                  Ghost + counter wrapper.
+                  The ghost (visibility:hidden) reserves the exact space for
+                  the final value, so the container never resizes during
+                  the count-up animation.
+                */}
                 <div
-                  ref={(el) => { metricRefs.current[i] = el; }}
                   style={{
-                    fontSize: isMobile
-                      ? "clamp(2rem, 9vw, 2.6rem)"
-                      : "clamp(1.8rem, 3vw, 2.4rem)",
-                    fontFamily: "var(--font-title)",
-                    fontWeight: 700,
-                    lineHeight: 1,
+                    position: "relative",
                     marginBottom: 8,
-                    letterSpacing: "-0.02em",
+                    lineHeight: 1,
                   }}
                 >
-                  0{m.suffix}
+                  {/* Ghost: determines container dimensions */}
+                  <span
+                    style={{
+                      display: "block",
+                      visibility: "hidden",
+                      fontSize: counterFontSize,
+                      fontFamily: "var(--font-title)",
+                      fontWeight: 700,
+                      lineHeight: 1,
+                      letterSpacing: "-0.02em",
+                      whiteSpace: "nowrap",
+                      fontVariantNumeric: "tabular-nums",
+                    }}
+                    aria-hidden
+                  >
+                    {finalDisplay}
+                  </span>
+
+                  {/* Live counter — absolutely positioned over the ghost */}
+                  <div
+                    ref={(el) => { metricRefs.current[i] = el; }}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      fontSize: counterFontSize,
+                      fontFamily: "var(--font-title)",
+                      fontWeight: 700,
+                      lineHeight: 1,
+                      letterSpacing: "-0.02em",
+                      whiteSpace: "nowrap",
+                      fontVariantNumeric: "tabular-nums",
+                    }}
+                  >
+                    0{m.suffix}
+                  </div>
                 </div>
+
                 <div
                   style={{
                     color: "rgba(255,255,255,0.38)",
@@ -444,7 +494,8 @@ export const SocialProof: React.FC = () => {
                   {m.label}
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Link */}

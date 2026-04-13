@@ -822,18 +822,18 @@ export const ScrollVideo: React.FC = () => {
         lastRawProgressRef.current = rawProgress;
 
         // Global progress for title fade (independent of DEAD_ZONE mapping)
-        // Title fades out completely by 6% into the pinned section
-        const TITLE_FADE_END = 0.06;
+        // Title fades out completely by 2.5% into the pinned section so it
+        // clears fast and doesn't anchor the visual experience.
+        const TITLE_FADE_END = 0.025;
         if (rawProgress < TITLE_FADE_END) {
           setHeaderOpacity(1 - rawProgress / TITLE_FADE_END);
         } else {
           setHeaderOpacity(0);
         }
 
-        // Dead zone: first 4% of scroll keeps frame 0 (flower with eye)
-        // while the header and IntroOverlay (if still visible) clear out.
-        // Reduced from 8% to make it feel less like an "anchor".
-        const DEAD_ZONE = 0.04;
+        // Dead zone: first 2% of scroll keeps frame 0 (flower with eye)
+        // while the header clears out. Kept minimal to avoid the "stuck" feeling.
+        const DEAD_ZONE = 0.02;
         const scrollProgress =
           rawProgress <= DEAD_ZONE
             ? 0
@@ -1680,24 +1680,28 @@ export const ScrollVideo: React.FC = () => {
           left: 0,
           right: 0,
           zIndex: 100,
-          backgroundColor: "#000",
+          // Gradient instead of solid black so the canvas is always visible
+          // beneath the title — removes the "anchored black block" feeling.
+          background:
+            "linear-gradient(to bottom, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0) 100%)",
           padding:
-            "clamp(60px, 10vw, 120px) clamp(24px, 5vw, 80px) clamp(40px, 6vw, 80px)",
+            "clamp(40px, 6vw, 80px) clamp(24px, 5vw, 80px) clamp(48px, 8vw, 96px)",
           opacity: headerOpacity,
           pointerEvents: headerOpacity < 0.1 ? "none" : "auto",
-          transform: `translateY(${-20 * (1 - headerOpacity)}px)`,
-          transition: "transform 0.4s ease-out",
+          transform: `translateY(${-16 * (1 - headerOpacity)}px)`,
+          transition: "transform 0.3s ease-out",
         }}
       >
         <p
           style={{
-            color: "rgba(255,255,255,0.35)",
+            color: "rgba(255,255,255,0.45)",
             fontSize: "0.75rem",
             fontFamily: "var(--font-subtitle)",
             fontWeight: 600,
             letterSpacing: "0.2em",
             textTransform: "uppercase",
             margin: "0 0 16px",
+            textShadow: "0 2px 12px rgba(0,0,0,0.6)",
           }}
         >
           Servizi
@@ -1712,6 +1716,8 @@ export const ScrollVideo: React.FC = () => {
             letterSpacing: "0.02em",
             lineHeight: 1.05,
             margin: 0,
+            textShadow:
+              "0 4px 16px rgba(0,0,0,0.8), 0 1px 3px rgba(0,0,0,0.9)",
           }}
         >
           I nostri
