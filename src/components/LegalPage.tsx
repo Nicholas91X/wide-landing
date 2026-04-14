@@ -26,7 +26,7 @@ function PrivacyContent() {
                 <strong>Alessia Amoruso</strong> — P.IVA 13486160966<br />
                 <strong>Asia Franceschi</strong> — P.IVA 01566890115<br />
                 operanti congiuntamente sotto il nome commerciale <strong>WIDE Studio Digitale</strong>.<br />
-                E-mail di contatto: <a href="mailto:info@wideagency.it">info@wideagency.it</a>
+                E-mail di contatto: <a href="mailto:widestudiodigitale@gmail.com">widestudiodigitale@gmail.com</a>
             </p>
 
             <h2>2. Dati raccolti</h2>
@@ -74,7 +74,7 @@ function PrivacyContent() {
                 <li>Revocare il consenso in qualsiasi momento;</li>
                 <li>Proporre reclamo al Garante per la Protezione dei Dati Personali (<a href="https://www.garanteprivacy.it" target="_blank" rel="noopener noreferrer">www.garanteprivacy.it</a>).</li>
             </ul>
-            <p>Per esercitare i propri diritti, scrivere a: <a href="mailto:info@wideagency.it">info@wideagency.it</a></p>
+            <p>Per esercitare i propri diritti, scrivere a: <a href="mailto:widestudiodigitale@gmail.com">widestudiodigitale@gmail.com</a></p>
 
             <h2>8. Trasferimento dati extra-UE</h2>
             <p>
@@ -158,7 +158,7 @@ function NoteLegaliContent() {
                 <strong>Alessia Amoruso</strong> — P.IVA 13486160966<br />
                 <strong>Asia Franceschi</strong> — P.IVA 01566890115<br />
                 operanti congiuntamente sotto il nome commerciale <strong>WIDE Studio Digitale</strong>.<br />
-                E-mail: <a href="mailto:info@wideagency.it">info@wideagency.it</a>
+                E-mail: <a href="mailto:widestudiodigitale@gmail.com">widestudiodigitale@gmail.com</a>
             </p>
 
             <h2>2. Proprietà intellettuale</h2>
@@ -229,7 +229,7 @@ function AuditPrivacyContent() {
 
             <h2>4. Diritti dell'utente</h2>
             <p>
-                L'utente detiene gli stessi diritti specificati nella <a href="/privacy" target="_blank">Privacy Policy generale</a> ai sensi del GDPR, tra cui diritto di accesso, cancellazione e opposizione. Per qualsiasi richiesta, scrivere a: <a href="mailto:info@wideagency.it">info@wideagency.it</a>.
+                L'utente detiene gli stessi diritti specificati nella <a href="/privacy" target="_blank">Privacy Policy generale</a> ai sensi del GDPR, tra cui diritto di accesso, cancellazione e opposizione. Per qualsiasi richiesta, scrivere a: <a href="mailto:widestudiodigitale@gmail.com">widestudiodigitale@gmail.com</a>.
             </p>
         </>
     );
