@@ -169,7 +169,7 @@ export const SocialProof: React.FC = () => {
   return (
     <div
       ref={sectionRef}
-      style={{ backgroundColor: "#000", color: "#fff", width: "100%", position: 'relative' }}
+      style={{ backgroundColor: 'var(--color-bg)', color: "#fff", width: "100%", position: 'relative' }}
     >
       {/* Grid lines decorative */}
       <div aria-hidden style={{ position: 'absolute', top: 0, bottom: 0, left: isMobile ? 24 : 48, width: 1, background: 'rgba(255,255,255,0.025)', pointerEvents: 'none', zIndex: 0 }} />
@@ -220,7 +220,7 @@ export const SocialProof: React.FC = () => {
               : "clamp(2.4rem, 5vw, 3.6rem)",
             fontFamily: "var(--font-title)",
             fontWeight: 800,
-            lineHeight: 1.1,
+            lineHeight: 1.05,
             letterSpacing: "-0.03em",
             textTransform: "uppercase",
             margin: "0 0 24px",
@@ -543,6 +543,7 @@ export const SocialProof: React.FC = () => {
           <a
             className="sp-anim"
             href="#portfolio"
+            data-cursor="ring"
             onClick={(e) => {
               e.preventDefault();
               document
