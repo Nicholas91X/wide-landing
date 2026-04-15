@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, lazy, Suspense } from "react";
+import { CustomCursor } from "./components/CustomCursor";
 import { NavBubble } from "./components/NavBubble";
 import { IntroOverlay } from "./components/IntroOverlay";
 import { LegalPage } from "./components/LegalPage";
@@ -68,6 +69,7 @@ function App() {
 
   return (
     <>
+      <CustomCursor />
       {/* NavBubble OUTSIDE <main> to prevent GSAP pin transforms
                 from creating a containing block that breaks position:fixed */}
       <NavBubble />
@@ -228,6 +230,7 @@ function FloatingCTA() {
         }}
       >
         <button
+          data-cursor="ring"
           onClick={goToContatti}
           style={{
             display: "flex",
@@ -258,6 +261,7 @@ function FloatingCTA() {
   // Desktop: bottom center button
   return (
     <button
+      data-cursor="ring"
       onClick={goToContatti}
       style={{
         position: "fixed",
