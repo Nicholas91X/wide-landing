@@ -13,6 +13,7 @@ export interface Project {
     tags: string[];
     gallery?: string[];          // Optional photo gallery shown in the modal
     galleryAspectRatio?: string; // e.g. '16/9' (default) or '9/16' for portrait shots
+    reels?: string[];
 }
 
 interface ProjectModalProps {
@@ -315,9 +316,9 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                             {project?.mediaSrc ? (
                                 <img src={project.mediaSrc} alt={project?.title}
                                     style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            ) : (project as any).reels && (project as any).reels.length > 0 ? (
+                            ) : project.reels && project.reels.length > 0 ? (
                                 <iframe
-                                    src={(project as any).reels[0]}
+                                    src={project.reels[0]}
                                     style={{
                                         border: 'none',
                                         position: 'absolute',
@@ -330,7 +331,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                                         pointerEvents: 'none',
                                     }}
                                     allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                                    sandbox="allow-scripts allow-same-origin"
+                                    sandbox="allow-scripts allow-same-origin allow-autoplay"
                                     allowFullScreen
                                 />
                             ) : (

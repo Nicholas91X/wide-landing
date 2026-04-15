@@ -68,7 +68,7 @@ export const SocialProof: React.FC = () => {
 
     const heroChildren = heroEl.querySelectorAll<HTMLElement>(".sp-anim");
     const caseChildren = caseEl.querySelectorAll<HTMLElement>(".sp-anim");
-    const heroH2 = heroEl?.querySelector('h2');
+    const heroH2 = heroEl.querySelector('h2');
 
     gsap.set([...heroChildren, ...caseChildren], { opacity: 0, y: 30 });
 

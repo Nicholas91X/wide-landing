@@ -438,7 +438,7 @@ export const Portfolio: React.FC = () => {
                             pointerEvents: "none",
                           }}
                           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                          sandbox="allow-scripts allow-same-origin"
+                          sandbox="allow-scripts allow-same-origin allow-autoplay"
                           allowFullScreen
                         />
                       ) : null}
