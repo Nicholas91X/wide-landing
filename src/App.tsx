@@ -199,6 +199,14 @@ function FloatingCTA() {
         ? chiSiamo.getBoundingClientRect().top <= window.innerHeight * 0.7
         : false;
 
+      // Hide while Portfolio section is pinned — its own "Scopri il progetto"
+      // CTA is visible and the floating button would overlap it on mobile.
+      const portfolio = document.getElementById("portfolio");
+      const portfolioActive = portfolio
+        ? portfolio.getBoundingClientRect().top < window.innerHeight * 0.8 &&
+          portfolio.getBoundingClientRect().bottom > window.innerHeight * 0.2
+        : false;
+
       // Hide as soon as Contatti section starts entering the viewport
       // so the CTA never obscures the booking form.
       const contatti = document.getElementById("contatti");
@@ -211,7 +219,7 @@ function FloatingCTA() {
         window.scrollY + window.innerHeight >=
         document.documentElement.scrollHeight - 120;
 
-      setVisible(pastScrollVideo && !contattiApproaching && !nearBottom);
+      setVisible(pastScrollVideo && !portfolioActive && !contattiApproaching && !nearBottom);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);

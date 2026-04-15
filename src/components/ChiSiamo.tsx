@@ -69,7 +69,9 @@ export const ChiSiamo: React.FC = () => {
   // ── Card dimensions — sized to fit longer descriptions ────────────────
   const cardW = isMobile ? 200 : 300;
   const cardH = isMobile ? 430 : 560;
-  const photoH = cardW; // Square photo
+  // Mobile: square photo (200×200). Desktop/tablet: 3:2 landscape (300×200)
+  // so name + role + description + pull quote have enough breathing room.
+  const photoH = isMobile ? cardW : 200;
 
   // ── GSAP Scroll Animations ──────────────────────────────────────────────
   useEffect(() => {
