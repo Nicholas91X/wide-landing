@@ -315,6 +315,24 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                             {project?.mediaSrc ? (
                                 <img src={project.mediaSrc} alt={project?.title}
                                     style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (project as any).reels && (project as any).reels.length > 0 ? (
+                                <iframe
+                                    src={(project as any).reels[0]}
+                                    style={{
+                                        border: 'none',
+                                        position: 'absolute',
+                                        top: '50%',
+                                        left: '50%',
+                                        height: '100%',
+                                        width: 'calc(100% * 9 / 16)',
+                                        minWidth: '100%',
+                                        transform: 'translate(-50%, -50%)',
+                                        pointerEvents: 'none',
+                                    }}
+                                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                                    sandbox="allow-scripts allow-same-origin"
+                                    allowFullScreen
+                                />
                             ) : (
                                 <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '3rem' }}>●</span>
                             )}
