@@ -368,14 +368,14 @@ export const ChiSiamo: React.FC = () => {
         </p>
         {/* Pull quote */}
         <div style={{
-          paddingTop: isMobile ? 12 : 16,
+          padding: isMobile ? '12px 0 10px' : '16px 0 14px',
           marginTop: 'auto',
           borderTop: '1px solid rgba(255,255,255,0.06)',
         }}>
           <p style={{
             fontFamily: 'var(--font-serif)',
             fontStyle: 'italic',
-            fontSize: isMobile ? '0.72rem' : '0.82rem',
+            fontSize: isMobile ? '0.75rem' : '0.85rem',
             color: 'rgba(255,255,255,0.72)',
             lineHeight: 1.45,
             paddingLeft: 16,
