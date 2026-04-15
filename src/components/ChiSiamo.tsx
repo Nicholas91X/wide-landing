@@ -306,7 +306,7 @@ export const ChiSiamo: React.FC = () => {
     return () => ctx.revert();
   }, [isMobile, cardH, prefersReduced]);
 
-  const renderCard = (index: number) => (
+  const renderCard = (index: number, quote: string, authorName: string) => (
     <>
       <img
         src={TEAM[index].image}
@@ -366,6 +366,46 @@ export const ChiSiamo: React.FC = () => {
         >
           {TEAM[index].description}
         </p>
+        {/* Pull quote */}
+        <div style={{
+          paddingTop: isMobile ? 12 : 16,
+          marginTop: 'auto',
+          borderTop: '1px solid rgba(255,255,255,0.06)',
+        }}>
+          <p style={{
+            fontFamily: 'var(--font-serif)',
+            fontStyle: 'italic',
+            fontSize: isMobile ? '0.72rem' : '0.82rem',
+            color: 'rgba(255,255,255,0.72)',
+            lineHeight: 1.45,
+            paddingLeft: 16,
+            position: 'relative',
+            margin: 0,
+          }}>
+            <span style={{
+              position: 'absolute',
+              left: 0,
+              top: -4,
+              color: 'var(--color-gold)',
+              fontFamily: 'var(--font-serif)',
+              fontSize: '1.4em',
+              lineHeight: 1,
+            }}>&ldquo;</span>
+            {quote}
+          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10 }}>
+            <div style={{ width: 16, height: 1, background: 'rgba(197,165,90,0.5)' }} />
+            <span style={{
+              fontSize: '0.6rem',
+              fontWeight: 700,
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              color: 'var(--color-gold)',
+            }}>
+              {authorName}
+            </span>
+          </div>
+        </div>
       </div>
     </>
   );
@@ -448,30 +488,30 @@ export const ChiSiamo: React.FC = () => {
           realizzare lavori di eccellenza.
         </p>
         <button
-          onClick={() => (window.location.href = "#contatti")}
+          data-cursor="ring"
+          onClick={() => document.getElementById('contatti')?.scrollIntoView({ behavior: 'instant' })}
           style={{
-            padding: "12px 22px",
-            backgroundColor: "#fff",
-            color: "#000",
-            border: "1px solid #fff",
-            borderRadius: "0",
-            fontSize: "0.75rem",
-            fontFamily: "var(--font-subtitle)",
+            padding: '12px 22px',
+            backgroundColor: 'transparent',
+            color: '#fff',
+            border: '1px solid rgba(255,255,255,0.22)',
+            borderRadius: '0',
+            fontSize: '0.75rem',
+            fontFamily: 'var(--font-subtitle)',
             fontWeight: 600,
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            cursor: "pointer",
-            transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-            whiteSpace: "nowrap",
-            boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            cursor: 'none',
+            transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+            whiteSpace: 'nowrap',
           }}
           onMouseOver={(e) => {
-            e.currentTarget.style.transform = "translateY(-2px)";
-            e.currentTarget.style.boxShadow = "0 15px 40px rgba(0,0,0,0.4)";
+            e.currentTarget.style.borderColor = 'rgba(197,165,90,0.5)';
+            e.currentTarget.style.color = 'var(--color-gold)';
           }}
           onMouseOut={(e) => {
-            e.currentTarget.style.transform = "translateY(0)";
-            e.currentTarget.style.boxShadow = "0 10px 30px rgba(0,0,0,0.3)";
+            e.currentTarget.style.borderColor = 'rgba(255,255,255,0.22)';
+            e.currentTarget.style.color = '#fff';
           }}
         >
           Verifica la nostra disponibilità
@@ -481,11 +521,30 @@ export const ChiSiamo: React.FC = () => {
       {/* ── Header ──────────────────────────────────────────────────── */}
       <div
         ref={headerRef}
-        style={{ marginBottom: "clamp(24px, 4vw, 40px)", textAlign: "left" }}
+        style={{ marginBottom: "clamp(24px, 4vw, 40px)", textAlign: "left", position: 'relative', overflow: 'hidden' }}
       >
+        {/* Numero decorativo editoriale */}
+        <div
+          aria-hidden={true}
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            fontFamily: 'var(--font-title)',
+            fontWeight: 900,
+            fontSize: 'clamp(80px, 20vw, 140px)',
+            color: 'rgba(255,255,255,0.025)',
+            lineHeight: 1,
+            pointerEvents: 'none',
+            userSelect: 'none',
+          }}
+        >
+          02
+        </div>
         <p
           style={{
-            color: "rgba(255,255,255,0.35)",
+            color: "var(--color-gold)",
             fontSize: "0.75rem",
             fontFamily: "var(--font-subtitle)",
             fontWeight: 600,
@@ -531,7 +590,7 @@ export const ChiSiamo: React.FC = () => {
         style={{
           display: "flex",
           justifyContent: "center",
-          alignItems: "flex-end",
+          alignItems: "flex-start",
           position: "relative",
           minHeight: cardH + 60,
           marginBottom: "clamp(60px, 10vw, 120px)",
@@ -558,7 +617,7 @@ export const ChiSiamo: React.FC = () => {
             marginRight: isMobile ? -30 : -40,
           }}
         >
-          {renderCard(0)}
+          {renderCard(0, 'Traduco la strategia in risultati misurabili.', 'Alessia Amoruso')}
         </div>
 
         {/* Right card */}
@@ -580,9 +639,10 @@ export const ChiSiamo: React.FC = () => {
             flexShrink: 0,
             willChange: "transform, opacity",
             marginLeft: isMobile ? -30 : -40,
+            marginTop: isMobile ? 0 : 48,
           }}
         >
-          {renderCard(1)}
+          {renderCard(1, 'Ogni materiale trasmette l\'autorevolezza del tuo brand.', 'Asia Franceschi')}
         </div>
 
         {/* ── Founder indicator dots ─────────────────────────────── */}
