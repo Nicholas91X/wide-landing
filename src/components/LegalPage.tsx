@@ -18,7 +18,7 @@ const TITLES: Record<PageType, string> = {
 function PrivacyContent() {
     return (
         <>
-            <p>Ultimo aggiornamento: marzo 2026</p>
+            <p>Ultimo aggiornamento: aprile 2026</p>
 
             <h2>1. Titolari del Trattamento</h2>
             <p>
@@ -30,39 +30,75 @@ function PrivacyContent() {
             </p>
 
             <h2>2. Dati raccolti</h2>
-            <p>Durante la navigazione sul sito possono essere trattati i seguenti dati personali:</p>
+            <p>
+                Durante la navigazione sui siti e le applicazioni web di WIDE Studio Digitale
+                (widestudiodigitale.com e game.widestudiodigitale.com) possono essere trattati
+                i seguenti dati personali:
+            </p>
             <ul>
-                <li><strong>Dati di navigazione:</strong> indirizzo IP, tipo di browser, sistema operativo, pagine visitate, orari di accesso. Questi dati vengono raccolti in forma anonima e aggregata tramite Vercel Analytics e sono utilizzati esclusivamente per finalità statistiche.</li>
-                <li><strong>Dati forniti volontariamente:</strong> nome, cognome, indirizzo e-mail e qualsiasi altra informazione comunicata dall'utente tramite il modulo di prenotazione Cal.com integrato nel sito.</li>
+                <li><strong>a) Dati di navigazione:</strong> indirizzo IP, tipo di browser, sistema operativo, pagine visitate, orari di accesso, eventi di interazione. Questi dati vengono raccolti tramite Google Analytics 4 (gestito via Google Tag Manager) e sono utilizzati per finalità statistiche e di miglioramento del servizio.</li>
+                <li><strong>b) Dati forniti volontariamente dall'utente:</strong>
+                    <ul>
+                        <li>Sul sito principale: nome, cognome, indirizzo e-mail e informazioni comunicate tramite il modulo di prenotazione Cal.com o tramite form e quiz integrati nel sito.</li>
+                        <li>Sull'applicazione di gioco (game.widestudiodigitale.com): nome o nickname scelto dal giocatore, indirizzo e-mail o numero di telefono WhatsApp forniti al termine della partita.</li>
+                    </ul>
+                </li>
+                <li><strong>c) Dati di sessione di gioco:</strong> le scelte effettuate durante la partita, i testi generati dall'intelligenza artificiale e i relativi metadati (prodotto assegnato, esito della partita, importi simulati). Questi dati sono conservati in forma pseudonimizzata e associati a un identificativo di sessione.</li>
+                <li><strong>d) Dati di rate limiting:</strong> l'indirizzo IP viene temporaneamente conservato per prevenire abusi del servizio (massimo 5 partite ogni 24 ore).</li>
             </ul>
 
             <h2>3. Finalità del trattamento</h2>
             <p>I dati personali sono trattati per le seguenti finalità:</p>
             <ul>
+                <li>Erogazione del servizio di gioco interattivo e invio della storia generata;</li>
                 <li>Gestione delle richieste di contatto e prenotazione consulenze;</li>
-                <li>Analisi statistiche anonime sull'utilizzo del sito (Vercel Analytics);</li>
+                <li>Analisi statistiche sull'utilizzo dei siti e dell'applicazione di gioco (Google Analytics 4, tramite Google Tag Manager);</li>
+                <li>Miglioramento dell'esperienza utente e del servizio;</li>
                 <li>Adempimento di obblighi di legge.</li>
             </ul>
 
             <h2>4. Base giuridica</h2>
-            <p>
-                Il trattamento dei dati è fondato sul consenso dell'interessato (art. 6, par. 1, lett. a del GDPR),
-                sull'esecuzione di misure precontrattuali (art. 6, par. 1, lett. b) e sull'adempimento di obblighi
-                legali (art. 6, par. 1, lett. c).
-            </p>
-
-            <h2>5. Servizi di terze parti</h2>
+            <p>Il trattamento dei dati è fondato su:</p>
             <ul>
-                <li><strong>Vercel Analytics:</strong> servizio di analisi statistica fornito da Vercel Inc. I dati raccolti sono anonimi e non includono cookie di profilazione. <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy di Vercel</a>.</li>
-                <li><strong>Cal.com:</strong> servizio di prenotazione appuntamenti. I dati inseriti nel modulo di prenotazione sono trattati da Cal.com Inc. secondo la propria <a href="https://cal.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</li>
-                <li><strong>Google Fonts:</strong> il sito utilizza font caricati dai server di Google LLC. Durante il caricamento, il browser dell'utente stabilisce una connessione con i server di Google, trasmettendo l'indirizzo IP. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy di Google</a>.</li>
+                <li>Consenso dell'interessato (art. 6, par. 1, lett. a del GDPR) per l'invio della storia di gioco, la raccolta del contatto e l'installazione di cookie non tecnici;</li>
+                <li>Esecuzione di misure precontrattuali (art. 6, par. 1, lett. b) per la gestione delle richieste di contatto e prenotazione;</li>
+                <li>Legittimo interesse (art. 6, par. 1, lett. f) per le analisi statistiche aggregate e la sicurezza del servizio (rate limiting);</li>
+                <li>Adempimento di obblighi legali (art. 6, par. 1, lett. c).</li>
             </ul>
 
+            <h2>5. Servizi di terze parti</h2>
+
+            <h3>a) Google Tag Manager (Google LLC)</h3>
+            <p>Servizio di gestione dei tag che consente di amministrare i codici di tracciamento tramite un'interfaccia web. GTM di per sé non raccoglie dati personali, ma abilita l'esecuzione di altri servizi (come Google Analytics 4). <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy di Google</a>.</p>
+
+            <h3>b) Google Analytics 4 (Google LLC)</h3>
+            <p>Servizio di analisi web che utilizza cookie per raccogliere informazioni sull'utilizzo del sito in forma aggregata. I dati possono essere trasferiti verso server situati negli Stati Uniti. L'utente può opporsi al tracciamento tramite il cookie banner presente sul sito. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy di Google</a>.</p>
+
+            <h3>c) Supabase (Supabase Inc.)</h3>
+            <p>Servizio di database utilizzato per la conservazione delle sessioni di gioco e dei dati di contatto forniti volontariamente. I dati sono conservati su server nell'Unione Europea. <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy di Supabase</a>.</p>
+
+            <h3>d) Anthropic (Anthropic PBC)</h3>
+            <p>Servizio di intelligenza artificiale utilizzato per la generazione dei testi narrativi durante la partita. I dati inviati ad Anthropic includono il nome scelto dal giocatore e il nome del prodotto assegnato. Anthropic non utilizza i dati inviati tramite API per addestrare i propri modelli. <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy di Anthropic</a>.</p>
+
+            <h3>e) Vercel (Vercel Inc.)</h3>
+            <p>Servizio di hosting e distribuzione del sito web. <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy di Vercel</a>.</p>
+
+            <h3>f) Cal.com (Cal.com Inc.)</h3>
+            <p>Servizio di prenotazione appuntamenti integrato nel sito principale. I dati inseriti nel modulo di prenotazione sono trattati da Cal.com secondo la propria <a href="https://cal.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</p>
+
+            <h3>g) Google Fonts (Google LLC)</h3>
+            <p>L'applicazione di gioco utilizza font caricati dai server di Google. Durante il caricamento, il browser dell'utente stabilisce una connessione con i server di Google, trasmettendo l'indirizzo IP. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy di Google</a>.</p>
+
+            <h3>h) Cookiebot (Usercentrics A/S)</h3>
+            <p>Servizio di gestione del consenso ai cookie. Cookiebot memorizza lo stato del consenso dell'utente tramite un cookie tecnico necessario. <a href="https://www.cookiebot.com/en/privacy-policy/" target="_blank" rel="noopener noreferrer">Privacy Policy di Cookiebot</a>.</p>
+
             <h2>6. Conservazione dei dati</h2>
-            <p>
-                I dati personali sono conservati per il tempo strettamente necessario al raggiungimento delle finalità
-                per cui sono stati raccolti e comunque non oltre i termini previsti dalla normativa vigente.
-            </p>
+            <ul>
+                <li><strong>Dati di sessione di gioco:</strong> conservati per 12 mesi dalla data di creazione, poi cancellati automaticamente.</li>
+                <li><strong>Dati di contatto (e-mail, WhatsApp):</strong> conservati per 24 mesi o fino a revoca del consenso.</li>
+                <li><strong>Dati di rate limiting (IP):</strong> cancellati automaticamente ogni 24 ore.</li>
+                <li><strong>Dati di navigazione e analytics:</strong> conservati secondo le impostazioni di Google Analytics 4 (default: 14 mesi).</li>
+            </ul>
 
             <h2>7. Diritti dell'interessato</h2>
             <p>Ai sensi degli artt. 15-22 del Regolamento UE 2016/679 (GDPR), l'utente ha diritto di:</p>
@@ -78,10 +114,10 @@ function PrivacyContent() {
 
             <h2>8. Trasferimento dati extra-UE</h2>
             <p>
-                Alcuni servizi di terze parti (Vercel, Cal.com, Google) possono comportare il trasferimento di dati
+                Alcuni servizi di terze parti (Google, Anthropic, Vercel) possono comportare il trasferimento di dati
                 verso paesi al di fuori dell'Unione Europea. Tali trasferimenti avvengono sulla base di adeguate
-                garanzie ai sensi degli artt. 46-49 del GDPR (es. Clausole Contrattuali Standard, decisioni di
-                adeguatezza).
+                garanzie ai sensi degli artt. 46-49 del GDPR (Clausole Contrattuali Standard, decisioni di
+                adeguatezza, Data Privacy Framework UE-USA).
             </p>
         </>
     );
@@ -90,7 +126,7 @@ function PrivacyContent() {
 function CookieContent() {
     return (
         <>
-            <p>Ultimo aggiornamento: marzo 2026</p>
+            <p>Ultimo aggiornamento: aprile 2026</p>
 
             <h2>1. Cosa sono i cookie</h2>
             <p>
@@ -99,37 +135,44 @@ function CookieContent() {
             </p>
 
             <h2>2. Cookie utilizzati da questo sito</h2>
-            <p>Il presente sito utilizza esclusivamente:</p>
 
-            <h3>Cookie tecnici</h3>
+            <h3>a) Cookie tecnici (non richiedono consenso)</h3>
+            <ul>
+                <li>Cookie di sessione necessari al funzionamento del sito.</li>
+                <li><strong>Cookie di Cookiebot (CookieConsent):</strong> memorizza le preferenze di consenso dell'utente. Durata: 12 mesi.</li>
+            </ul>
+
+            <h3>b) Cookie analitici (richiedono consenso)</h3>
             <p>
-                Necessari al corretto funzionamento del sito. Non richiedono il consenso dell'utente ai sensi
-                dell'art. 122 del D.Lgs. 196/2003 e del Provvedimento del Garante n. 229/2014.
+                <strong>Google Analytics 4</strong> (_ga, _ga_*): raccolgono dati statistici sull'utilizzo del sito in
+                forma aggregata e pseudonimizzata. Durata: fino a 14 mesi. Fornitore: Google LLC.
+                Questi cookie vengono installati solo dopo il consenso dell'utente tramite il cookie banner.
             </p>
 
-            <h3>Vercel Analytics</h3>
+            <h3>c) Cookie di terze parti</h3>
+            <ul>
+                <li><strong>Cal.com:</strong> il widget di prenotazione integrato nel sito principale potrebbe installare cookie tecnici necessari al funzionamento del servizio. Per maggiori informazioni: <a href="https://cal.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy di Cal.com</a>.</li>
+                <li><strong>Google Fonts:</strong> il caricamento dei font (nell'applicazione di gioco) non comporta l'installazione di cookie, ma implica una connessione ai server di Google con trasmissione dell'indirizzo IP.</li>
+            </ul>
+
+            <h2>3. Gestione del consenso</h2>
             <p>
-                Il sito utilizza Vercel Analytics, un servizio di analisi web che <strong>non utilizza cookie</strong> e
-                raccoglie dati in forma anonima e aggregata. Non viene effettuata alcuna profilazione dell'utente.
+                Al primo accesso al sito viene mostrato un banner di gestione dei cookie (fornito da Cookiebot/Usercentrics). L'utente può:
+            </p>
+            <ul>
+                <li>Accettare tutti i cookie;</li>
+                <li>Rifiutare i cookie non tecnici;</li>
+                <li>Personalizzare le categorie di cookie accettate;</li>
+                <li>Modificare le proprie preferenze in qualsiasi momento cliccando sul link "Gestisci cookie" presente nel footer del sito.</li>
+            </ul>
+            <p>
+                I cookie analitici (Google Analytics 4) vengono attivati <strong>SOLO</strong> dopo il consenso esplicito dell'utente.
             </p>
 
-            <h3>Cookie di terze parti — Cal.com</h3>
+            <h2>4. Come gestire i cookie dal browser</h2>
             <p>
-                Il widget di prenotazione Cal.com integrato nel sito potrebbe installare cookie tecnici necessari
-                al funzionamento del servizio di prenotazione. Per maggiori informazioni, consultare la
-                {' '}<a href="https://cal.com/privacy" target="_blank" rel="noopener noreferrer">Cookie Policy di Cal.com</a>.
-            </p>
-
-            <h3>Google Fonts</h3>
-            <p>
-                Il caricamento dei font da Google Fonts non comporta l'installazione di cookie, ma implica una
-                connessione ai server di Google con trasmissione dell'indirizzo IP dell'utente.
-            </p>
-
-            <h2>3. Come gestire i cookie</h2>
-            <p>
-                L'utente può gestire le preferenze relative ai cookie direttamente tramite le impostazioni del
-                proprio browser. Di seguito i link alle guide dei principali browser:
+                L'utente può gestire le preferenze relative ai cookie anche tramite le impostazioni del
+                proprio browser:
             </p>
             <ul>
                 <li><a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener noreferrer">Google Chrome</a></li>
@@ -138,10 +181,10 @@ function CookieContent() {
                 <li><a href="https://support.microsoft.com/it-it/help/4027947" target="_blank" rel="noopener noreferrer">Microsoft Edge</a></li>
             </ul>
 
-            <h2>4. Aggiornamenti</h2>
+            <h2>5. Aggiornamenti</h2>
             <p>
                 La presente Cookie Policy può essere soggetta ad aggiornamenti. L'utente è invitato a consultare
-                periodicamente questa pagina per prendere visione di eventuali modifiche.
+                periodicamente questa pagina.
             </p>
         </>
     );
@@ -150,11 +193,11 @@ function CookieContent() {
 function NoteLegaliContent() {
     return (
         <>
-            <p>Ultimo aggiornamento: marzo 2026</p>
+            <p>Ultimo aggiornamento: aprile 2026</p>
 
             <h2>1. Informazioni generali</h2>
             <p>
-                Il presente sito web è di proprietà di:<br />
+                I presenti siti web (widestudiodigitale.com e game.widestudiodigitale.com) sono di proprietà di:<br />
                 <strong>Alessia Amoruso</strong> — P.IVA 13486160966<br />
                 <strong>Asia Franceschi</strong> — P.IVA 01566890115<br />
                 operanti congiuntamente sotto il nome commerciale <strong>WIDE Studio Digitale</strong>.<br />
@@ -201,17 +244,17 @@ function NoteLegaliContent() {
 function AuditPrivacyContent() {
     return (
         <>
-            <p>Ultimo aggiornamento: marzo 2026</p>
+            <p>Ultimo aggiornamento: aprile 2026</p>
 
             <h2>1. Contesto e Dati raccolti</h2>
             <p>
-                Questa informativa è specifica per lo strumento "Indice di Dispersione del Mercato". 
+                Questa informativa è specifica per lo strumento "Indice di Dispersione del Mercato".
                 I Titolari del trattamento sono Alessia Amoruso e Asia Franceschi (WIDE Studio Digitale).
                 Attraverso il questionario e l'eventuale successiva prenotazione raccogliamo:
             </p>
             <ul>
-                <li><strong>Dati di navigazione:</strong> analizzati in forma anonima tramite Vercel Analytics.</li>
-                <li><strong>Risposte al quiz:</strong> memorizzate localmente nel browser dell'utente (non salvate sui nostri server web in questa fase).</li>
+                <li><strong>Dati di navigazione:</strong> analizzati tramite Google Analytics 4 (gestito via Google Tag Manager). I cookie analitici vengono installati solo previo consenso tramite il cookie banner.</li>
+                <li><strong>Risposte al quiz:</strong> memorizzate localmente nel browser dell'utente (non salvate sui nostri server web in questa fase). Gli eventi di avanzamento e completamento del quiz vengono tracciati in forma aggregata tramite GA4.</li>
                 <li><strong>Dati di prenotazione:</strong> se si sceglie di prenotare la consulenza finale, i dati (nome, email, scelte espresse) verranno raccolti tramite il widget di Cal.com.</li>
             </ul>
 
@@ -238,7 +281,7 @@ function AuditPrivacyContent() {
 function AuditTerminiContent() {
     return (
         <>
-            <p>Ultimo aggiornamento: marzo 2026</p>
+            <p>Ultimo aggiornamento: aprile 2026</p>
 
             <h2>1. Natura dello Strumento</h2>
             <p>

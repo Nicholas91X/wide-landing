@@ -17,6 +17,7 @@ const LEGAL_LINKS = [
     { label: 'Privacy Policy', href: '/privacy' },
     { label: 'Cookie Policy', href: '/cookie' },
     { label: 'Note Legali',   href: '/note-legali' },
+    { label: 'Gestisci cookie', href: '#', isCookiebot: true },
 ];
 
 export const Footer: React.FC = () => {
@@ -233,6 +234,12 @@ export const Footer: React.FC = () => {
                                 href={link.href}
                                 onClick={(e) => {
                                     e.preventDefault();
+                                    if ('isCookiebot' in link && link.isCookiebot) {
+                                        if (typeof (window as any).Cookiebot !== 'undefined') {
+                                            (window as any).Cookiebot.renew();
+                                        }
+                                        return;
+                                    }
                                     window.history.pushState(null, '', link.href);
                                     window.dispatchEvent(new PopStateEvent('popstate'));
                                 }}
