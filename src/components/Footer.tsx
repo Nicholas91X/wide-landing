@@ -88,10 +88,12 @@ export const Footer: React.FC = () => {
     const onLinkEnter = (e: React.MouseEvent<HTMLAnchorElement>) => {
         e.currentTarget.style.color = 'rgba(255,255,255,0.65)';
         e.currentTarget.style.borderBottom = '1px solid rgba(197,165,90,0.3)';
+        e.currentTarget.style.paddingBottom = '1px';
     };
     const onLinkLeave = (e: React.MouseEvent<HTMLAnchorElement>) => {
         e.currentTarget.style.color = 'rgba(255,255,255,0.28)';
         e.currentTarget.style.borderBottom = '1px solid transparent';
+        e.currentTarget.style.paddingBottom = '1px';
     };
 
     return (
