@@ -434,7 +434,7 @@ export const ChiSiamo: React.FC = () => {
             color: "#fff",
             fontSize: "clamp(1.8rem, 5vw, 3.5rem)",
             fontFamily: "var(--font-title)",
-            fontWeight: 700,
+            fontWeight: 800,
             textTransform: "uppercase",
             letterSpacing: "0.05em",
             lineHeight: 1.1,
@@ -501,7 +501,6 @@ export const ChiSiamo: React.FC = () => {
             fontWeight: 600,
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
-            cursor: 'none',
             transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
             whiteSpace: 'nowrap',
           }}

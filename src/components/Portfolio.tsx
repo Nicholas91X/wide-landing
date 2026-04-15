@@ -229,7 +229,7 @@ export const Portfolio: React.FC = () => {
       >
         <p
           style={{
-            color: "rgba(255,255,255,0.35)",
+            color: "var(--color-gold)",
             fontSize: "0.75rem",
             fontFamily: "var(--font-subtitle)",
             fontWeight: 600,
@@ -587,6 +587,7 @@ export const Portfolio: React.FC = () => {
                 }}
               >
                 <div
+                  data-cursor="ring"
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
