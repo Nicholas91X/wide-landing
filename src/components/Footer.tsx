@@ -79,15 +79,19 @@ export const Footer: React.FC = () => {
         fontSize: '0.6rem',
         letterSpacing: '0.1em',
         textDecoration: 'none',
-        transition: 'color 0.3s ease',
+        transition: 'color 0.3s ease, border-bottom 0.3s ease',
         whiteSpace: 'nowrap' as const,
+        borderBottom: '1px solid transparent',
+        paddingBottom: '1px',
     };
 
     const onLinkEnter = (e: React.MouseEvent<HTMLAnchorElement>) => {
         e.currentTarget.style.color = 'rgba(255,255,255,0.65)';
+        e.currentTarget.style.borderBottom = '1px solid rgba(197,165,90,0.3)';
     };
     const onLinkLeave = (e: React.MouseEvent<HTMLAnchorElement>) => {
         e.currentTarget.style.color = 'rgba(255,255,255,0.28)';
+        e.currentTarget.style.borderBottom = '1px solid transparent';
     };
 
     return (
@@ -205,19 +209,24 @@ export const Footer: React.FC = () => {
                     </p>
                 </div>
 
-                {/* Center column — tagline */}
+                {/* Center column — tagline in Playfair italic oro */}
                 <div style={{ textAlign: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'center' }}>
+                    <div style={{ width: 24, height: 1, background: 'rgba(197,165,90,0.3)' }} />
                     <p style={{
-                        color: 'rgba(255,255,255,0.16)',
-                        fontSize: isMobile ? '0.58rem' : '0.6rem',
-                        letterSpacing: '0.25em',
-                        textTransform: 'uppercase',
-                        margin: 0,
-                        fontStyle: 'italic',
-                        whiteSpace: 'nowrap',
+                      color: 'rgba(197,165,90,0.6)',
+                      fontSize: isMobile ? '0.58rem' : '0.65rem',
+                      fontFamily: 'var(--font-serif)',
+                      fontStyle: 'italic',
+                      letterSpacing: '0.05em',
+                      textTransform: 'none',
+                      margin: 0,
+                      whiteSpace: 'nowrap',
                     }}>
-                        Ogni pixel, con intenzione.
+                      ogni pixel, con intenzione.
                     </p>
+                    <div style={{ width: 24, height: 1, background: 'rgba(197,165,90,0.3)' }} />
+                  </div>
                 </div>
 
                 {/* Right column — legal links */}
