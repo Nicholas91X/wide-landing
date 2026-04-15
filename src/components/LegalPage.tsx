@@ -89,8 +89,6 @@ function PrivacyContent() {
             <h3>g) Google Fonts (Google LLC)</h3>
             <p>L'applicazione di gioco utilizza font caricati dai server di Google. Durante il caricamento, il browser dell'utente stabilisce una connessione con i server di Google, trasmettendo l'indirizzo IP. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy di Google</a>.</p>
 
-            <h3>h) Cookiebot (Usercentrics A/S)</h3>
-            <p>Servizio di gestione del consenso ai cookie. Cookiebot memorizza lo stato del consenso dell'utente tramite un cookie tecnico necessario. <a href="https://www.cookiebot.com/en/privacy-policy/" target="_blank" rel="noopener noreferrer">Privacy Policy di Cookiebot</a>.</p>
 
             <h2>6. Conservazione dei dati</h2>
             <ul>
@@ -139,7 +137,7 @@ function CookieContent() {
             <h3>a) Cookie tecnici (non richiedono consenso)</h3>
             <ul>
                 <li>Cookie di sessione necessari al funzionamento del sito.</li>
-                <li><strong>Cookie di Cookiebot (CookieConsent):</strong> memorizza le preferenze di consenso dell'utente. Durata: 12 mesi.</li>
+                <li><strong>Preferenze di consenso:</strong> il sito memorizza la scelta dell'utente relativa ai cookie (accettazione o rifiuto) tramite localStorage del browser. Questa informazione è necessaria per non ripresentare il banner ad ogni visita.</li>
             </ul>
 
             <h3>b) Cookie analitici (richiedono consenso)</h3>
@@ -157,12 +155,11 @@ function CookieContent() {
 
             <h2>3. Gestione del consenso</h2>
             <p>
-                Al primo accesso al sito viene mostrato un banner di gestione dei cookie (fornito da Cookiebot/Usercentrics). L'utente può:
+                Al primo accesso al sito viene mostrato un banner di gestione dei cookie. L'utente può:
             </p>
             <ul>
                 <li>Accettare tutti i cookie;</li>
                 <li>Rifiutare i cookie non tecnici;</li>
-                <li>Personalizzare le categorie di cookie accettate;</li>
                 <li>Modificare le proprie preferenze in qualsiasi momento cliccando sul link "Gestisci cookie" presente nel footer del sito.</li>
             </ul>
             <p>

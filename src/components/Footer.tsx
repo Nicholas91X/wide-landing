@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import { useReducedMotion } from '../hooks/useReducedMotion';
+import { reopenCookieBanner } from './CookieBanner';
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
 // Visual concept: "WIDE signing off"
@@ -235,9 +236,7 @@ export const Footer: React.FC = () => {
                                 onClick={(e) => {
                                     e.preventDefault();
                                     if ('isCookiebot' in link && link.isCookiebot) {
-                                        if (typeof (window as any).Cookiebot !== 'undefined') {
-                                            (window as any).Cookiebot.renew();
-                                        }
+                                        reopenCookieBanner();
                                         return;
                                     }
                                     window.history.pushState(null, '', link.href);

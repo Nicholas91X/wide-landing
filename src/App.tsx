@@ -5,6 +5,7 @@ import { LegalPage } from "./components/LegalPage";
 import { SocialProof } from "./components/SocialProof";
 import { Analytics } from "@vercel/analytics/react";
 import { trackCTAClick } from "./utils/analytics";
+import { CookieBanner } from "./components/CookieBanner";
 
 // Lazy-load all sections below SocialProof to reduce initial JS payload
 const ScrollVideo = lazy(() =>
@@ -59,6 +60,7 @@ function App() {
     return (
       <>
         <LegalPage page={legalPage} onBack={goBack} />
+        <CookieBanner />
         <Analytics />
       </>
     );
@@ -154,6 +156,7 @@ function App() {
 
       {/* ── Floating CTA — appears after scrolling past the intro ──── */}
       <FloatingCTA />
+      <CookieBanner />
     </>
   );
 }

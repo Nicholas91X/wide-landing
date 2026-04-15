@@ -552,8 +552,49 @@
     &copy; 2026 WIDE Studio Digitale. Tutti i diritti riservati.<br><br>
     <a href="/audit-privacy">Privacy Policy</a> |
     <a href="/audit-termini">Termini e Condizioni</a> |
-    <a href="/">Torna al sito principale</a>
+    <a href="/">Torna al sito principale</a> |
+    <a href="javascript:void(0)" onclick="reopenCookieBanner()">Gestisci cookie</a>
   </footer>
+
+  <!-- Cookie Banner -->
+  <div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#111;border-top:1px solid rgba(0,0,0,0.1);padding:20px clamp(20px,5vw,40px);font-family:var(--font-body);align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+    <p style="color:#555;font-size:0.82rem;line-height:1.6;margin:0;flex:1 1 400px;">
+      Questo sito utilizza cookie analitici e di profilazione per migliorare la tua esperienza.
+      <a href="/audit-privacy" style="color:#111;text-decoration:underline;text-underline-offset:3px;">Cookie Policy</a>
+    </p>
+    <div style="display:flex;gap:10px;flex-shrink:0;">
+      <button onclick="rejectCookies()" style="padding:10px 22px;font-size:0.75rem;font-family:var(--font-subtitle);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;border:1px solid #ccc;border-radius:0;background:transparent;color:#555;cursor:pointer;">Rifiuta</button>
+      <button onclick="acceptCookies()" style="padding:10px 22px;font-size:0.75rem;font-family:var(--font-subtitle);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;border:none;border-radius:0;background:#111;color:#fff;cursor:pointer;">Accetta</button>
+    </div>
+  </div>
+  <script>
+    (function(){
+      var KEY = 'wide_cookie_consent';
+      var banner = document.getElementById('cookie-banner');
+      var stored = null;
+      try { stored = localStorage.getItem(KEY); } catch(e){}
+      if (stored === 'accepted') {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({event:'consent_accepted'});
+      } else if (!stored) {
+        banner.style.display = 'flex';
+      }
+      window.acceptCookies = function(){
+        try { localStorage.setItem(KEY, 'accepted'); } catch(e){}
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({event:'consent_accepted'});
+        banner.style.display = 'none';
+      };
+      window.rejectCookies = function(){
+        try { localStorage.setItem(KEY, 'rejected'); } catch(e){}
+        banner.style.display = 'none';
+      };
+      window.reopenCookieBanner = function(){
+        try { localStorage.removeItem(KEY); } catch(e){}
+        banner.style.display = 'flex';
+      };
+    })();
+  </script>
 
   <script>
     const questions = [
