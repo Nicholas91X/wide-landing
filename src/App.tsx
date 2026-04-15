@@ -36,6 +36,9 @@ function getRouteFromPath(): LegalRoute {
 function App() {
   const [legalPage, setLegalPage] = useState<LegalRoute>(getRouteFromPath);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [showIntro, setShowIntro] = useState(
+    () => !localStorage.getItem('wide_intro_seen')
+  );
 
   useEffect(() => {
     const onScroll = () => setHasScrolled(true);
@@ -73,7 +76,14 @@ function App() {
       {/* NavBubble OUTSIDE <main> to prevent GSAP pin transforms
                 from creating a containing block that breaks position:fixed */}
       <NavBubble />
-      <IntroOverlay />
+      {showIntro && (
+        <IntroOverlay
+          onDismiss={() => {
+            localStorage.setItem('wide_intro_seen', '1');
+            setShowIntro(false);
+          }}
+        />
+      )}
       {/* LCP hint: browser registers this as LCP candidate eagerly */}
       <img
         src={
