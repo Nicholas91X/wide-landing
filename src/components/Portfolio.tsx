@@ -328,6 +328,57 @@ export const Portfolio: React.FC = () => {
               willChange: "transform, opacity",
             }}
           >
+            {/* Numero progressivo decorativo */}
+            <div
+              aria-hidden={true}
+              style={{
+                position: 'absolute',
+                top: 16,
+                left: 20,
+                fontFamily: 'var(--font-title)',
+                fontWeight: 900,
+                fontSize: 'clamp(48px, 10vw, 80px)',
+                color: 'rgba(255,255,255,0.04)',
+                lineHeight: 1,
+                pointerEvents: 'none',
+                userSelect: 'none',
+                zIndex: 2,
+              }}
+            >
+              {String(i + 1).padStart(2, '0')}
+            </div>
+
+            {/* Indicatore reels verticale */}
+            {project.reels && project.reels.length > 0 && (
+              <div
+                aria-hidden={true}
+                style={{
+                  position: 'absolute',
+                  top: 16,
+                  right: 16,
+                  display: 'flex',
+                  gap: 4,
+                  alignItems: 'center',
+                  zIndex: 2,
+                  pointerEvents: 'none',
+                }}
+              >
+                {project.reels.map((_, reelIdx) => (
+                  <div
+                    key={reelIdx}
+                    style={{
+                      width: 3,
+                      height: 28,
+                      borderRadius: 2,
+                      background: reelIdx === 0
+                        ? 'rgba(255,255,255,0.85)'
+                        : 'rgba(255,255,255,0.22)',
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+
             {/* Background / Reels */}
             <div
               style={{
@@ -476,7 +527,7 @@ export const Portfolio: React.FC = () => {
               {/* Category + year */}
               <div
                 style={{
-                  color: "rgba(255,255,255,0.5)",
+                  color: "var(--color-gold)",
                   fontSize: "0.75rem",
                   fontFamily: "var(--font-subtitle)",
                   fontWeight: 600,
@@ -494,7 +545,7 @@ export const Portfolio: React.FC = () => {
                   color: "#fff",
                   fontSize: "clamp(1.6rem, 6vw, 3.5rem)",
                   fontFamily: "var(--font-title)",
-                  fontWeight: 700,
+                  fontWeight: 800,
                   letterSpacing: "-0.03em",
                   lineHeight: 1.05,
                   margin: "0 0 20px",
@@ -502,6 +553,28 @@ export const Portfolio: React.FC = () => {
               >
                 {project.title}
               </h3>
+
+              {/* Tag progetto */}
+              {project.tags && project.tags.length > 0 && (
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 16 }}>
+                  {project.tags.slice(0, 3).map((tag) => (
+                    <span
+                      key={tag}
+                      style={{
+                        display: 'inline-block',
+                        padding: '3px 8px',
+                        border: '1px solid rgba(197,165,90,0.4)',
+                        color: 'var(--color-gold)',
+                        fontSize: '0.65rem',
+                        fontFamily: 'var(--font-subtitle)',
+                        fontWeight: 700,
+                        letterSpacing: '0.18em',
+                        textTransform: 'uppercase',
+                      }}
+                    >{tag}</span>
+                  ))}
+                </div>
+              )}
 
               {/* CTA & Swipe Indicator */}
               <div
@@ -522,11 +595,11 @@ export const Portfolio: React.FC = () => {
                     fontFamily: "var(--font-subtitle)",
                     fontWeight: 600,
                     letterSpacing: "0.08em",
-                    border: "1px solid #fff",
+                    border: "none",
                     padding: "10px 20px",
                     borderRadius: "0",
-                    backdropFilter: "blur(8px)",
-                    WebkitBackdropFilter: "blur(8px)",
+                    backdropFilter: "none",
+                    WebkitBackdropFilter: "none",
                     backgroundColor: "#fff",
                   }}
                 >
