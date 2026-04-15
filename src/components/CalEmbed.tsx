@@ -47,6 +47,7 @@ export const CalEmbed = ({ calLink, eventSlug, domain = "cal.com", buttonText = 
       <button
         data-cal-link={`${calLink}/${eventSlug}`}
         data-cal-config='{"layout":"month_view"}'
+        data-cursor="ring"
         onClick={() => trackBookingStart()}
         style={{
           backgroundColor: '#fff',

@@ -64,10 +64,17 @@ export const SocialProof: React.FC = () => {
     const caseEl = caseRef.current;
     if (!heroEl || !caseEl) return;
 
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     const heroChildren = heroEl.querySelectorAll<HTMLElement>(".sp-anim");
     const caseChildren = caseEl.querySelectorAll<HTMLElement>(".sp-anim");
+    const heroH2 = heroEl?.querySelector('h2');
 
     gsap.set([...heroChildren, ...caseChildren], { opacity: 0, y: 30 });
+
+    if (heroH2 && !prefersReduced) {
+      gsap.set(heroH2, { opacity: 1, y: 0, clipPath: 'inset(0 0 100% 0)' });
+    }
 
     const tl1 = gsap.timeline({
       scrollTrigger: {
@@ -83,6 +90,14 @@ export const SocialProof: React.FC = () => {
       ease: "power2.out",
       stagger: 0.15,
     });
+
+    if (heroH2 && !prefersReduced) {
+      tl1.to(heroH2, {
+        clipPath: 'inset(0 0 0% 0)',
+        duration: 0.75,
+        ease: 'power3.out',
+      }, 0);
+    }
 
     const tl2 = gsap.timeline({
       scrollTrigger: {
