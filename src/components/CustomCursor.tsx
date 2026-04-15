@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 
 // Rilevamento pointer coarse (touch) — una sola volta al caricamento
 const IS_TOUCH = typeof window !== 'undefined'
@@ -57,7 +57,7 @@ export const CustomCursor: React.FC = () => {
       {/* Dot — segue il mouse con lerp */}
       <div
         ref={dotRef}
-        aria-hidden
+        aria-hidden={true}
         style={{
           position: 'fixed',
           top: 0, left: 0,
@@ -66,13 +66,12 @@ export const CustomCursor: React.FC = () => {
           background: 'rgba(255,255,255,0.92)',
           pointerEvents: 'none',
           zIndex: 99999,
-          willChange: 'transform',
         }}
       />
       {/* Ring — appare su [data-cursor="ring"] */}
       <div
         ref={ringRef}
-        aria-hidden
+        aria-hidden={true}
         style={{
           position: 'fixed',
           top: 0, left: 0,
@@ -83,12 +82,9 @@ export const CustomCursor: React.FC = () => {
           background: isRing ? 'rgba(197,165,90,0.05)' : 'transparent',
           pointerEvents: 'none',
           zIndex: 99998,
-          willChange: 'transform',
           transition: 'width 0.22s ease, height 0.22s ease, border 0.22s ease, background 0.22s ease',
         }}
       />
     </>
   );
 };
-
-export default CustomCursor;
