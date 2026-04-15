@@ -197,7 +197,7 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onDismiss }) => {
       overlay.removeEventListener("click", dismiss);
       document.body.style.overflow = "";
     };
-  }, [prefersReduced]);
+  }, [prefersReduced, onDismiss]);
 
   const TITLE = "WIDE";
 

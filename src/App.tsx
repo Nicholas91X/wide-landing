@@ -60,6 +60,11 @@ function App() {
     setLegalPage(null);
   }, []);
 
+  const handleIntroDismiss = useCallback(() => {
+    localStorage.setItem('wide_intro_seen', '1');
+    setShowIntro(false);
+  }, []);
+
   if (legalPage) {
     return (
       <>
@@ -77,12 +82,7 @@ function App() {
                 from creating a containing block that breaks position:fixed */}
       <NavBubble />
       {showIntro && (
-        <IntroOverlay
-          onDismiss={() => {
-            localStorage.setItem('wide_intro_seen', '1');
-            setShowIntro(false);
-          }}
-        />
+        <IntroOverlay onDismiss={handleIntroDismiss} />
       )}
       {/* LCP hint: browser registers this as LCP candidate eagerly */}
       <img
