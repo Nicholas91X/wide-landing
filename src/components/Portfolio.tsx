@@ -324,7 +324,7 @@ export const Portfolio: React.FC = () => {
             style={{
               position: "absolute",
               inset: 0,
-              cursor: "pointer",
+              cursor: "none",
               willChange: "transform, opacity",
             }}
           >
@@ -511,6 +511,7 @@ export const Portfolio: React.FC = () => {
                 inset: 0,
                 background: `linear-gradient(to top, rgba(0,0,0,0.85) 0%, ${CARD_OVERLAYS[i % CARD_OVERLAYS.length]} 50%, transparent 100%)`,
                 pointerEvents: "none",
+                zIndex: 1,
               }}
             />
 
