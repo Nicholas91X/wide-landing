@@ -24,7 +24,7 @@ Sostituzione del widget Cal.com con un sistema di lead management completo:
 - **Framework:** NestJS 11 + TypeScript
 - **ORM:** Prisma + PostgreSQL 16
 - **Cache:** Redis 7
-- **Email:** Nodemailer via Mailgun SMTP (`smtp.eu.mailgun.org:465`)
+- **Email:** Nodemailer via Brevo SMTP (`smtp-relay.brevo.com:587`, STARTTLS)
 - **Auth:** JWT RS256 (Passport.js), refresh token rotation con family tracking
 - **Validazione env:** Zod
 - **Pattern:** Repository → Service → Controller (identico ad auto2g-backend)
@@ -267,12 +267,12 @@ JWT_PUBLIC_KEY_FILE=/app/jwt-keys/public.pem
 JWT_ACCESS_EXPIRY=15m
 JWT_REFRESH_EXPIRY=7d
 
-# Email (Mailgun SMTP)
-SMTP_HOST=smtp.eu.mailgun.org
-SMTP_PORT=465
-SMTP_USER=postmaster@widestudiodigitale.com
-SMTP_PASS=<mailgun-password>
-SMTP_SECURE=true
+# Email (Brevo SMTP)
+SMTP_HOST=smtp-relay.brevo.com
+SMTP_PORT=587
+SMTP_USER=<brevo-account-email>
+SMTP_PASS=<brevo-smtp-key>
+SMTP_SECURE=false   # STARTTLS su 587, non SSL
 EMAIL_FROM=noreply@widestudiodigitale.com
 INTERNAL_NOTIFICATION_EMAIL=info@widestudiodigitale.com
 
@@ -453,20 +453,106 @@ wide-admin/
 
 ---
 
-## 5. Ordine di implementazione
+## 5. Tracciamento GTM / GA4
 
-1. **`wide-backend`** — schema Prisma, moduli NestJS, email template, Docker config
-2. **Form `wide-landing`** — `LeadForm.tsx`, sostituzione CalEmbed, variabile env `VITE_API_URL`
+Il sistema viene preparato per il tracciamento completo. Le credenziali GTM/GA4 sono ancora da configurare — i punti di integrazione vengono implementati adesso con variabili placeholder, attivabili semplicemente aggiungendo gli ID.
+
+### 5.1 Landing page — eventi `dataLayer` nel form
+
+Il file `src/utils/analytics.ts` (già esistente) viene esteso con funzioni dedicate al form lead. Seguono lo stesso pattern `window.dataLayer.push(...)` già usato per `trackCTAClick` e `trackSectionView`.
+
+```typescript
+// src/utils/analytics.ts — aggiunte
+
+export function trackLeadFormStart() {
+  window.dataLayer?.push({ event: 'lead_form_start' });
+}
+
+export function trackLeadFormSubmit(servizio: string) {
+  window.dataLayer?.push({
+    event: 'lead_form_submit',
+    lead_servizio: servizio,
+  });
+}
+
+export function trackLeadFormSuccess(servizio: string) {
+  window.dataLayer?.push({
+    event: 'lead_form_success',   // trigger conversione in GA4
+    lead_servizio: servizio,
+  });
+}
+
+export function trackLeadFormError(reason: string) {
+  window.dataLayer?.push({
+    event: 'lead_form_error',
+    error_reason: reason,
+  });
+}
+```
+
+**Dove vengono chiamate in `LeadForm.tsx`:**
+
+| Evento | Trigger |
+|--------|---------|
+| `lead_form_start` | Focus sul primo campo del form (una sola volta) |
+| `lead_form_submit` | Click sul bottone Invia (validazione passata) |
+| `lead_form_success` | API risponde 201 Created |
+| `lead_form_error` | API risponde con errore (4xx/5xx) |
+
+**In GTM** (da configurare dopo): creare un trigger su `lead_form_success` e collegarlo a un tag GA4 Event con `event_name: generate_lead` — è l'evento standard GA4 per la conversione lead.
+
+### 5.2 Backend — GA4 Measurement Protocol (opzionale, fase 2)
+
+Il backend può inviare un evento server-side a GA4 tramite Measurement Protocol al momento della creazione del lead. Questo garantisce il tracciamento anche se il browser blocca gli script (ad-blocker, Safari ITP).
+
+**Variabili d'ambiente da aggiungere al backend quando GA4 è configurato:**
+```env
+GA4_MEASUREMENT_ID=G-XXXXXXXXXX    # lasciare vuoto per disabilitare
+GA4_API_SECRET=<measurement-protocol-api-secret>
+```
+
+**Comportamento:** se `GA4_MEASUREMENT_ID` è valorizzato, dopo la creazione del lead il backend invia in background (fire-and-forget, non blocca la risposta):
+
+```
+POST https://www.google-analytics.com/mp/collect
+     ?measurement_id=G-XXXXXXXXXX&api_secret=...
+
+{
+  "client_id": "<uuid generato o IP anonimizzato>",
+  "events": [{
+    "name": "generate_lead",
+    "params": {
+      "servizio": "Social Media Marketing",
+      "settore": "Automotive"
+    }
+  }]
+}
+```
+
+> **Nota:** il Measurement Protocol è una rete di sicurezza, non il tracciamento primario. La fonte principale rimane il `dataLayer` lato client. In fase 1 si implementa solo il punto 5.1; il Measurement Protocol si aggiunge in fase 2 quando GA4 è live.
+
+### 5.3 Admin dashboard — nessun tracciamento
+
+Il dashboard è uno strumento interno. Non richiede GTM/GA4.
+
+---
+
+## 6. Ordine di implementazione
+
+1. **`wide-backend`** — schema Prisma, moduli NestJS, email template (Brevo), Docker config
+2. **Form `wide-landing`** — `LeadForm.tsx`, sostituzione CalEmbed, `VITE_API_URL`, hook GTM/GA4
 3. **`wide-admin`** — scaffold Vite, auth flow, pagine Lead + Account
+4. **GA4 Measurement Protocol** *(fase 2, dopo configurazione GA4)* — env vars + chiamata server-side
 
 Ogni sub-progetto è indipendente e deployabile separatamente. Il backend deve essere live su Hetzner prima che form e admin possano funzionare in produzione, ma lo sviluppo locale può procedere in parallelo con mock.
 
 ---
 
-## 6. Criteri di successo
+## 7. Criteri di successo
 
 - Form landing: submit → lead creato nel DB + email cliente ricevuta + email interna ricevuta entro 30 secondi
 - Admin: login funzionante, lista lead visibile, cambio stato registra attività con autore
 - RBAC: USER non riesce ad accedere a `/accounts`, non riesce a eliminare lead
 - Export CSV: file scaricabile con tutti i campi del lead
 - Docker: `docker-compose up` su Hetzner avvia tutti e tre i servizi (api, db, redis) senza errori
+- GTM/GA4: `dataLayer.push` con evento `lead_form_success` visibile in GTM Preview Mode dopo la configurazione
