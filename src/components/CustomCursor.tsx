@@ -16,8 +16,53 @@ export const CustomCursor: React.FC = () => {
   useEffect(() => {
     if (IS_TOUCH) return;
 
+    // Idle detection: stop the RAF after ~500ms of no mouse movement
+    // (30 frames at 60fps with position converged). Restarts on next mousemove.
+    const LERP = 0.15;
+    const IDLE_FRAMES = 30;   // frames to wait after convergence before stopping
+    const EPSILON     = 0.08; // px — "close enough" threshold
+    let idleCount = 0;
+    let ticking = false;
+
+    const tickRef = { fn: () => {} };
+
+    tickRef.fn = () => {
+      const cx = current.current.x + (target.current.x - current.current.x) * LERP;
+      const cy = current.current.y + (target.current.y - current.current.y) * LERP;
+      current.current.x = cx;
+      current.current.y = cy;
+
+      const t = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
+      if (dotRef.current)  dotRef.current.style.transform  = t;
+      if (ringRef.current) ringRef.current.style.transform = t;
+
+      // Check convergence
+      if (
+        Math.abs(target.current.x - cx) < EPSILON &&
+        Math.abs(target.current.y - cy) < EPSILON
+      ) {
+        idleCount++;
+        if (idleCount >= IDLE_FRAMES) {
+          // Cursor has been still long enough — stop the loop
+          ticking = false;
+          rafId.current = 0;
+          return; // don't reschedule
+        }
+      } else {
+        idleCount = 0;
+      }
+
+      rafId.current = requestAnimationFrame(tickRef.fn);
+    };
+
     const onMove = (e: MouseEvent) => {
       target.current = { x: e.clientX, y: e.clientY };
+      idleCount = 0;
+      // Restart loop if it went idle
+      if (!ticking) {
+        ticking = true;
+        rafId.current = requestAnimationFrame(tickRef.fn);
+      }
     };
 
     const onOver = (e: MouseEvent) => {
@@ -27,21 +72,9 @@ export const CustomCursor: React.FC = () => {
     window.addEventListener('mousemove', onMove, { passive: true });
     window.addEventListener('mouseover', onOver, { passive: true });
 
-    const LERP = 0.15;
-    const tick = () => {
-      current.current.x += (target.current.x - current.current.x) * LERP;
-      current.current.y += (target.current.y - current.current.y) * LERP;
-
-      const x = current.current.x;
-      const y = current.current.y;
-      const t = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
-
-      if (dotRef.current)  dotRef.current.style.transform  = t;
-      if (ringRef.current) ringRef.current.style.transform = t;
-
-      rafId.current = requestAnimationFrame(tick);
-    };
-    rafId.current = requestAnimationFrame(tick);
+    // Kick off initial loop (cursor starts at -200,-200 until first mousemove)
+    ticking = true;
+    rafId.current = requestAnimationFrame(tickRef.fn);
 
     return () => {
       window.removeEventListener('mousemove', onMove);

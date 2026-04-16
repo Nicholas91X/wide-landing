@@ -169,6 +169,12 @@ export const Contatti: React.FC = () => {
     const boatsEnteredRef = useRef(false);
     const pondRippleIdRef = useRef(0);
 
+    // Visibility-driven pause: loops store themselves here so the
+    // IntersectionObserver can restart them when the section re-enters viewport.
+    const isVisibleRef  = useRef(false); // starts false — loops begin paused
+    const pondTickRef   = useRef<() => void>(() => {});
+    const rippleDrawRef = useRef<() => void>(() => {});
+
     const [isMobile, setIsMobile] = useState(false);
     const [pondVisualRipples, setPondVisualRipples] = useState<PondVisualRipple[]>([]);
 
@@ -190,6 +196,33 @@ export const Contatti: React.FC = () => {
             { threshold: 0.2 },
         );
         obs.observe(el);
+        return () => obs.disconnect();
+    }, []);
+
+    /* ── Pause/resume loops based on viewport visibility ────────────────── */
+    useEffect(() => {
+        const section = sectionRef.current;
+        if (!section) return;
+        const obs = new IntersectionObserver(
+            ([entry]) => {
+                const wasVisible = isVisibleRef.current;
+                isVisibleRef.current = entry.isIntersecting;
+                if (entry.isIntersecting && !wasVisible) {
+                    // Section entered viewport — restart any loops that drained
+                    lastTimeRef.current = performance.now();
+                    if (!pondRafRef.current) {
+                        pondRafRef.current = requestAnimationFrame(pondTickRef.current);
+                    }
+                    if (!rafRef.current) {
+                        rafRef.current = requestAnimationFrame(rippleDrawRef.current);
+                    }
+                }
+                // Loops drain themselves when isVisibleRef becomes false —
+                // no explicit cancel needed here.
+            },
+            { threshold: 0.01 }, // any pixel visible = active
+        );
+        obs.observe(section);
         return () => obs.disconnect();
     }, []);
 
@@ -244,6 +277,12 @@ export const Contatti: React.FC = () => {
         lastTimeRef.current = performance.now();
 
         const tick = () => {
+            // Pause when section is off-screen — drain the loop gracefully.
+            // The visibility observer will restart it when needed.
+            if (!isVisibleRef.current) {
+                pondRafRef.current = 0;
+                return;
+            }
             const now = performance.now();
             const dt = Math.min((now - lastTimeRef.current) / 1000, 0.05);
             lastTimeRef.current = now;
@@ -338,8 +377,9 @@ export const Contatti: React.FC = () => {
             pondRafRef.current = requestAnimationFrame(tick);
         };
 
+        pondTickRef.current = tick;
         pondRafRef.current = requestAnimationFrame(tick);
-        return () => cancelAnimationFrame(pondRafRef.current);
+        return () => { cancelAnimationFrame(pondRafRef.current); pondRafRef.current = 0; };
     }, [isMobile]);
 
     /* ── Create visual ripple in pond (#1) ───────────────────────────────── */
@@ -380,6 +420,11 @@ export const Contatti: React.FC = () => {
         if (!ctx) return;
 
         const draw = () => {
+            // Drain when off-screen; visibility observer restarts when needed.
+            if (!isVisibleRef.current) {
+                rafRef.current = 0;
+                return;
+            }
             const now = performance.now();
             const dpr = Math.min(window.devicePixelRatio || 1, 2);
             const w = canvas.width / dpr;
@@ -405,8 +450,9 @@ export const Contatti: React.FC = () => {
             });
             rafRef.current = requestAnimationFrame(draw);
         };
+        rippleDrawRef.current = draw;
         rafRef.current = requestAnimationFrame(draw);
-        return () => cancelAnimationFrame(rafRef.current);
+        return () => { cancelAnimationFrame(rafRef.current); rafRef.current = 0; };
     }, []);
 
     /* ── Perturb elements + feed pond ────────────────────────────────────── */
