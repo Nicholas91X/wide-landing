@@ -34,6 +34,9 @@
     <!-- Preconnect to third-party origins -->
     <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
     <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+    <!-- Bunny.net video CDN — pre-warms TCP/TLS so the first Portfolio iframe loads faster -->
+    <link rel="preconnect" href="https://iframe.mediadelivery.net" />
+    <link rel="dns-prefetch" href="https://iframe.mediadelivery.net" />
 
     <!-- Preload critical fonts to avoid render-blocking delay -->
     <link rel="preload" as="font" type="font/woff2" href="/fonts/outfit-700-latin.woff2" crossorigin />

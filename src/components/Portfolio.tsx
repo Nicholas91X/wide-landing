@@ -114,6 +114,10 @@ export const Portfolio: React.FC = () => {
   );
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const currentCardIndexRef = useRef(0);
+  // Tracks which "cardIndex-reelIndex" iframes have ever been mounted.
+  // Once added, an iframe is never removed from the DOM — prevents cold-start
+  // reload when the user scrolls between cards or revisits a previous card.
+  const preloadedKeys = useRef<Set<string>>(new Set(['0-0']));
 
   const prefersReduced = useReducedMotion();
 
@@ -419,29 +423,42 @@ export const Portfolio: React.FC = () => {
                         overflow: "hidden",
                       }}
                     >
-                      {/* Only render iframe for the currently active card */}
-                      {i === currentCardIndex ? (
-                        <iframe
-                          src={reelUrl}
-                          loading="lazy"
-                          style={{
-                            border: "none",
-                            position: "absolute",
-                            top: "50%",
-                            left: "50%",
-                            // Force iframe to 9:16 ratio based on viewport height,
-                            // then clip overflow — eliminates black bars for portrait reels
-                            height: "100dvh",
-                            width: "calc(100dvh * 9 / 16)",
-                            minWidth: "100%",
-                            transform: "translate(-50%, -50%)",
-                            pointerEvents: "none",
-                          }}
-                          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                          sandbox="allow-scripts allow-same-origin allow-autoplay"
-                          allowFullScreen
-                        />
-                      ) : null}
+                      {/* Iframe mounting strategy:
+                          - Active card  → mount all reels (full visibility)
+                          - Next card    → mount first reel only, opacity 0 (pre-warm)
+                          - Any prev.    → keep mounted once loaded (never cold-reload)
+                          This ensures video is already buffered before the card slides in. */}
+                      {(() => {
+                        const iframeKey = `${i}-${idx}`;
+                        const isActive = i === currentCardIndex;
+                        const isPrewarm = i === currentCardIndex + 1 && idx === 0;
+                        const wasLoaded = preloadedKeys.current.has(iframeKey);
+                        const shouldMount = isActive || isPrewarm || wasLoaded;
+                        if (shouldMount) preloadedKeys.current.add(iframeKey);
+                        if (!shouldMount) return null;
+                        return (
+                          <iframe
+                            src={reelUrl}
+                            loading="eager"
+                            style={{
+                              border: "none",
+                              position: "absolute",
+                              top: "50%",
+                              left: "50%",
+                              height: "100dvh",
+                              width: "calc(100dvh * 9 / 16)",
+                              minWidth: "100%",
+                              transform: "translate(-50%, -50%)",
+                              pointerEvents: "none",
+                              // Pre-warmed iframes are invisible but still buffer video
+                              opacity: isActive ? 1 : 0,
+                            }}
+                            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                            sandbox="allow-scripts allow-same-origin allow-autoplay"
+                            allowFullScreen
+                          />
+                        );
+                      })()}
                       {/* Invisible overlay to catch scroll/swipe events over the iframe */}
                       <div
                         style={{ position: "absolute", inset: 0, zIndex: 1 }}
