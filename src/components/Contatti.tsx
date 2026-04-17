@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import CalEmbed from './CalEmbed';
+import { LeadForm } from './LeadForm';
 import { trackSectionView } from '../utils/analytics';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -935,8 +935,7 @@ export const Contatti: React.FC = () => {
                                 borderRadius: 16,
                                 padding: isMobile ? 'clamp(28px, 6vw, 40px)' : 'clamp(36px, 4vw, 56px)',
                                 display: 'flex', flexDirection: 'column',
-                                alignItems: 'center', justifyContent: 'center', textAlign: 'center',
-                                minHeight: isMobile ? 220 : 300,
+                                alignItems: 'stretch', justifyContent: 'flex-start', textAlign: 'left',
                                 willChange: isMobile ? 'auto' : 'transform',
                             }}
                         >
@@ -945,7 +944,18 @@ export const Contatti: React.FC = () => {
                                 opacity: 0, pointerEvents: 'none', transition: 'opacity 0.2s',
                             }} />
 
-                            <CalEmbed calLink="wide-studiodigitale-jdk11j" eventSlug="30min" domain="cal.eu" />
+                            <p style={{
+                                color: 'var(--color-gold)',
+                                fontSize: '0.68rem',
+                                fontFamily: 'var(--font-subtitle)',
+                                fontWeight: 700,
+                                letterSpacing: '0.3em',
+                                textTransform: 'uppercase',
+                                margin: '0 0 20px',
+                            }}>
+                                Contattaci
+                            </p>
+                            <LeadForm isMobile={isMobile} />
                         </div>
                     </div>
                 </div>
