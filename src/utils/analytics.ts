@@ -55,3 +55,27 @@ export function trackAuditComplete(resultProfile: string, score: number) {
 export function trackAuditBookingClick() {
   push('audit_booking_click');
 }
+
+// ─── Lead Form (Contatti) ────────────────────────────────────────────────────
+// GTM: crea un trigger "Custom Event" per ogni event name.
+// Collega `lead_form_success` a un tag GA4 Event con event_name "generate_lead".
+
+/** Fired on first field interaction (once per form session). */
+export function trackLeadFormStart() {
+  push('lead_form_start');
+}
+
+/** Fired when the user clicks submit after client-side validation passes. */
+export function trackLeadFormSubmit(servizio: string) {
+  push('lead_form_submit', { lead_servizio: servizio });
+}
+
+/** Fired on successful backend response — use this as conversion trigger. */
+export function trackLeadFormSuccess(servizio: string) {
+  push('lead_form_success', { lead_servizio: servizio });
+}
+
+/** Fired when the backend returns an error or fetch fails. */
+export function trackLeadFormError(reason: string) {
+  push('lead_form_error', { error_reason: reason });
+}
