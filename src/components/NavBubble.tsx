@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+
+gsap.registerPlugin(ScrollToPlugin);
 
 // Inject NavBubble keyframes once
 const NB_STYLE_ID = "navbubble-styles";
@@ -457,20 +459,29 @@ export const NavBubble: React.FC = () => {
           window.scrollTo({ top: sectionTop + offset, behavior: "instant" });
         }
       } else {
-        // ScrollTrigger ha 3 pin-spacer sopra Contatti (ScrollVideo, ChiSiamo,
-        // Portfolio) + sezioni lazy-loaded. Al primo click il layout può non
-        // essere ancora settled, facendo atterrare scrollIntoView "corto"
-        // (fondo di Servizi). Refresh esplicito + doppio scroll (il secondo
-        // in rAF corregge eventuale drift dovuto a re-pin durante lo scroll).
-        ScrollTrigger.refresh();
-        const scrollToSection = () => {
+        // chi-siamo / portfolio / contatti sono lazy-loaded dietro
+        // `hasScrolled` in App.tsx + Suspense fallback. Se l'utente clicca dal
+        // hero potrebbero non esistere in DOM → nudge di scroll per triggerare
+        // il mount, poi polling finché appaiono. Lo scroll animato via GSAP
+        // (ScrollToPlugin) è ScrollTrigger-aware e gestisce correttamente i
+        // pin-spacer che si aggiornano mentre attraversiamo le sezioni pinned.
+        if (!document.getElementById(sectionId) && window.scrollY < 30) {
+          window.scrollTo(0, 40);
+        }
+        let attempts = 60;
+        const tryScroll = () => {
           const el = document.getElementById(sectionId);
-          if (!el) return;
-          const top = el.getBoundingClientRect().top + window.pageYOffset;
-          window.scrollTo({ top, behavior: "instant" });
+          if (!el) {
+            if (--attempts > 0) requestAnimationFrame(tryScroll);
+            return;
+          }
+          gsap.to(window, {
+            duration: 0.9,
+            scrollTo: `#${sectionId}`,
+            ease: "power2.inOut",
+          });
         };
-        scrollToSection();
-        requestAnimationFrame(scrollToSection);
+        tryScroll();
       }
     }, 700);
   };
