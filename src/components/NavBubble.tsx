@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 // Inject NavBubble keyframes once
 const NB_STYLE_ID = "navbubble-styles";
@@ -456,8 +457,20 @@ export const NavBubble: React.FC = () => {
           window.scrollTo({ top: sectionTop + offset, behavior: "instant" });
         }
       } else {
-        const el = document.getElementById(sectionId);
-        if (el) el.scrollIntoView({ behavior: "instant" });
+        // ScrollTrigger ha 3 pin-spacer sopra Contatti (ScrollVideo, ChiSiamo,
+        // Portfolio) + sezioni lazy-loaded. Al primo click il layout può non
+        // essere ancora settled, facendo atterrare scrollIntoView "corto"
+        // (fondo di Servizi). Refresh esplicito + doppio scroll (il secondo
+        // in rAF corregge eventuale drift dovuto a re-pin durante lo scroll).
+        ScrollTrigger.refresh();
+        const scrollToSection = () => {
+          const el = document.getElementById(sectionId);
+          if (!el) return;
+          const top = el.getBoundingClientRect().top + window.pageYOffset;
+          window.scrollTo({ top, behavior: "instant" });
+        };
+        scrollToSection();
+        requestAnimationFrame(scrollToSection);
       }
     }, 700);
   };

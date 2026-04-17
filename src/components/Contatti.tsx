@@ -911,7 +911,11 @@ export const Contatti: React.FC = () => {
                     ref={calCardRef}
                     onMouseMove={handleCardMouseMove}
                     onMouseLeave={handleCardMouseLeave}
-                    onClick={handleCardTap}
+                    // Stop propagation: altrimenti il click bubble alla section
+                    // triggera perturbElements → la card si anima mentre il <select>
+                    // nativo è aperto, chiudendo la dropdown senza registrare il change
+                    onClick={(e) => { e.stopPropagation(); handleCardTap(); }}
+                    onTouchStart={(e) => e.stopPropagation()}
                 >
                     <div style={{
                         position: 'relative', borderRadius: 17, padding: 1,
