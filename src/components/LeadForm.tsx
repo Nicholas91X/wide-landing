@@ -41,6 +41,7 @@ interface FormData {
   settore: string;
   settoreCustom: string;
   servizio: string;
+  privacy: boolean;
 }
 
 interface FormErrors {
@@ -51,6 +52,7 @@ interface FormErrors {
   settore?: string;
   settoreCustom?: string;
   servizio?: string;
+  privacy?: string;
 }
 
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
@@ -58,6 +60,7 @@ type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
 const EMPTY: FormData = {
   nome: '', cognome: '', email: '', telefono: '',
   settore: '', settoreCustom: '', servizio: '',
+  privacy: false,
 };
 
 const API_URL = import.meta.env.VITE_API_URL as string;
@@ -87,6 +90,9 @@ function validate(data: FormData): FormErrors {
 
   if (!data.servizio)
     errors.servizio = 'Seleziona il servizio di interesse';
+
+  if (!data.privacy)
+    errors.privacy = 'Devi accettare l\'informativa privacy per continuare';
 
   return errors;
 }
@@ -168,7 +174,12 @@ export const LeadForm: React.FC<LeadFormProps> = ({ isMobile }) => {
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-      const { name, value } = e.target;
+      const target = e.target;
+      const name = target.name;
+      const value =
+        target instanceof HTMLInputElement && target.type === 'checkbox'
+          ? target.checked
+          : target.value;
       setData((prev) => ({ ...prev, [name]: value }));
 
       if (errors[name as keyof FormErrors]) {
@@ -300,6 +311,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({ isMobile }) => {
           <label htmlFor="nome" style={S.label}>Nome</label>
           <input
             id="nome" name="nome" type="text" autoComplete="given-name"
+            required aria-required="true"
             value={data.nome} onChange={handleChange} disabled={submitting}
             placeholder="Mario"
             style={S.input(!!errors.nome)}
@@ -310,6 +322,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({ isMobile }) => {
           <label htmlFor="cognome" style={S.label}>Cognome</label>
           <input
             id="cognome" name="cognome" type="text" autoComplete="family-name"
+            required aria-required="true"
             value={data.cognome} onChange={handleChange} disabled={submitting}
             placeholder="Rossi"
             style={S.input(!!errors.cognome)}
@@ -323,6 +336,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({ isMobile }) => {
           <label htmlFor="email" style={S.label}>Email</label>
           <input
             id="email" name="email" type="email" autoComplete="email"
+            required aria-required="true"
             value={data.email} onChange={handleChange} disabled={submitting}
             placeholder="mario.rossi@email.com"
             style={S.input(!!errors.email)}
@@ -333,6 +347,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({ isMobile }) => {
           <label htmlFor="telefono" style={S.label}>Telefono</label>
           <input
             id="telefono" name="telefono" type="tel" autoComplete="tel"
+            required aria-required="true"
             value={data.telefono} onChange={handleChange} disabled={submitting}
             placeholder="+39 333 1234567"
             style={S.input(!!errors.telefono)}
@@ -346,6 +361,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({ isMobile }) => {
         <div style={{ position: 'relative' }}>
           <select
             id="settore" name="settore"
+            required aria-required="true"
             value={data.settore} onChange={handleChange} disabled={submitting}
             style={{
               ...S.input(!!errors.settore),
@@ -369,6 +385,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({ isMobile }) => {
           <label htmlFor="settoreCustom" style={S.label}>Specifica il settore</label>
           <input
             id="settoreCustom" name="settoreCustom" type="text"
+            required aria-required="true"
             value={data.settoreCustom} onChange={handleChange} disabled={submitting}
             placeholder="Es. Turismo, Agricoltura…"
             style={S.input(!!errors.settoreCustom)}
@@ -382,6 +399,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({ isMobile }) => {
         <div style={{ position: 'relative' }}>
           <select
             id="servizio" name="servizio"
+            required aria-required="true"
             value={data.servizio} onChange={handleChange} disabled={submitting}
             style={{
               ...S.input(!!errors.servizio),
@@ -398,6 +416,68 @@ export const LeadForm: React.FC<LeadFormProps> = ({ isMobile }) => {
           </select>
         </div>
         {errors.servizio && <p style={S.errorMsg}>{errors.servizio}</p>}
+      </div>
+
+      {/* Privacy */}
+      <div style={{ ...S.fieldWrap, marginTop: 4 }}>
+        <label
+          htmlFor="privacy"
+          style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 12,
+            cursor: submitting ? 'not-allowed' : 'pointer',
+            userSelect: 'none',
+          }}
+        >
+          <input
+            id="privacy" name="privacy" type="checkbox"
+            required aria-required="true"
+            checked={data.privacy} onChange={handleChange} disabled={submitting}
+            style={{
+              appearance: 'none',
+              WebkitAppearance: 'none',
+              width: 16,
+              height: 16,
+              flexShrink: 0,
+              marginTop: 2,
+              border: `1px solid ${errors.privacy ? 'rgba(220,50,50,0.6)' : 'var(--color-border)'}`,
+              background: data.privacy ? 'var(--color-gold)' : 'rgba(255,255,255,0.04)',
+              backgroundImage: data.privacy
+                ? `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpolyline points='2,6 5,9 10,3' fill='none' stroke='%23050505' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`
+                : 'none',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center',
+              cursor: submitting ? 'not-allowed' : 'pointer',
+              transition: 'background 0.2s, border-color 0.2s',
+            }}
+          />
+          <span
+            style={{
+              color: 'rgba(255,255,255,0.68)',
+              fontSize: '0.78rem',
+              fontFamily: 'var(--font-body)',
+              lineHeight: 1.5,
+            }}
+          >
+            Ho letto e accetto l'
+            <a
+              href="/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                color: 'var(--color-gold)',
+                textDecoration: 'underline',
+                textUnderlineOffset: '2px',
+              }}
+            >
+              informativa privacy
+            </a>
+            .
+          </span>
+        </label>
+        {errors.privacy && <p style={{ ...S.errorMsg, marginLeft: 28 }}>{errors.privacy}</p>}
       </div>
 
       {status === 'error' && apiError && (
@@ -447,7 +527,14 @@ export const LeadForm: React.FC<LeadFormProps> = ({ isMobile }) => {
         )}
       </button>
 
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        /* Forza sfondo scuro sulle options del select (altrimenti bianco-su-bianco su alcune combo OS/browser) */
+        form select option {
+          background-color: #0a0a0a;
+          color: #fff;
+        }
+      `}</style>
     </form>
   );
 };

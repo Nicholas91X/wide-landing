@@ -570,7 +570,10 @@ export const Contatti: React.FC = () => {
         [spawnPondRipple, perturbElements],
     );
 
-    /* ── 3D Tilt + Spotlight (desktop) ───────────────────────────────────── */
+    /* ── Spotlight cursor-following (desktop) ────────────────────────────── */
+    // Il tilt 3D perspective è stato rimosso perché rendeva instabile la digitazione
+    // nel LeadForm. Resta solo la luce radiale che segue il mouse — effetto coerente
+    // col resto della pagina (orbs, caustics, breathing glow) e non interferisce con l'input.
     const handleCardMouseMove = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
             if (isMobile) return;
@@ -579,10 +582,9 @@ export const Contatti: React.FC = () => {
             const rect = inner.getBoundingClientRect();
             const x = (e.clientX - rect.left) / rect.width;
             const y = (e.clientY - rect.top) / rect.height;
-            inner.style.transform = `perspective(800px) rotateX(${(y - 0.5) * -24}deg) rotateY(${(x - 0.5) * 24}deg)`;
             const spot = inner.querySelector<HTMLDivElement>('[data-spotlight]');
             if (spot) {
-                spot.style.background = `radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(255,255,255,0.10), transparent 60%)`;
+                spot.style.background = `radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(197,165,90,0.10), transparent 55%)`;
                 spot.style.opacity = '1';
             }
         },
@@ -592,7 +594,6 @@ export const Contatti: React.FC = () => {
     const handleCardMouseLeave = useCallback(() => {
         const inner = calCardInnerRef.current;
         if (!inner) return;
-        gsap.to(inner, { rotateX: 0, rotateY: 0, duration: 0.6, ease: 'power2.out', clearProps: 'transform' });
         const spot = inner.querySelector<HTMLDivElement>('[data-spotlight]');
         if (spot) gsap.to(spot, { opacity: 0, duration: 0.4 });
     }, []);
@@ -911,7 +912,6 @@ export const Contatti: React.FC = () => {
                     onMouseMove={handleCardMouseMove}
                     onMouseLeave={handleCardMouseLeave}
                     onClick={handleCardTap}
-                    style={{ perspective: '800px', willChange: 'transform' }}
                 >
                     <div style={{
                         position: 'relative', borderRadius: 17, padding: 1,
@@ -936,7 +936,6 @@ export const Contatti: React.FC = () => {
                                 padding: isMobile ? 'clamp(28px, 6vw, 40px)' : 'clamp(36px, 4vw, 56px)',
                                 display: 'flex', flexDirection: 'column',
                                 alignItems: 'stretch', justifyContent: 'flex-start', textAlign: 'left',
-                                willChange: isMobile ? 'auto' : 'transform',
                             }}
                         >
                             <div data-spotlight style={{
