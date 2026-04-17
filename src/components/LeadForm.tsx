@@ -290,11 +290,14 @@ export const LeadForm: React.FC<LeadFormProps> = ({ isMobile }) => {
             fontSize: '0.9rem',
             lineHeight: 1.7,
             margin: 0,
-            maxWidth: 320,
+            maxWidth: 340,
           }}
         >
-          Abbiamo inviato una conferma alla tua email. Nel frattempo puoi
-          esplorare il nostro portfolio.
+          Abbiamo inviato una conferma alla tua email.
+          <br />
+          <span style={{ color: 'rgba(255,255,255,0.72)' }}>
+            Non la trovi? Controlla la cartella spam.
+          </span>
         </p>
         <div style={{ width: 40, height: 1, background: 'var(--color-gold)' }} />
       </div>
