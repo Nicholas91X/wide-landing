@@ -11,12 +11,17 @@ import { useReducedMotion } from "../hooks/useReducedMotion";
 //     reappears when scrollY returns to top. No DOM removal — just opacity.
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const IntroOverlay: React.FC = () => {
+interface IntroOverlayProps {
+  onDismiss: () => void;
+}
+
+export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onDismiss }) => {
   const overlayRef = useRef<HTMLDivElement>(null);
   const textAreaRef = useRef<HTMLDivElement>(null);
   const lettersRef = useRef<(HTMLSpanElement | null)[]>([]);
   const kickerRef = useRef<HTMLParagraphElement>(null);
   const swipeRef = useRef<HTMLDivElement>(null);
+  const goldLineRef = useRef<HTMLDivElement>(null);
 
   const overlayShownRef = useRef(true);
 
@@ -48,6 +53,18 @@ export const IntroOverlay: React.FC = () => {
         ease: "power2.out",
         delay: 1.6,
       });
+
+    // Gold line — reveals after letters complete
+    const goldLine = goldLineRef.current;
+    if (goldLine) {
+      gsap.set(goldLine, { scaleY: 0, transformOrigin: 'top center' });
+      gsap.to(goldLine, {
+        scaleY: 1,
+        duration: 0.6,
+        ease: 'power2.out',
+        delay: 1.8,
+      });
+    }
 
     // Looping timeline: fade in → hold → fade out → pause → repeat
     const tl = gsap.timeline({ repeat: -1, delay: 0.4 });
@@ -133,6 +150,7 @@ export const IntroOverlay: React.FC = () => {
         overlayShownRef.current = false;
         document.body.style.overflow = "";
         window.scrollTo({ top: 0, behavior: "instant" });
+        onDismiss();
         return;
       }
 
@@ -148,6 +166,7 @@ export const IntroOverlay: React.FC = () => {
           // Unlock scroll and reset to top
           document.body.style.overflow = "";
           window.scrollTo({ top: 0, behavior: "instant" });
+          onDismiss();
         },
       });
     };
@@ -178,7 +197,7 @@ export const IntroOverlay: React.FC = () => {
       overlay.removeEventListener("click", dismiss);
       document.body.style.overflow = "";
     };
-  }, [prefersReduced]);
+  }, [prefersReduced, onDismiss]);
 
   const TITLE = "WIDE";
 
@@ -214,6 +233,7 @@ export const IntroOverlay: React.FC = () => {
             overlay.style.pointerEvents = "none";
             document.body.style.overflow = "";
             window.scrollTo({ top: 0, behavior: "instant" });
+            onDismiss();
           } else {
             import("gsap").then(({ gsap }) => {
               gsap.to(overlay, {
@@ -225,6 +245,7 @@ export const IntroOverlay: React.FC = () => {
                   overlay.style.pointerEvents = "none";
                   document.body.style.overflow = "";
                   window.scrollTo({ top: 0, behavior: "instant" });
+                  onDismiss();
                 },
               });
             });
@@ -257,7 +278,7 @@ export const IntroOverlay: React.FC = () => {
         <p
           ref={kickerRef}
           style={{
-            color: "rgba(255,255,255,0.28)",
+            color: "var(--color-gold)",
             fontSize: "0.68rem",
             fontWeight: 600,
             letterSpacing: "0.30em",
@@ -272,13 +293,17 @@ export const IntroOverlay: React.FC = () => {
           style={{
             display: "flex",
             gap: "clamp(0.01em, 0.5vw, 0.05em)",
-            color: "#fff",
+            color: "transparent",
+            WebkitTextStroke: "1.5px rgba(255,255,255,0.85)",
+            textShadow: [
+              "-2px 0 rgba(255,70,70,0.08)",
+              "2px 0 rgba(70,70,255,0.08)",
+            ].join(","),
             fontSize: "clamp(5rem, 22vw, 18rem)",
             fontWeight: 900,
             letterSpacing: "-0.04em",
             lineHeight: 0.9,
             margin: 0,
-            textShadow: "0 0 100px rgba(255,255,255,0.05)",
           }}
         >
           {TITLE.split("").map((ch, i) => (
@@ -293,6 +318,17 @@ export const IntroOverlay: React.FC = () => {
             </span>
           ))}
         </div>
+        {/* Linea verticale oro — si rivela dopo WIDE */}
+        <div
+          ref={goldLineRef}
+          style={{
+            width: 1,
+            height: 60,
+            background: 'linear-gradient(to bottom, var(--color-gold), transparent)',
+            margin: '12px auto 0',
+            transformOrigin: 'top center',
+          }}
+        />
       </div>
 
       {/* Dismiss hint — bottom center, fades in after the logo animation */}
@@ -329,7 +365,7 @@ export const IntroOverlay: React.FC = () => {
             style={{
               width: 1,
               height: 28,
-              background: "linear-gradient(to bottom, rgba(255,255,255,0.5), rgba(255,255,255,0.05))",
+              background: "linear-gradient(to bottom, rgba(197,165,90,0.6), rgba(197,165,90,0.05))",
               animation: "introScrollDrop 2s ease-in-out infinite",
             }}
           />
@@ -350,7 +386,7 @@ export const IntroOverlay: React.FC = () => {
         {/* Label — explicit and actionable */}
         <span
           style={{
-            color: "rgba(255,255,255,0.5)",
+            color: "rgba(197,165,90,0.55)",
             fontSize: "0.65rem",
             fontFamily: "var(--font-subtitle)",
             fontWeight: 600,

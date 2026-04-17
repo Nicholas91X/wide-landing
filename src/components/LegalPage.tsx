@@ -269,7 +269,7 @@ function AuditPrivacyContent() {
 
             <h2>4. Diritti dell'utente</h2>
             <p>
-                L'utente detiene gli stessi diritti specificati nella <a href="/privacy" target="_blank">Privacy Policy generale</a> ai sensi del GDPR, tra cui diritto di accesso, cancellazione e opposizione. Per qualsiasi richiesta, scrivere a: <a href="mailto:widestudiodigitale@gmail.com">widestudiodigitale@gmail.com</a>.
+                L'utente detiene gli stessi diritti specificati nella <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy generale</a> ai sensi del GDPR, tra cui diritto di accesso, cancellazione e opposizione. Per qualsiasi richiesta, scrivere a: <a href="mailto:widestudiodigitale@gmail.com">widestudiodigitale@gmail.com</a>.
             </p>
         </>
     );
@@ -299,7 +299,7 @@ function AuditTerminiContent() {
 
             <h2>4. Limitazione di Responsabilità</h2>
             <p>
-                WIDE Studio Digitale non è responsabile per eventuali decisioni di business prese dall'utente basandosi esclusivamente sull'esito automatizzato di questo quiz. Qualsiasi strategia aziendale richiede sempre un'analisi approfondita su misura. Per le altre condizioni d'uso, fa fede il generale documento di <a href="/note-legali" target="_blank">Note Legali</a>.
+                WIDE Studio Digitale non è responsabile per eventuali decisioni di business prese dall'utente basandosi esclusivamente sull'esito automatizzato di questo quiz. Qualsiasi strategia aziendale richiede sempre un'analisi approfondita su misura. Per le altre condizioni d'uso, fa fede il generale documento di <a href="/note-legali" target="_blank" rel="noopener noreferrer">Note Legali</a>.
             </p>
         </>
     );

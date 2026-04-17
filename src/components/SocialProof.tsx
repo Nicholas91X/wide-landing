@@ -12,6 +12,31 @@ const METRICS = [
   { value: "1000", suffix: "+", label: "Condivisioni" },
 ];
 
+// ─── MediaSlot helper (video-ready) ─────────────────────────────────────────
+/** Renders <video> if src is a video file, otherwise <img> */
+function MediaSlot({ src, alt, style }: { src: string; alt: string; style?: React.CSSProperties }) {
+  const isVideo = /\.(mp4|webm|mov)$/i.test(src);
+  if (isVideo) {
+    return (
+      <video
+        src={src}
+        autoPlay
+        loop
+        muted
+        playsInline
+        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style }}
+      />
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt={alt}
+      style={{ width: '100%', height: '100%', objectFit: 'contain', transform: 'scale(0.95)', filter: 'brightness(0.8)', ...style }}
+    />
+  );
+}
+
 // ─── Component ──────────────────────────────────────────────────────────────
 export const SocialProof: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -39,10 +64,17 @@ export const SocialProof: React.FC = () => {
     const caseEl = caseRef.current;
     if (!heroEl || !caseEl) return;
 
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     const heroChildren = heroEl.querySelectorAll<HTMLElement>(".sp-anim");
     const caseChildren = caseEl.querySelectorAll<HTMLElement>(".sp-anim");
+    const heroH2 = heroEl.querySelector('h2');
 
     gsap.set([...heroChildren, ...caseChildren], { opacity: 0, y: 30 });
+
+    if (heroH2 && !prefersReduced) {
+      gsap.set(heroH2, { opacity: 1, y: 0, clipPath: 'inset(0 0 100% 0)' });
+    }
 
     const tl1 = gsap.timeline({
       scrollTrigger: {
@@ -58,6 +90,14 @@ export const SocialProof: React.FC = () => {
       ease: "power2.out",
       stagger: 0.15,
     });
+
+    if (heroH2 && !prefersReduced) {
+      tl1.to(heroH2, {
+        clipPath: 'inset(0 0 0% 0)',
+        duration: 0.75,
+        ease: 'power3.out',
+      }, 0);
+    }
 
     const tl2 = gsap.timeline({
       scrollTrigger: {
@@ -144,8 +184,12 @@ export const SocialProof: React.FC = () => {
   return (
     <div
       ref={sectionRef}
-      style={{ backgroundColor: "#000", color: "#fff", width: "100%" }}
+      style={{ backgroundColor: 'var(--color-bg)', color: "#fff", width: "100%", position: 'relative' }}
     >
+      {/* Grid lines decorative */}
+      <div aria-hidden style={{ position: 'absolute', top: 0, bottom: 0, left: isMobile ? 24 : 48, width: 1, background: 'rgba(255,255,255,0.025)', pointerEvents: 'none', zIndex: 0 }} />
+      <div aria-hidden style={{ position: 'absolute', top: 0, bottom: 0, right: isMobile ? 24 : 48, width: 1, background: 'rgba(255,255,255,0.025)', pointerEvents: 'none', zIndex: 0 }} />
+
       {/* ── BLOCCO A — Hero Statement ──────────────────────────────────── */}
       <div
         ref={heroRef}
@@ -165,7 +209,7 @@ export const SocialProof: React.FC = () => {
         <p
           className="sp-anim"
           style={{
-            color: "rgba(255,255,255,0.35)",
+            color: "var(--color-gold)",
             fontSize: "0.72rem",
             fontFamily: "var(--font-subtitle)",
             fontWeight: 600,
@@ -190,9 +234,10 @@ export const SocialProof: React.FC = () => {
               ? "clamp(1.8rem, 8vw, 2.6rem)"
               : "clamp(2.4rem, 5vw, 3.6rem)",
             fontFamily: "var(--font-title)",
-            fontWeight: 700,
-            lineHeight: 1.1,
-            letterSpacing: "-0.02em",
+            fontWeight: 800,
+            lineHeight: 1.05,
+            letterSpacing: "-0.03em",
+            textTransform: "uppercase",
             margin: "0 0 24px",
           }}
         >
@@ -203,7 +248,7 @@ export const SocialProof: React.FC = () => {
         <p
           className="sp-anim"
           style={{
-            color: "rgba(255,255,255,0.55)",
+            color: "var(--color-text-secondary)",
             fontSize: "clamp(0.92rem, 2vw, 1.1rem)",
             fontFamily: "var(--font-body)",
             fontWeight: 400,
@@ -220,6 +265,7 @@ export const SocialProof: React.FC = () => {
         {/* CTA */}
         <button
           className="sp-anim"
+          data-cursor="ring"
           onClick={() => {
             trackCTAClick('hero');
             document
@@ -242,6 +288,8 @@ export const SocialProof: React.FC = () => {
             textTransform: "uppercase",
             cursor: "pointer",
             transition: "transform 0.3s ease, box-shadow 0.3s ease",
+            width: isMobile ? '100%' : 'auto',
+            justifyContent: 'center',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = "translateY(-2px)";
@@ -257,6 +305,9 @@ export const SocialProof: React.FC = () => {
           <span style={{ fontSize: "0.9rem" }}>→</span>
         </button>
       </div>
+
+      {/* Hairline oro */}
+      <div style={{ height: 1, background: 'linear-gradient(to right, transparent, var(--color-gold-muted), transparent)' }} />
 
       {/* ── BLOCCO B — Caso Studio ─────────────────────────────────────── */}
       <div
@@ -287,16 +338,9 @@ export const SocialProof: React.FC = () => {
           }}
         >
           {/* Background Image - Real zoom out via contain and scale */}
-          <img
+          <MediaSlot
             src="/assets/mustang_mach_1.jpg"
-            alt="Automotive Client 2025 - Mustang Mach 1"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "contain",
-              transform: "scale(0.95)", // Extra safety margin to show everything
-              filter: "brightness(0.8)",
-            }}
+            alt="Automotive Client 2025"
           />
 
           {/* Overlay label */}
@@ -314,7 +358,7 @@ export const SocialProof: React.FC = () => {
           >
             <span
               style={{
-                color: "rgba(255,255,255,0.5)",
+                color: "var(--color-gold)",
                 fontSize: "0.65rem",
                 fontFamily: "var(--font-subtitle)",
                 fontWeight: 600,
@@ -394,11 +438,10 @@ export const SocialProof: React.FC = () => {
           <div
             className="sp-anim"
             style={{
-              display: "flex",
-              flexDirection: isMobile ? "column" : "row",
-              gap: isMobile ? 0 : 0,
+              display: "grid",
+              gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(3, 1fr)',
               marginBottom: 28,
-              border: "1px solid rgba(255,255,255,0.08)",
+              border: "1px solid var(--color-border)",
             }}
           >
             {METRICS.map((m, i) => {
@@ -418,14 +461,13 @@ export const SocialProof: React.FC = () => {
               <div
                 key={i}
                 style={{
-                  flex: isMobile ? "none" : "1 1 0",
-                  padding: isMobile ? "20px 24px" : "24px 28px",
+                  padding: isMobile ? '20px 20px' : '24px 28px',
                   borderRight: !isMobile && i < METRICS.length - 1
-                    ? "1px solid rgba(255,255,255,0.08)"
+                    ? "1px solid var(--color-border)"
                     : "none",
-                  borderBottom: isMobile && i < METRICS.length - 1
-                    ? "1px solid rgba(255,255,255,0.08)"
-                    : "none",
+                  borderTop: isMobile && i === 2 ? "1px solid var(--color-border)" : "none",
+                  borderBottom: isMobile && i < 2 ? "1px solid var(--color-border)" : "none",
+                  gridColumn: isMobile && i === 2 ? '1 / -1' : undefined,
                   position: "relative",
                 }}
               >
@@ -516,6 +558,7 @@ export const SocialProof: React.FC = () => {
           <a
             className="sp-anim"
             href="#portfolio"
+            data-cursor="ring"
             onClick={(e) => {
               e.preventDefault();
               document
@@ -535,7 +578,7 @@ export const SocialProof: React.FC = () => {
               transition: "color 0.3s ease",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = "#fff";
+              e.currentTarget.style.color = "var(--color-gold)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.color = "rgba(255,255,255,0.6)";

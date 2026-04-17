@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import CalEmbed from './CalEmbed';
+import { LeadForm } from './LeadForm';
 import { trackSectionView } from '../utils/analytics';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -169,6 +169,12 @@ export const Contatti: React.FC = () => {
     const boatsEnteredRef = useRef(false);
     const pondRippleIdRef = useRef(0);
 
+    // Visibility-driven pause: loops store themselves here so the
+    // IntersectionObserver can restart them when the section re-enters viewport.
+    const isVisibleRef  = useRef(false); // starts false — loops begin paused
+    const pondTickRef   = useRef<() => void>(() => {});
+    const rippleDrawRef = useRef<() => void>(() => {});
+
     const [isMobile, setIsMobile] = useState(false);
     const [pondVisualRipples, setPondVisualRipples] = useState<PondVisualRipple[]>([]);
 
@@ -190,6 +196,33 @@ export const Contatti: React.FC = () => {
             { threshold: 0.2 },
         );
         obs.observe(el);
+        return () => obs.disconnect();
+    }, []);
+
+    /* ── Pause/resume loops based on viewport visibility ────────────────── */
+    useEffect(() => {
+        const section = sectionRef.current;
+        if (!section) return;
+        const obs = new IntersectionObserver(
+            ([entry]) => {
+                const wasVisible = isVisibleRef.current;
+                isVisibleRef.current = entry.isIntersecting;
+                if (entry.isIntersecting && !wasVisible) {
+                    // Section entered viewport — restart any loops that drained
+                    lastTimeRef.current = performance.now();
+                    if (!pondRafRef.current) {
+                        pondRafRef.current = requestAnimationFrame(pondTickRef.current);
+                    }
+                    if (!rafRef.current) {
+                        rafRef.current = requestAnimationFrame(rippleDrawRef.current);
+                    }
+                }
+                // Loops drain themselves when isVisibleRef becomes false —
+                // no explicit cancel needed here.
+            },
+            { threshold: 0.01 }, // any pixel visible = active
+        );
+        obs.observe(section);
         return () => obs.disconnect();
     }, []);
 
@@ -244,6 +277,12 @@ export const Contatti: React.FC = () => {
         lastTimeRef.current = performance.now();
 
         const tick = () => {
+            // Pause when section is off-screen — drain the loop gracefully.
+            // The visibility observer will restart it when needed.
+            if (!isVisibleRef.current) {
+                pondRafRef.current = 0;
+                return;
+            }
             const now = performance.now();
             const dt = Math.min((now - lastTimeRef.current) / 1000, 0.05);
             lastTimeRef.current = now;
@@ -338,8 +377,9 @@ export const Contatti: React.FC = () => {
             pondRafRef.current = requestAnimationFrame(tick);
         };
 
+        pondTickRef.current = tick;
         pondRafRef.current = requestAnimationFrame(tick);
-        return () => cancelAnimationFrame(pondRafRef.current);
+        return () => { cancelAnimationFrame(pondRafRef.current); pondRafRef.current = 0; };
     }, [isMobile]);
 
     /* ── Create visual ripple in pond (#1) ───────────────────────────────── */
@@ -380,6 +420,11 @@ export const Contatti: React.FC = () => {
         if (!ctx) return;
 
         const draw = () => {
+            // Drain when off-screen; visibility observer restarts when needed.
+            if (!isVisibleRef.current) {
+                rafRef.current = 0;
+                return;
+            }
             const now = performance.now();
             const dpr = Math.min(window.devicePixelRatio || 1, 2);
             const w = canvas.width / dpr;
@@ -405,8 +450,9 @@ export const Contatti: React.FC = () => {
             });
             rafRef.current = requestAnimationFrame(draw);
         };
+        rippleDrawRef.current = draw;
         rafRef.current = requestAnimationFrame(draw);
-        return () => cancelAnimationFrame(rafRef.current);
+        return () => { cancelAnimationFrame(rafRef.current); rafRef.current = 0; };
     }, []);
 
     /* ── Perturb elements + feed pond ────────────────────────────────────── */
@@ -524,7 +570,10 @@ export const Contatti: React.FC = () => {
         [spawnPondRipple, perturbElements],
     );
 
-    /* ── 3D Tilt + Spotlight (desktop) ───────────────────────────────────── */
+    /* ── Spotlight cursor-following (desktop) ────────────────────────────── */
+    // Il tilt 3D perspective è stato rimosso perché rendeva instabile la digitazione
+    // nel LeadForm. Resta solo la luce radiale che segue il mouse — effetto coerente
+    // col resto della pagina (orbs, caustics, breathing glow) e non interferisce con l'input.
     const handleCardMouseMove = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
             if (isMobile) return;
@@ -533,10 +582,9 @@ export const Contatti: React.FC = () => {
             const rect = inner.getBoundingClientRect();
             const x = (e.clientX - rect.left) / rect.width;
             const y = (e.clientY - rect.top) / rect.height;
-            inner.style.transform = `perspective(800px) rotateX(${(y - 0.5) * -24}deg) rotateY(${(x - 0.5) * 24}deg)`;
             const spot = inner.querySelector<HTMLDivElement>('[data-spotlight]');
             if (spot) {
-                spot.style.background = `radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(255,255,255,0.10), transparent 60%)`;
+                spot.style.background = `radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(197,165,90,0.10), transparent 55%)`;
                 spot.style.opacity = '1';
             }
         },
@@ -546,7 +594,6 @@ export const Contatti: React.FC = () => {
     const handleCardMouseLeave = useCallback(() => {
         const inner = calCardInnerRef.current;
         if (!inner) return;
-        gsap.to(inner, { rotateX: 0, rotateY: 0, duration: 0.6, ease: 'power2.out', clearProps: 'transform' });
         const spot = inner.querySelector<HTMLDivElement>('[data-spotlight]');
         if (spot) gsap.to(spot, { opacity: 0, duration: 0.4 });
     }, []);
@@ -865,7 +912,6 @@ export const Contatti: React.FC = () => {
                     onMouseMove={handleCardMouseMove}
                     onMouseLeave={handleCardMouseLeave}
                     onClick={handleCardTap}
-                    style={{ perspective: '800px', willChange: 'transform' }}
                 >
                     <div style={{
                         position: 'relative', borderRadius: 17, padding: 1,
@@ -889,9 +935,7 @@ export const Contatti: React.FC = () => {
                                 borderRadius: 16,
                                 padding: isMobile ? 'clamp(28px, 6vw, 40px)' : 'clamp(36px, 4vw, 56px)',
                                 display: 'flex', flexDirection: 'column',
-                                alignItems: 'center', justifyContent: 'center', textAlign: 'center',
-                                minHeight: isMobile ? 220 : 300,
-                                willChange: isMobile ? 'auto' : 'transform',
+                                alignItems: 'stretch', justifyContent: 'flex-start', textAlign: 'left',
                             }}
                         >
                             <div data-spotlight style={{
@@ -899,7 +943,18 @@ export const Contatti: React.FC = () => {
                                 opacity: 0, pointerEvents: 'none', transition: 'opacity 0.2s',
                             }} />
 
-                            <CalEmbed calLink="wide-studiodigitale-jdk11j" eventSlug="30min" domain="cal.eu" />
+                            <p style={{
+                                color: 'var(--color-gold)',
+                                fontSize: '0.68rem',
+                                fontFamily: 'var(--font-subtitle)',
+                                fontWeight: 700,
+                                letterSpacing: '0.3em',
+                                textTransform: 'uppercase',
+                                margin: '0 0 20px',
+                            }}>
+                                Contattaci
+                            </p>
+                            <LeadForm isMobile={isMobile} />
                         </div>
                     </div>
                 </div>

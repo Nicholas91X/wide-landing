@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, lazy, Suspense } from "react";
+import { CustomCursor } from "./components/CustomCursor";
 import { NavBubble } from "./components/NavBubble";
 import { IntroOverlay } from "./components/IntroOverlay";
 import { LegalPage } from "./components/LegalPage";
@@ -35,6 +36,9 @@ function getRouteFromPath(): LegalRoute {
 function App() {
   const [legalPage, setLegalPage] = useState<LegalRoute>(getRouteFromPath);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [showIntro, setShowIntro] = useState(
+    () => !localStorage.getItem('wide_intro_seen')
+  );
 
   useEffect(() => {
     const onScroll = () => setHasScrolled(true);
@@ -56,6 +60,11 @@ function App() {
     setLegalPage(null);
   }, []);
 
+  const handleIntroDismiss = useCallback(() => {
+    localStorage.setItem('wide_intro_seen', '1');
+    setShowIntro(false);
+  }, []);
+
   if (legalPage) {
     return (
       <>
@@ -68,10 +77,13 @@ function App() {
 
   return (
     <>
+      <CustomCursor />
       {/* NavBubble OUTSIDE <main> to prevent GSAP pin transforms
                 from creating a containing block that breaks position:fixed */}
       <NavBubble />
-      <IntroOverlay />
+      {showIntro && (
+        <IntroOverlay onDismiss={handleIntroDismiss} />
+      )}
       {/* LCP hint: browser registers this as LCP candidate eagerly */}
       <img
         src={
@@ -187,6 +199,14 @@ function FloatingCTA() {
         ? chiSiamo.getBoundingClientRect().top <= window.innerHeight * 0.7
         : false;
 
+      // Hide while Portfolio section is pinned — its own "Scopri il progetto"
+      // CTA is visible and the floating button would overlap it on mobile.
+      const portfolio = document.getElementById("portfolio");
+      const portfolioActive = portfolio
+        ? portfolio.getBoundingClientRect().top < window.innerHeight * 0.8 &&
+          portfolio.getBoundingClientRect().bottom > window.innerHeight * 0.2
+        : false;
+
       // Hide as soon as Contatti section starts entering the viewport
       // so the CTA never obscures the booking form.
       const contatti = document.getElementById("contatti");
@@ -199,7 +219,7 @@ function FloatingCTA() {
         window.scrollY + window.innerHeight >=
         document.documentElement.scrollHeight - 120;
 
-      setVisible(pastScrollVideo && !contattiApproaching && !nearBottom);
+      setVisible(pastScrollVideo && !portfolioActive && !contattiApproaching && !nearBottom);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -228,6 +248,7 @@ function FloatingCTA() {
         }}
       >
         <button
+          data-cursor="ring"
           onClick={goToContatti}
           style={{
             display: "flex",
@@ -258,6 +279,7 @@ function FloatingCTA() {
   // Desktop: bottom center button
   return (
     <button
+      data-cursor="ring"
       onClick={goToContatti}
       style={{
         position: "fixed",

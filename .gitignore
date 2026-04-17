@@ -54,3 +54,5 @@ ffmpeg-*.log
 .eslintcache
 .stylelintcache
 *.tsbuildinfo
+
+.claude/settings.local.json
