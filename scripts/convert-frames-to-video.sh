@@ -8,11 +8,13 @@
 # Requires:  ffmpeg installato (brew install ffmpeg / scoop install ffmpeg)
 #
 # Genera:
-#   public/videos/services-desktop.mp4  (~2-4MB da 908 frame WEBP desktop)
-#   public/videos/services-mobile.mp4   (~1-2MB da ~223 frame WEBP 9:16)
+#   public/videos/services-desktop.mp4  (~4-6MB da 908 frame WEBP desktop a 1280x720)
+#   public/videos/services-mobile.mp4   (~2-4MB da ~223 frame WEBP 720x1280)
 #
 # Profilo H.264 baseline + pixel format yuv420p + fastdecode per scrub fluido.
-# Keyframe ogni 10 frame (GOP=10) per seek preciso su currentTime=.
+# Keyframe ogni 20 frame (GOP=20) per bilanciare seek precisione e dimensione file.
+# Downscale 720p: il canvas fa cover del viewport, 720p è sufficiente per un background
+# scrub scaled su display retina (nessuna differenza visibile con 1080p sul video scurito).
 
 set -euo pipefail
 
@@ -23,36 +25,38 @@ OUT_DIR="$REPO_ROOT/public/videos"
 
 mkdir -p "$OUT_DIR"
 
-echo "→ Converting desktop frames (908 webp) to MP4..."
+echo "→ Converting desktop frames (908 webp, 1920x1080 → 1280x720) to MP4..."
 ffmpeg -y \
   -framerate 30 \
   -i "$DESKTOP_SRC/frame_%04d.webp" \
+  -vf "scale=1280:720:flags=lanczos" \
   -c:v libx264 \
   -profile:v baseline \
   -level 3.0 \
   -preset slow \
-  -crf 23 \
+  -crf 28 \
   -pix_fmt yuv420p \
-  -g 10 \
-  -keyint_min 10 \
+  -g 20 \
+  -keyint_min 20 \
   -sc_threshold 0 \
   -movflags +faststart \
   -tune fastdecode \
   -an \
   "$OUT_DIR/services-desktop.mp4"
 
-echo "→ Converting mobile frames (~223 webp 9:16) to MP4..."
+echo "→ Converting mobile frames (~223 webp 9:16, downscale a 720x1280) to MP4..."
 ffmpeg -y \
   -framerate 30 \
   -i "$MOBILE_SRC/frame_%04d.webp" \
+  -vf "scale=720:1280:flags=lanczos" \
   -c:v libx264 \
   -profile:v baseline \
   -level 3.0 \
   -preset slow \
-  -crf 25 \
+  -crf 30 \
   -pix_fmt yuv420p \
-  -g 10 \
-  -keyint_min 10 \
+  -g 20 \
+  -keyint_min 20 \
   -sc_threshold 0 \
   -movflags +faststart \
   -tune fastdecode \
