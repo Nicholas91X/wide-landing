@@ -14,6 +14,7 @@ const ScrollVideo = lazy(() =>
 );
 const Portfolio = lazy(() => import("./components/Portfolio"));
 const ChiSiamo = lazy(() => import("./components/ChiSiamo"));
+const GameReminder = lazy(() => import("./components/GameReminder"));
 const Contatti = lazy(() => import("./components/Contatti"));
 const Footer = lazy(() => import("./components/Footer"));
 
@@ -130,6 +131,15 @@ function App() {
             <section id="chi-siamo">
               <ChiSiamo />
             </section>
+            {/* Gradient fade divider */}
+            <div
+              style={{
+                height: "clamp(80px, 12vw, 160px)",
+                background:
+                  "linear-gradient(to bottom, #000 0%, #0a0a0a 30%, #111 50%, #0a0a0a 70%, #000 100%)",
+              }}
+            />
+            <GameReminder />
             {/* Gradient fade divider */}
             <div
               style={{
