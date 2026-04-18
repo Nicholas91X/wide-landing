@@ -114,11 +114,6 @@ export const Portfolio: React.FC = () => {
   );
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const currentCardIndexRef = useRef(0);
-  // Tracks which "cardIndex-reelIndex" iframes have ever been mounted.
-  // Once added, an iframe is never removed from the DOM — prevents cold-start
-  // reload when the user scrolls between cards or revisits a previous card.
-  const preloadedKeys = useRef<Set<string>>(new Set(['0-0']));
-
   const prefersReduced = useReducedMotion();
 
   // ── Track section visibility ───────────────────────────────────────────
@@ -352,14 +347,14 @@ export const Portfolio: React.FC = () => {
               {String(i + 1).padStart(2, '0')}
             </div>
 
-            {/* Indicatore reels verticale */}
+            {/* Indicatore reels verticale — top-left per non collidere con NavBubble (top-right) */}
             {project.reels && project.reels.length > 0 && (
               <div
                 aria-hidden={true}
                 style={{
                   position: 'absolute',
                   top: 16,
-                  right: 16,
+                  left: 72,
                   display: 'flex',
                   gap: 4,
                   alignItems: 'center',
@@ -423,18 +418,18 @@ export const Portfolio: React.FC = () => {
                         overflow: "hidden",
                       }}
                     >
-                      {/* Iframe mounting strategy:
-                          - Active card  → mount all reels (full visibility)
-                          - Next card    → mount first reel only, opacity 0 (pre-warm)
-                          - Any prev.    → keep mounted once loaded (never cold-reload)
-                          This ensures video is already buffered before the card slides in. */}
+                      {/* Iframe mounting strategy (sliding window per performance):
+                          - Active card    → mount all reels (full visibility)
+                          - Adjacent cards → mount first reel only, opacity 0 (pre-warm)
+                          - Far cards      → unmount (anche se già visti).
+                          Accumulare iframe oltre ±1 causa frame-drop: ogni iframe Bunny
+                          continua a decodificare il video in background anche a opacity 0. */}
                       {(() => {
-                        const iframeKey = `${i}-${idx}`;
                         const isActive = i === currentCardIndex;
-                        const isPrewarm = i === currentCardIndex + 1 && idx === 0;
-                        const wasLoaded = preloadedKeys.current.has(iframeKey);
-                        const shouldMount = isActive || isPrewarm || wasLoaded;
-                        if (shouldMount) preloadedKeys.current.add(iframeKey);
+                        const isAdjacent =
+                          (i === currentCardIndex + 1 || i === currentCardIndex - 1) &&
+                          idx === 0;
+                        const shouldMount = isActive || isAdjacent;
                         if (!shouldMount) return null;
                         return (
                           <iframe
@@ -493,12 +488,12 @@ export const Portfolio: React.FC = () => {
                                         }
                                         @keyframes swipeHintShimmer {
                                             0%, 100% {
-                                                filter: brightness(1);
-                                                text-shadow: 0 2px 8px rgba(0,0,0,0.75);
+                                                transform: scale(1);
+                                                box-shadow: 0 4px 16px rgba(0,0,0,0.55), 0 0 0 0 rgba(197,165,90,0.6), inset 0 1px 0 rgba(255,255,255,0.4);
                                             }
                                             50% {
-                                                filter: brightness(1.4);
-                                                text-shadow: 0 0 12px rgba(255,255,255,0.6), 0 2px 8px rgba(0,0,0,0.75);
+                                                transform: scale(1.05);
+                                                box-shadow: 0 6px 22px rgba(0,0,0,0.6), 0 0 0 8px rgba(197,165,90,0), inset 0 1px 0 rgba(255,255,255,0.5);
                                             }
                                         }
                                     `,
@@ -642,17 +637,21 @@ export const Portfolio: React.FC = () => {
                   <div
                     className="portfolio-swipe-hint"
                     style={{
-                      display: "flex",
+                      display: "inline-flex",
                       alignItems: "center",
-                      gap: "8px",
-                      color: "#fff",
-                      fontSize: "0.8rem",
+                      gap: "10px",
+                      color: "#0a0a0a",
+                      fontSize: "0.82rem",
                       fontFamily: "var(--font-subtitle)",
-                      fontWeight: 700,
-                      letterSpacing: "0.1em",
+                      fontWeight: 800,
+                      letterSpacing: "0.14em",
                       textTransform: "uppercase",
-                      textShadow: "0 2px 8px rgba(0,0,0,0.75)",
-                      animation: "swipeHintShimmer 2.5s ease-in-out infinite",
+                      padding: "10px 18px",
+                      background: "var(--color-gold)",
+                      borderRadius: "999px",
+                      boxShadow: "0 4px 16px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.4)",
+                      animation: "swipeHintShimmer 2.2s ease-in-out infinite",
+                      alignSelf: "flex-start",
                     }}
                   >
                     <svg

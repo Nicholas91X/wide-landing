@@ -684,7 +684,7 @@ export const NavBubble: React.FC = () => {
             >
               <span
                 style={{
-                  color: isActive ? "#050505" : "rgba(15,15,15,0.82)",
+                  color: "#fff",
                   fontSize: "0.72rem",
                   fontWeight: isActive ? 800 : 700,
                   letterSpacing: "0.1em",
@@ -692,7 +692,7 @@ export const NavBubble: React.FC = () => {
                   textAlign: "center",
                   pointerEvents: "none",
                   lineHeight: 1.2,
-                  textShadow: "0 0 6px rgba(255,255,255,0.55)",
+                  textShadow: "0 1px 3px rgba(0,0,0,0.85), 0 0 10px rgba(0,0,0,0.6)",
                 }}
               >
                 {item.label}
