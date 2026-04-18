@@ -632,6 +632,7 @@ interface ProgressOverlayProps {
   isMobile: boolean;
   currentServiceIndex: number;
   progress: number;
+  visible: boolean;
   onServiceClick: (idx: number) => void;
 }
 
@@ -639,6 +640,7 @@ const ProgressOverlay: React.FC<ProgressOverlayProps> = React.memo(({
   isMobile,
   currentServiceIndex,
   progress,
+  visible,
   onServiceClick,
 }) => {
   if (isMobile) {
@@ -651,6 +653,8 @@ const ProgressOverlay: React.FC<ProgressOverlayProps> = React.memo(({
           right: 0,
           zIndex: 100,
           pointerEvents: "none",
+          opacity: visible ? 1 : 0,
+          transition: "opacity 0.35s ease",
         }}
       >
         <div
@@ -702,6 +706,9 @@ const ProgressOverlay: React.FC<ProgressOverlayProps> = React.memo(({
         display: "flex",
         flexDirection: "column",
         gap: 14,
+        opacity: visible ? 1 : 0,
+        pointerEvents: visible ? "auto" : "none",
+        transition: "opacity 0.35s ease",
       }}
     >
       {SERVICE_LABELS.map((label, i) => {
@@ -781,6 +788,7 @@ export const ScrollVideo: React.FC = () => {
   const [useFallback, setUseFallback] = useState(false);
   const fallbackImagesRef = useRef<HTMLImageElement[]>([]);
   const [fallbackLoaded, setFallbackLoaded] = useState(false);
+  const [isInView, setIsInView] = useState(false);
   const prefersReduced = useReducedMotion();
 
   useEffect(() => {
@@ -799,14 +807,16 @@ export const ScrollVideo: React.FC = () => {
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+    let tracked = false;
     const obs = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        setIsInView(entry.isIntersecting);
+        if (entry.isIntersecting && !tracked) {
           trackSectionView("services");
-          obs.disconnect();
+          tracked = true;
         }
       },
-      { threshold: 0.2 }
+      { threshold: 0, rootMargin: "0px 0px -20% 0px" }
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -1099,6 +1109,7 @@ export const ScrollVideo: React.FC = () => {
         isMobile={isMobile}
         currentServiceIndex={currentServiceIndex}
         progress={progress}
+        visible={isInView}
         onServiceClick={scrollToService}
       />
     </div>

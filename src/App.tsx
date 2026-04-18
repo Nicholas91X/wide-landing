@@ -103,7 +103,7 @@ function App() {
         }}
         alt=""
       />
-      <main style={{ overflowX: "hidden" }}>
+      <main>
         <SocialProof />
         <Suspense
           fallback={<div style={{ background: "#000", minHeight: "100vh" }} />}
