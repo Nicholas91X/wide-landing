@@ -420,7 +420,7 @@ export const SocialProof: React.FC = () => {
           <p
             className="sp-anim"
             style={{
-              color: "rgba(255,255,255,0.5)",
+              color: "rgba(255,255,255,0.72)",
               fontSize: "clamp(0.88rem, 2vw, 1rem)",
               fontFamily: "var(--font-body)",
               fontWeight: 400,
@@ -566,7 +566,7 @@ export const SocialProof: React.FC = () => {
                 ?.scrollIntoView({ behavior: "instant" });
             }}
             style={{
-              color: "rgba(255,255,255,0.6)",
+              color: "rgba(255,255,255,0.75)",
               fontSize: "0.82rem",
               fontFamily: "var(--font-subtitle)",
               fontWeight: 600,
@@ -581,7 +581,7 @@ export const SocialProof: React.FC = () => {
               e.currentTarget.style.color = "var(--color-gold)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = "rgba(255,255,255,0.6)";
+              e.currentTarget.style.color = "rgba(255,255,255,0.75)";
             }}
           >
             Scopri come <span>→</span>

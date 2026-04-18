@@ -285,7 +285,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({ isMobile }) => {
         </h3>
         <p
           style={{
-            color: 'rgba(255,255,255,0.48)',
+            color: 'rgba(255,255,255,0.72)',
             fontFamily: 'var(--font-body)',
             fontSize: '0.9rem',
             lineHeight: 1.7,
@@ -457,7 +457,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({ isMobile }) => {
           />
           <span
             style={{
-              color: 'rgba(255,255,255,0.68)',
+              color: 'rgba(255,255,255,0.75)',
               fontSize: '0.78rem',
               fontFamily: 'var(--font-body)',
               lineHeight: 1.5,

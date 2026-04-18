@@ -262,7 +262,7 @@ export const Portfolio: React.FC = () => {
         </h2>
         <p
           style={{
-            color: "rgba(255,255,255,0.45)",
+            color: "rgba(255,255,255,0.65)",
             fontSize: "clamp(0.9rem, 2vw, 1.1rem)",
             fontFamily: "var(--font-body)",
             fontWeight: 400,
@@ -634,7 +634,7 @@ export const Portfolio: React.FC = () => {
                       display: "flex",
                       alignItems: "center",
                       gap: "6px",
-                      color: "rgba(255,255,255,0.6)",
+                      color: "rgba(255,255,255,0.75)",
                       fontSize: "0.75rem",
                       fontFamily: "var(--font-subtitle)",
                       fontWeight: 600,
