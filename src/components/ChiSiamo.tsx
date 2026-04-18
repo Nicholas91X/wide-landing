@@ -117,7 +117,7 @@ const FounderScene = React.forwardRef<HTMLDivElement, FounderSceneProps>(
                 bottom: 18,
               }}
             >
-              <h3
+              <h4
                 style={{
                   fontFamily: "var(--font-title)",
                   fontSize: "2rem",
@@ -132,7 +132,7 @@ const FounderScene = React.forwardRef<HTMLDivElement, FounderSceneProps>(
                 {person.nameFirst}
                 <br />
                 {person.nameLast}
-              </h3>
+              </h4>
               <span
                 style={{
                   fontFamily: "var(--font-title)",
