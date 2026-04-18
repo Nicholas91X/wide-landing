@@ -301,7 +301,7 @@ export const SocialProof: React.FC = () => {
             e.currentTarget.style.boxShadow = "none";
           }}
         >
-          Prenota una call gratuita
+          Contattaci senza impegno
           <span style={{ fontSize: "0.9rem" }}>→</span>
         </button>
       </div>

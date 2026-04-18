@@ -269,7 +269,7 @@ function FloatingCTA() {
             boxShadow: "0 6px 24px rgba(0,0,0,0.4)",
           }}
         >
-          Prenota una call gratuita
+          Contattaci senza impegno
           <span style={{ fontSize: "0.9rem" }}>→</span>
         </button>
       </div>
@@ -313,7 +313,7 @@ function FloatingCTA() {
         e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.4)";
       }}
     >
-      Prenota una call gratuita
+      Contattaci senza impegno
     </button>
   );
 }

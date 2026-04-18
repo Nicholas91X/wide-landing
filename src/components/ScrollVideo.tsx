@@ -233,12 +233,13 @@ const CardsLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = Re
       <div
         key={i}
         style={{
-          background: "rgba(255,255,255,0.04)",
-          border: "1px solid rgba(255,255,255,0.1)",
-          backdropFilter: "blur(10px)",
-          WebkitBackdropFilter: "blur(10px)",
+          background: "rgba(5,5,5,0.82)",
+          border: "1px solid rgba(197,165,90,0.22)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
           borderRadius: 4,
           padding: isMobile ? "18px 18px" : "28px 24px",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.35)",
         }}
       >
         {item.title && (
@@ -261,7 +262,7 @@ const CardsLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = Re
               fontFamily: "var(--font-body)",
               fontSize: isMobile ? "0.78rem" : "0.85rem",
               lineHeight: 1.6,
-              color: "rgba(255,255,255,0.78)",
+              color: "rgba(255,255,255,0.88)",
               margin: 0,
             }}
           >
@@ -363,12 +364,13 @@ const GalleryLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = 
       <div
         key={i}
         style={{
-          background: "rgba(255,255,255,0.04)",
-          border: "1px solid rgba(255,255,255,0.1)",
-          backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
+          background: "rgba(5,5,5,0.82)",
+          border: "1px solid rgba(197,165,90,0.22)",
+          backdropFilter: "blur(14px)",
+          WebkitBackdropFilter: "blur(14px)",
           borderRadius: 4,
           padding: isMobile ? "16px 16px" : "22px 22px",
+          boxShadow: "0 6px 24px rgba(0,0,0,0.3)",
         }}
       >
         {item.title && (
@@ -390,7 +392,7 @@ const GalleryLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = 
               fontFamily: "var(--font-body)",
               fontSize: isMobile ? "0.75rem" : "0.82rem",
               lineHeight: 1.55,
-              color: "rgba(255,255,255,0.78)",
+              color: "rgba(255,255,255,0.88)",
               margin: 0,
             }}
           >

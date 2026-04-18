@@ -773,7 +773,7 @@ export const Contatti: React.FC = () => {
                     margin: 0,
                     maxWidth: 520,
                 }}>
-                    Se vuoi scoprire come possiamo aiutarti, scrivici o prenota una consulenza gratuita:
+                    Se vuoi scoprire come possiamo aiutarti, compila il form qui a fianco senza impegno:
                     insieme costruiremo una strategia efficace per la tua crescita.
                     Il tuo lavoro merita di essere conosciuto, e noi siamo qui per farlo arrivare
                     alle persone giuste.
