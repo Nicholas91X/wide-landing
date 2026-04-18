@@ -352,11 +352,16 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onDismiss }) => {
           }
         `}</style>
 
-        {/* Cluster 3 chevron stacked */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        {/* Cluster 3 chevron stacked — decorative */}
+        <div
+          aria-hidden="true"
+          style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+        >
           {[0, 1, 2].map((i) => (
             <svg
               key={i}
+              aria-hidden="true"
+              focusable="false"
               width="28"
               height="14"
               viewBox="0 0 28 14"
@@ -366,9 +371,11 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onDismiss }) => {
               strokeLinecap="round"
               strokeLinejoin="round"
               style={{
-                opacity: 0.3,
+                opacity: prefersReduced ? 0.8 : 0.3,
                 marginTop: i === 0 ? 0 : -6,
-                animation: "introChevCascade 1.6s ease-in-out infinite",
+                animation: prefersReduced
+                  ? "none"
+                  : "introChevCascade 1.6s ease-in-out infinite",
                 animationDelay: `${i * 0.2}s`,
               }}
             >

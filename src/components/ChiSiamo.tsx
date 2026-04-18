@@ -425,7 +425,7 @@ export const ChiSiamo: React.FC = () => {
         </h2>
         <p
           style={{
-            color: "rgba(255,255,255,0.6)",
+            color: "rgba(255,255,255,0.75)",
             fontSize: "clamp(0.85rem, 2vw, 1.1rem)",
             fontFamily: "var(--font-body)",
             fontWeight: 400,
@@ -439,7 +439,7 @@ export const ChiSiamo: React.FC = () => {
         </p>
         <p
           style={{
-            color: "rgba(255,255,255,0.5)",
+            color: "rgba(255,255,255,0.72)",
             fontSize: "clamp(0.82rem, 1.8vw, 1rem)",
             fontFamily: "var(--font-body)",
             fontWeight: 400,
@@ -454,7 +454,7 @@ export const ChiSiamo: React.FC = () => {
         </p>
         <p
           style={{
-            color: "rgba(255,255,255,0.5)",
+            color: "rgba(255,255,255,0.72)",
             fontSize: "clamp(0.82rem, 1.8vw, 1rem)",
             fontFamily: "var(--font-body)",
             fontWeight: 400,
@@ -663,7 +663,7 @@ export const ChiSiamo: React.FC = () => {
         </h3>
         <p
           style={{
-            color: "rgba(255,255,255,0.5)",
+            color: "rgba(255,255,255,0.75)",
             fontSize: "clamp(0.9rem, 2vw, 1.1rem)",
             fontFamily: "var(--font-body)",
             fontWeight: 400,
@@ -678,7 +678,7 @@ export const ChiSiamo: React.FC = () => {
         </p>
         <p
           style={{
-            color: "rgba(255,255,255,0.5)",
+            color: "rgba(255,255,255,0.75)",
             fontSize: "clamp(0.9rem, 2vw, 1.1rem)",
             fontFamily: "var(--font-body)",
             fontWeight: 400,
