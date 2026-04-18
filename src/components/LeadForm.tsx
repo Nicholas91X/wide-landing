@@ -21,16 +21,6 @@ const SETTORI = [
   'Altro',
 ] as const;
 
-const SERVIZI = [
-  'Social Media Marketing',
-  'Content Marketing',
-  'Shooting Video/Fotografici',
-  'Produzioni Video con AI',
-  'Il Tuo Strumento Digitale',
-  'Sviluppo Piattaforme Web',
-  'Integrazioni Automazioni AI',
-] as const;
-
 // ─── Tipi ────────────────────────────────────────────────────────────────────
 
 interface FormData {
@@ -40,7 +30,6 @@ interface FormData {
   telefono: string;
   settore: string;
   settoreCustom: string;
-  servizio: string;
   privacy: boolean;
 }
 
@@ -51,7 +40,6 @@ interface FormErrors {
   telefono?: string;
   settore?: string;
   settoreCustom?: string;
-  servizio?: string;
   privacy?: string;
 }
 
@@ -59,7 +47,7 @@ type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
 
 const EMPTY: FormData = {
   nome: '', cognome: '', email: '', telefono: '',
-  settore: '', settoreCustom: '', servizio: '',
+  settore: '', settoreCustom: '',
   privacy: false,
 };
 
@@ -87,9 +75,6 @@ function validate(data: FormData): FormErrors {
 
   if (data.settore === 'Altro' && !data.settoreCustom.trim())
     errors.settoreCustom = 'Specifica il tuo settore';
-
-  if (!data.servizio)
-    errors.servizio = 'Seleziona il servizio di interesse';
 
   if (!data.privacy)
     errors.privacy = 'Devi accettare l\'informativa privacy per continuare';
@@ -205,7 +190,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({ isMobile }) => {
 
       setStatus('submitting');
       setApiError('');
-      trackLeadFormSubmit(data.servizio);
+      trackLeadFormSubmit();
 
       const payload = {
         nome: data.nome.trim(),
@@ -216,7 +201,6 @@ export const LeadForm: React.FC<LeadFormProps> = ({ isMobile }) => {
         ...(data.settore === 'Altro' && data.settoreCustom
           ? { settoreCustom: data.settoreCustom.trim() }
           : {}),
-        servizio: data.servizio,
       };
 
       try {
@@ -233,7 +217,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({ isMobile }) => {
         }
 
         setStatus('success');
-        trackLeadFormSuccess(data.servizio);
+        trackLeadFormSuccess();
       } catch (err) {
         const msg = (err as Error).message ?? 'Errore sconosciuto';
         setApiError(msg);
@@ -396,30 +380,6 @@ export const LeadForm: React.FC<LeadFormProps> = ({ isMobile }) => {
           {errors.settoreCustom && <p style={S.errorMsg}>{errors.settoreCustom}</p>}
         </div>
       )}
-
-      <div style={S.fieldWrap}>
-        <label htmlFor="servizio" style={S.label}>Servizio di interesse</label>
-        <div style={{ position: 'relative' }}>
-          <select
-            id="servizio" name="servizio"
-            required aria-required="true"
-            value={data.servizio} onChange={handleChange} disabled={submitting}
-            style={{
-              ...S.input(!!errors.servizio),
-              paddingRight: 36,
-              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpolyline points='1,1 6,7 11,1' fill='none' stroke='rgba(197,165,90,0.7)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 12px center',
-            }}
-          >
-            <option value="">Seleziona il servizio…</option>
-            {SERVIZI.map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-        </div>
-        {errors.servizio && <p style={S.errorMsg}>{errors.servizio}</p>}
-      </div>
 
       {/* Privacy */}
       <div style={{ ...S.fieldWrap, marginTop: 4 }}>

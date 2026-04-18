@@ -30,7 +30,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Home", sectionId: "home", angle: -90 }, // 12 o'clock
   { label: "Servizi", sectionId: "servizi", angle: -18 }, // 1-2 o'clock
   { label: "Chi Siamo", sectionId: "chi-siamo", angle: 54 }, // 4-5 o'clock
-  { label: "Portfolio", sectionId: "portfolio", angle: 126 }, // 7-8 o'clock
+  { label: "Progetti", sectionId: "portfolio", angle: 126 }, // 7-8 o'clock
   { label: "Contatti", sectionId: "contatti", angle: 198 }, // 9-10 o'clock
 ];
 
@@ -684,14 +684,15 @@ export const NavBubble: React.FC = () => {
             >
               <span
                 style={{
-                  color: isActive ? "#fff" : "rgba(255,255,255,0.75)",
-                  fontSize: "0.6rem",
-                  fontWeight: isActive ? 800 : 600,
+                  color: isActive ? "#050505" : "rgba(15,15,15,0.82)",
+                  fontSize: "0.72rem",
+                  fontWeight: isActive ? 800 : 700,
                   letterSpacing: "0.1em",
                   textTransform: "uppercase",
                   textAlign: "center",
                   pointerEvents: "none",
                   lineHeight: 1.2,
+                  textShadow: "0 0 6px rgba(255,255,255,0.55)",
                 }}
               >
                 {item.label}

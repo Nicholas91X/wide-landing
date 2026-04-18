@@ -66,13 +66,13 @@ export function trackLeadFormStart() {
 }
 
 /** Fired when the user clicks submit after client-side validation passes. */
-export function trackLeadFormSubmit(servizio: string) {
-  push('lead_form_submit', { lead_servizio: servizio });
+export function trackLeadFormSubmit() {
+  push('lead_form_submit');
 }
 
 /** Fired on successful backend response — use this as conversion trigger. */
-export function trackLeadFormSuccess(servizio: string) {
-  push('lead_form_success', { lead_servizio: servizio });
+export function trackLeadFormSuccess() {
+  push('lead_form_success');
 }
 
 /** Fired when the backend returns an error or fetch fails. */

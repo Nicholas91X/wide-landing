@@ -160,6 +160,9 @@ const SERVICE_LABELS = [
 
 const TOTAL_SERVICES = SERVICES.length; // 6
 
+const ROMAN_NUMERALS = ["I", "II", "III", "IV", "V", "VI"];
+const toRoman = (n: number): string => ROMAN_NUMERALS[n - 1] ?? String(n);
+
 const BUNNY_VIDEO_URL =
   "https://iframe.mediadelivery.net/embed/604848/6947a772-4a77-416c-85a6-c0b30154aeea?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=true";
 
@@ -573,36 +576,37 @@ const ServiceBlock: React.FC<ServiceBlockProps> = React.memo(({
     >
       <div
         style={{
-          maxWidth: 900,
-          margin: "0 auto 40px",
+          maxWidth: 860,
+          margin: "0 auto 44px",
           textAlign: isMobile ? "left" : "center",
           width: "100%",
         }}
       >
-        <p
+        <div
           style={{
-            fontFamily: "var(--font-title)",
-            fontSize: isMobile ? "0.58rem" : "0.68rem",
-            letterSpacing: "0.28em",
-            textTransform: "uppercase",
+            fontFamily: "var(--font-serif)",
+            fontStyle: "italic",
+            fontSize: isMobile ? "0.95rem" : "1.2rem",
             color: "var(--color-gold)",
-            fontWeight: 700,
-            margin: "0 0 16px",
+            lineHeight: 1,
+            marginBottom: isMobile ? 10 : 14,
+            letterSpacing: "0.05em",
           }}
+          aria-hidden="true"
         >
-          {String(index + 1).padStart(2, "0")} /{" "}
-          {String(TOTAL_SERVICES).padStart(2, "0")}
-        </p>
+          — {toRoman(index + 1)}
+        </div>
         <h3
           style={{
-            fontFamily: "var(--font-title)",
-            fontSize: isMobile ? "1.8rem" : "clamp(2rem, 4.5vw, 3.5rem)",
-            fontWeight: 800,
-            lineHeight: 1.05,
-            letterSpacing: "-0.02em",
+            fontFamily: "var(--font-serif)",
+            fontStyle: "italic",
+            fontSize: isMobile ? "2rem" : "clamp(2.4rem, 5vw, 4rem)",
+            fontWeight: 400,
+            lineHeight: 1.02,
+            letterSpacing: "-0.01em",
             color: "#fff",
-            margin: "0 0 14px",
-            textTransform: "uppercase",
+            margin: "0 0 18px",
+            textShadow: "0 2px 20px rgba(0,0,0,0.6)",
           }}
         >
           {service.title}
@@ -610,14 +614,15 @@ const ServiceBlock: React.FC<ServiceBlockProps> = React.memo(({
         <p
           style={{
             fontFamily: "var(--font-body)",
-            fontSize: isMobile ? "0.85rem" : "1rem",
-            lineHeight: 1.6,
-            color: "rgba(255,255,255,0.82)",
+            fontSize: isMobile ? "0.9rem" : "1.05rem",
+            lineHeight: 1.65,
+            color: "rgba(255,255,255,0.95)",
             margin: 0,
             maxWidth: "56ch",
             marginLeft: isMobile ? 0 : "auto",
             marginRight: isMobile ? 0 : "auto",
             whiteSpace: "pre-line",
+            textShadow: "0 1px 10px rgba(0,0,0,0.6)",
           }}
         >
           {service.description}
@@ -1091,7 +1096,7 @@ export const ScrollVideo: React.FC = () => {
             position: "absolute",
             inset: 0,
             background:
-              "radial-gradient(ellipse at center, transparent 40%, rgba(5,5,5,0.55) 100%)",
+              "radial-gradient(ellipse at center, rgba(5,5,5,0.4) 0%, rgba(5,5,5,0.75) 100%)",
             pointerEvents: "none",
           }}
         />
