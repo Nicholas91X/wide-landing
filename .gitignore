@@ -56,3 +56,4 @@ ffmpeg-*.log
 *.tsbuildinfo
 
 .claude/settings.local.json
+.superpowers/
