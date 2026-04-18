@@ -57,3 +57,4 @@ ffmpeg-*.log
 
 .claude/settings.local.json
 .superpowers/
+.worktrees/
