@@ -171,7 +171,7 @@ interface ChapterStripProps {
   isMobile: boolean;
 }
 
-const ChapterStrip: React.FC<ChapterStripProps> = ({ number, title, isMobile }) => (
+const ChapterStrip: React.FC<ChapterStripProps> = React.memo(({ number, title, isMobile }) => (
   <div
     style={{
       padding: isMobile ? "28px 20px" : "40px 40px",
@@ -210,11 +210,12 @@ const ChapterStrip: React.FC<ChapterStripProps> = ({ number, title, isMobile }) 
       {title}
     </div>
   </div>
-);
+));
+ChapterStrip.displayName = "ChapterStrip";
 
 // ── Layout components ──
 
-const CardsLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = ({
+const CardsLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = React.memo(({
   items,
   isMobile,
 }) => (
@@ -270,9 +271,10 @@ const CardsLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = ({
       </div>
     ))}
   </div>
-);
+));
+CardsLayout.displayName = "CardsLayout";
 
-const StatsLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = ({
+const StatsLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = React.memo(({
   items,
   isMobile,
 }) => (
@@ -340,9 +342,10 @@ const StatsLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = ({
       </div>
     ))}
   </div>
-);
+));
+StatsLayout.displayName = "StatsLayout";
 
-const GalleryLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = ({
+const GalleryLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = React.memo(({
   items,
   isMobile,
 }) => (
@@ -397,9 +400,10 @@ const GalleryLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = 
       </div>
     ))}
   </div>
-);
+));
+GalleryLayout.displayName = "GalleryLayout";
 
-const TestimonialLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = ({
+const TestimonialLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = React.memo(({
   items,
   isMobile,
 }) => {
@@ -444,9 +448,10 @@ const TestimonialLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }
       )}
     </div>
   );
-};
+});
+TestimonialLayout.displayName = "TestimonialLayout";
 
-const VideoLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = ({
+const VideoLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = React.memo(({
   items: _items,
   isMobile: _isMobile,
 }) => (
@@ -484,7 +489,8 @@ const VideoLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = ({
       />
     </div>
   </div>
-);
+));
+VideoLayout.displayName = "VideoLayout";
 
 const ServiceLayout: React.FC<{ service: Service; isMobile: boolean }> = ({
   service,
@@ -514,7 +520,7 @@ interface ServiceBlockProps {
   prefersReduced: boolean;
 }
 
-const ServiceBlock: React.FC<ServiceBlockProps> = ({
+const ServiceBlock: React.FC<ServiceBlockProps> = React.memo(({
   service,
   index,
   isMobile,
@@ -552,6 +558,7 @@ const ServiceBlock: React.FC<ServiceBlockProps> = ({
   return (
     <div
       ref={blockRef}
+      data-service-index={index}
       style={{
         minHeight: isMobile ? "90vh" : "100vh",
         padding: isMobile ? "60px 20px 40px" : "80px 40px 60px",
@@ -618,7 +625,8 @@ const ServiceBlock: React.FC<ServiceBlockProps> = ({
       <ServiceLayout service={service} isMobile={isMobile} />
     </div>
   );
-};
+});
+ServiceBlock.displayName = "ServiceBlock";
 
 interface ProgressOverlayProps {
   isMobile: boolean;
@@ -627,7 +635,7 @@ interface ProgressOverlayProps {
   onServiceClick: (idx: number) => void;
 }
 
-const ProgressOverlay: React.FC<ProgressOverlayProps> = ({
+const ProgressOverlay: React.FC<ProgressOverlayProps> = React.memo(({
   isMobile,
   currentServiceIndex,
   progress,
@@ -757,7 +765,8 @@ const ProgressOverlay: React.FC<ProgressOverlayProps> = ({
       </div>
     </div>
   );
-};
+});
+ProgressOverlay.displayName = "ProgressOverlay";
 
 // ═══════ Main Component ═══════
 export const ScrollVideo: React.FC = () => {
@@ -805,6 +814,16 @@ export const ScrollVideo: React.FC = () => {
     v.pause();
     setVideoReady(true);
   }, []);
+
+  // Reload video source when breakpoint changes (desktop ↔ mobile)
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    setVideoReady(false);
+    v.load();
+    // ScrollTrigger measurements are stale after minHeight changes
+    ScrollTrigger.refresh();
+  }, [isMobile]);
 
   useEffect(() => {
     if (!videoReady || prefersReduced) return;
@@ -891,10 +910,11 @@ export const ScrollVideo: React.FC = () => {
   const scrollToService = useCallback((idx: number) => {
     const c = containerRef.current;
     if (!c) return;
-    const rect = c.getBoundingClientRect();
-    const scrollTop = window.scrollY + rect.top;
-    const total = c.offsetHeight - window.innerHeight;
-    const y = scrollTop + (idx / TOTAL_SERVICES) * total;
+    const block = c.querySelector<HTMLElement>(
+      `[data-service-index="${idx}"]`
+    );
+    if (!block) return;
+    const y = block.getBoundingClientRect().top + window.scrollY - 20;
     window.scrollTo({ top: y, behavior: "smooth" });
   }, []);
 
