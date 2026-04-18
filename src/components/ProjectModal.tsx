@@ -396,22 +396,57 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                         dangerouslySetInnerHTML={{ __html: project?.description || '' }}
                     />
 
-                    {/* Tags */}
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                        {project?.tags.map((tag, i) => (
-                            <span key={i} style={{
-                                padding: '6px 14px',
-                                backgroundColor: '#fff',
-                                border: '1px solid #fff',
-                                borderRadius: '0',
-                                color: '#000',
-                                fontSize: '0.8rem',
-                                fontWeight: 600,
-                                letterSpacing: '0.05em',
+                    {/* Specifiche — label + year + tags con contrasto pieno */}
+                    <div style={{
+                        marginTop: 32,
+                        paddingTop: 24,
+                        borderTop: '1px solid rgba(197,165,90,0.25)',
+                    }}>
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: 14,
+                        }}>
+                            <span style={{
+                                color: 'var(--color-gold)',
+                                fontSize: '0.68rem',
+                                fontFamily: 'var(--font-title)',
+                                fontWeight: 700,
+                                letterSpacing: '0.25em',
+                                textTransform: 'uppercase',
                             }}>
-                                {tag}
+                                Specifiche
                             </span>
-                        ))}
+                            {project?.year && (
+                                <span style={{
+                                    color: 'rgba(255,255,255,0.88)',
+                                    fontSize: '0.75rem',
+                                    fontFamily: 'var(--font-title)',
+                                    fontWeight: 700,
+                                    letterSpacing: '0.15em',
+                                }}>
+                                    {project.year}
+                                </span>
+                            )}
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                            {project?.tags.map((tag, i) => (
+                                <span key={i} style={{
+                                    padding: '7px 14px',
+                                    backgroundColor: '#fff',
+                                    border: '1px solid #fff',
+                                    borderRadius: '0',
+                                    color: '#000',
+                                    fontSize: '0.78rem',
+                                    fontWeight: 700,
+                                    letterSpacing: '0.08em',
+                                    lineHeight: 1.2,
+                                }}>
+                                    {tag}
+                                </span>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -39,7 +39,7 @@ function PrivacyContent() {
                 <li><strong>a) Dati di navigazione:</strong> indirizzo IP, tipo di browser, sistema operativo, pagine visitate, orari di accesso, eventi di interazione. Questi dati vengono raccolti tramite Google Analytics 4 (gestito via Google Tag Manager) e sono utilizzati per finalità statistiche e di miglioramento del servizio.</li>
                 <li><strong>b) Dati forniti volontariamente dall'utente:</strong>
                     <ul>
-                        <li>Sul sito principale: nome, cognome, indirizzo e-mail e informazioni comunicate tramite il modulo di prenotazione Cal.com o tramite form e quiz integrati nel sito.</li>
+                        <li>Sul sito principale: nome, cognome, indirizzo e-mail, numero di telefono, settore di attività e informazioni comunicate tramite il form di contatto proprietario o tramite i quiz integrati nel sito. I dati vengono inviati al nostro backend ospitato su api.widestudiodigitale.com.</li>
                         <li>Sull'applicazione di gioco (game.widestudiodigitale.com): nome o nickname scelto dal giocatore, indirizzo e-mail o numero di telefono WhatsApp forniti al termine della partita.</li>
                     </ul>
                 </li>
@@ -51,7 +51,7 @@ function PrivacyContent() {
             <p>I dati personali sono trattati per le seguenti finalità:</p>
             <ul>
                 <li>Erogazione del servizio di gioco interattivo e invio della storia generata;</li>
-                <li>Gestione delle richieste di contatto e prenotazione consulenze;</li>
+                <li>Gestione delle richieste di contatto e consulenze;</li>
                 <li>Analisi statistiche sull'utilizzo dei siti e dell'applicazione di gioco (Google Analytics 4, tramite Google Tag Manager);</li>
                 <li>Miglioramento dell'esperienza utente e del servizio;</li>
                 <li>Adempimento di obblighi di legge.</li>
@@ -61,7 +61,7 @@ function PrivacyContent() {
             <p>Il trattamento dei dati è fondato su:</p>
             <ul>
                 <li>Consenso dell'interessato (art. 6, par. 1, lett. a del GDPR) per l'invio della storia di gioco, la raccolta del contatto e l'installazione di cookie non tecnici;</li>
-                <li>Esecuzione di misure precontrattuali (art. 6, par. 1, lett. b) per la gestione delle richieste di contatto e prenotazione;</li>
+                <li>Esecuzione di misure precontrattuali (art. 6, par. 1, lett. b) per la gestione delle richieste di contatto;</li>
                 <li>Legittimo interesse (art. 6, par. 1, lett. f) per le analisi statistiche aggregate e la sicurezza del servizio (rate limiting);</li>
                 <li>Adempimento di obblighi legali (art. 6, par. 1, lett. c).</li>
             </ul>
@@ -83,8 +83,8 @@ function PrivacyContent() {
             <h3>e) Vercel (Vercel Inc.)</h3>
             <p>Servizio di hosting e distribuzione del sito web. <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy di Vercel</a>.</p>
 
-            <h3>f) Cal.com (Cal.com Inc.)</h3>
-            <p>Servizio di prenotazione appuntamenti integrato nel sito principale. I dati inseriti nel modulo di prenotazione sono trattati da Cal.com secondo la propria <a href="https://cal.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</p>
+            <h3>f) Brevo (Sendinblue SAS)</h3>
+            <p>Servizio SMTP utilizzato per l'invio delle notifiche e-mail transazionali legate al form di contatto (conferme e avvisi interni). I dati trasmessi includono nome, cognome e indirizzo e-mail inseriti nel form. <a href="https://www.brevo.com/legal/privacypolicy/" target="_blank" rel="noopener noreferrer">Privacy Policy di Brevo</a>.</p>
 
             <h3>g) Google Fonts (Google LLC)</h3>
             <p>L'applicazione di gioco utilizza font caricati dai server di Google. Durante il caricamento, il browser dell'utente stabilisce una connessione con i server di Google, trasmettendo l'indirizzo IP. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy di Google</a>.</p>
@@ -112,7 +112,7 @@ function PrivacyContent() {
 
             <h2>8. Trasferimento dati extra-UE</h2>
             <p>
-                Alcuni servizi di terze parti (Google, Anthropic, Vercel) possono comportare il trasferimento di dati
+                Alcuni servizi di terze parti (Google, Anthropic, Vercel, Brevo) possono comportare il trasferimento di dati
                 verso paesi al di fuori dell'Unione Europea. Tali trasferimenti avvengono sulla base di adeguate
                 garanzie ai sensi degli artt. 46-49 del GDPR (Clausole Contrattuali Standard, decisioni di
                 adeguatezza, Data Privacy Framework UE-USA).
@@ -149,7 +149,6 @@ function CookieContent() {
 
             <h3>c) Cookie di terze parti</h3>
             <ul>
-                <li><strong>Cal.com:</strong> il widget di prenotazione integrato nel sito principale potrebbe installare cookie tecnici necessari al funzionamento del servizio. Per maggiori informazioni: <a href="https://cal.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy di Cal.com</a>.</li>
                 <li><strong>Google Fonts:</strong> il caricamento dei font (nell'applicazione di gioco) non comporta l'installazione di cookie, ma implica una connessione ai server di Google con trasmissione dell'indirizzo IP.</li>
             </ul>
 
@@ -247,16 +246,16 @@ function AuditPrivacyContent() {
             <p>
                 Questa informativa è specifica per lo strumento "Indice di Dispersione del Mercato".
                 I Titolari del trattamento sono Alessia Amoruso e Asia Franceschi (WIDE Studio Digitale).
-                Attraverso il questionario e l'eventuale successiva prenotazione raccogliamo:
+                Attraverso il questionario e l'eventuale successivo invio del form di contatto raccogliamo:
             </p>
             <ul>
                 <li><strong>Dati di navigazione:</strong> analizzati tramite Google Analytics 4 (gestito via Google Tag Manager). I cookie analitici vengono installati solo previo consenso tramite il cookie banner.</li>
                 <li><strong>Risposte al quiz:</strong> memorizzate localmente nel browser dell'utente (non salvate sui nostri server web in questa fase). Gli eventi di avanzamento e completamento del quiz vengono tracciati in forma aggregata tramite GA4.</li>
-                <li><strong>Dati di prenotazione:</strong> se si sceglie di prenotare la consulenza finale, i dati (nome, email, scelte espresse) verranno raccolti tramite il widget di Cal.com.</li>
+                <li><strong>Dati di contatto:</strong> se si sceglie di richiedere la consulenza finale, i dati (nome, cognome, email, telefono, settore, scelte espresse) vengono raccolti tramite il form di contatto proprietario e trasmessi al nostro backend su api.widestudiodigitale.com.</li>
             </ul>
 
             <h2>2. Finalità del trattamento</h2>
-            <p>I dati condivisi durante la prenotazione verranno usati esclusivamente per:</p>
+            <p>I dati condivisi tramite il form verranno usati esclusivamente per:</p>
             <ul>
                 <li>Studiare il posizionamento e le risposte fornite per preparare la consulenza strategica gratuita.</li>
                 <li>Inviare comunicazioni di servizio relative all'appuntamento fissato.</li>
@@ -264,7 +263,7 @@ function AuditPrivacyContent() {
 
             <h2>3. Sicurezza e Conservazione</h2>
             <p>
-                Non vendiamo o cediamo a terzi i vostri dati per scopi di marketing. I dati restano custoditi secondo i più rigidi standard di sicurezza dai nostri partner tecnologici (Cal.com, Vercel) e conservati solo per il periodo strettamente necessario a erogare il servizio di consulenza.
+                Non vendiamo o cediamo a terzi i vostri dati per scopi di marketing. I dati restano custoditi secondo i più rigidi standard di sicurezza dai nostri partner tecnologici (Vercel per hosting front-end, Brevo per l'invio delle notifiche e-mail, infrastruttura back-end gestita da WIDE Studio Digitale) e conservati solo per il periodo strettamente necessario a erogare il servizio di consulenza.
             </p>
 
             <h2>4. Diritti dell'utente</h2>
@@ -288,7 +287,7 @@ function AuditTerminiContent() {
 
             <h2>2. Consulenza Gratuita</h2>
             <p>
-                La prenotazione della sessione gratuita successiva al completamento del quiz è soggetta alla disponibilità d'agenda di WIDE Studio Digitale.
+                La richiesta della sessione gratuita successiva al completamento del quiz avviene tramite il form di contatto ed è soggetta alla disponibilità di WIDE Studio Digitale.
                 La sessione ha lo scopo di esplorare le opportunità di collaborazione e analizzare le criticità emerse, ma non obbliga né l'utente all'acquisto di servizi, né WIDE all'erogazione di garanzie di risultato specifiche pre-contrattuali.
             </p>
 
