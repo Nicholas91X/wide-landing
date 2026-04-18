@@ -296,18 +296,51 @@ export const GameReminder: React.FC = () => {
           </div>
         </div>
 
-        {/* Colonna video */}
+        {/* Colonna video + caption */}
+        <div
+          style={{
+            order: isMobile ? 1 : 2,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: isMobile ? 18 : 22,
+            width: "100%",
+          }}
+        >
+          {/* Caption sopra il video: preserva la CTA promise anche quando l'utente guarda solo il media */}
+          <p
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: isMobile ? "0.88rem" : "1rem",
+              lineHeight: 1.5,
+              color: "rgba(255,255,255,0.9)",
+              margin: 0,
+              textAlign: "center",
+              maxWidth: isMobile ? 280 : 380,
+              fontWeight: 500,
+            }}
+          >
+            Prova il nostro gioco{" "}
+            <em
+              style={{
+                fontFamily: "var(--font-serif)",
+                color: "var(--color-gold)",
+                fontStyle: "italic",
+                fontWeight: 600,
+              }}
+            >
+              Imprenditore per un giorno
+            </em>
+          </p>
+
         <div
           ref={videoWrapRef}
           style={{
-            order: isMobile ? 1 : 2,
             position: "relative",
             borderRadius: 6,
             overflow: "hidden",
             aspectRatio: "9 / 16",
             maxWidth: isMobile ? 280 : 380,
-            marginLeft: isMobile ? "auto" : 0,
-            marginRight: isMobile ? "auto" : 0,
             width: "100%",
             border: "1px solid rgba(197,165,90,0.25)",
             boxShadow:
@@ -374,6 +407,7 @@ export const GameReminder: React.FC = () => {
             />
             Live
           </div>
+        </div>
         </div>
       </div>
     </section>

@@ -114,6 +114,10 @@ export const Portfolio: React.FC = () => {
   );
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const currentCardIndexRef = useRef(0);
+  // Reel attualmente visibile per-card: key = cardIndex, value = reelIndex
+  const [currentReelByCard, setCurrentReelByCard] = useState<
+    Record<number, number>
+  >({});
   const prefersReduced = useReducedMotion();
 
   // ── Track section visibility ───────────────────────────────────────────
@@ -362,19 +366,27 @@ export const Portfolio: React.FC = () => {
                   pointerEvents: 'none',
                 }}
               >
-                {project.reels.map((_, reelIdx) => (
-                  <div
-                    key={reelIdx}
-                    style={{
-                      width: 3,
-                      height: 28,
-                      borderRadius: 2,
-                      background: reelIdx === 0
-                        ? 'rgba(255,255,255,0.85)'
-                        : 'rgba(255,255,255,0.22)',
-                    }}
-                  />
-                ))}
+                {project.reels.map((_, reelIdx) => {
+                  const activeReel = currentReelByCard[i] ?? 0;
+                  const isActive = reelIdx === activeReel;
+                  return (
+                    <div
+                      key={reelIdx}
+                      style={{
+                        width: 3,
+                        height: isActive ? 36 : 24,
+                        borderRadius: 2,
+                        background: isActive
+                          ? 'rgba(255,255,255,0.95)'
+                          : 'rgba(255,255,255,0.3)',
+                        transition: 'all 0.25s cubic-bezier(0.4,0,0.2,1)',
+                        boxShadow: isActive
+                          ? '0 0 8px rgba(255,255,255,0.4)'
+                          : 'none',
+                      }}
+                    />
+                  );
+                })}
               </div>
             )}
 
@@ -390,6 +402,15 @@ export const Portfolio: React.FC = () => {
               {project.reels && project.reels.length > 0 ? (
                 <div
                   className="portfolio-reels-bg"
+                  onScroll={(e) => {
+                    const el = e.currentTarget;
+                    const width = el.clientWidth;
+                    if (!width) return;
+                    const idx = Math.round(el.scrollLeft / width);
+                    setCurrentReelByCard((prev) =>
+                      prev[i] === idx ? prev : { ...prev, [i]: idx },
+                    );
+                  }}
                   style={{
                     display: "flex",
                     width: "100%",
