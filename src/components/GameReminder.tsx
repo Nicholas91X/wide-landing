@@ -183,7 +183,7 @@ export const GameReminder: React.FC = () => {
                 opacity: 0.6,
               }}
             />
-            Un Gioco
+            Il Gioco
           </div>
 
           <h3
