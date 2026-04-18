@@ -776,7 +776,11 @@ export const ScrollVideo: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
   const [progress, setProgress] = useState(0);
+  const progressRef = useRef(0);
   const [videoReady, setVideoReady] = useState(false);
+  const [useFallback, setUseFallback] = useState(false);
+  const fallbackImagesRef = useRef<HTMLImageElement[]>([]);
+  const [fallbackLoaded, setFallbackLoaded] = useState(false);
   const prefersReduced = useReducedMotion();
 
   useEffect(() => {
@@ -808,12 +812,42 @@ export const ScrollVideo: React.FC = () => {
     return () => obs.disconnect();
   }, []);
 
-  const onVideoLoaded = useCallback(() => {
+  const probeVideoSeek = useCallback(async (): Promise<boolean> => {
+    const v = videoRef.current;
+    if (!v || !v.duration) return false;
+    const samples = [0.1, 0.3, 0.5, 0.7, 0.9];
+    const start = performance.now();
+    for (const s of samples) {
+      await new Promise<void>((resolve) => {
+        const handler = () => {
+          v.removeEventListener("seeked", handler);
+          resolve();
+        };
+        v.addEventListener("seeked", handler);
+        v.currentTime = s * v.duration;
+      });
+    }
+    const avgMs = (performance.now() - start) / samples.length;
+    return avgMs > 200;
+  }, []);
+
+  const onVideoLoaded = useCallback(async () => {
     const v = videoRef.current;
     if (!v) return;
     v.pause();
+    const slow = await probeVideoSeek();
+    if (slow) {
+      setUseFallback(true);
+      // Track fallback activation to GTM/GA4
+      if (typeof window !== "undefined" && (window as unknown as { dataLayer?: unknown[] }).dataLayer) {
+        (window as unknown as { dataLayer: unknown[] }).dataLayer.push({
+          event: "scrollvideo_fallback_activated",
+          reason: "slow_video_seek",
+        });
+      }
+    }
     setVideoReady(true);
-  }, []);
+  }, [probeVideoSeek]);
 
   // Reload video source when breakpoint changes (desktop ↔ mobile)
   useEffect(() => {
@@ -824,6 +858,41 @@ export const ScrollVideo: React.FC = () => {
     // ScrollTrigger measurements are stale after minHeight changes
     ScrollTrigger.refresh();
   }, [isMobile]);
+
+  // Preload WEBP keyframes when fallback activates
+  useEffect(() => {
+    if (!useFallback) return;
+    const basePath = isMobile ? "/frames_9_16/section-2" : "/frames/section-2";
+    const totalFrames = isMobile ? 223 : 908;
+    const keyframeCount = 60;
+    const step = Math.max(1, Math.floor(totalFrames / keyframeCount));
+    const urls: string[] = [];
+    for (let i = 0; i < keyframeCount; i++) {
+      const frameIdx = Math.min(totalFrames, 1 + i * step);
+      urls.push(`${basePath}/frame_${String(frameIdx).padStart(4, "0")}.webp`);
+    }
+    const loaded: HTMLImageElement[] = new Array(keyframeCount);
+    let count = 0;
+    urls.forEach((url, i) => {
+      const img = new Image();
+      img.src = url;
+      img.onload = () => {
+        loaded[i] = img;
+        count++;
+        if (count === keyframeCount) {
+          fallbackImagesRef.current = loaded;
+          setFallbackLoaded(true);
+        }
+      };
+      img.onerror = () => {
+        count++;
+        if (count === keyframeCount && loaded.filter(Boolean).length > keyframeCount / 2) {
+          fallbackImagesRef.current = loaded.filter(Boolean);
+          setFallbackLoaded(true);
+        }
+      };
+    });
+  }, [useFallback, isMobile]);
 
   useEffect(() => {
     if (!videoReady || prefersReduced) return;
@@ -849,12 +918,31 @@ export const ScrollVideo: React.FC = () => {
     window.addEventListener("resize", resize);
 
     const drawFrame = () => {
-      const vw = video.videoWidth;
-      const vh = video.videoHeight;
-      if (!vw || !vh) return;
       const cw = window.innerWidth;
       const ch = window.innerHeight;
-      const vRatio = vw / vh;
+      let source: HTMLVideoElement | HTMLImageElement | null = null;
+      let sw = 0;
+      let sh = 0;
+
+      if (useFallback && fallbackImagesRef.current.length > 0) {
+        const imgs = fallbackImagesRef.current;
+        const idx = Math.min(
+          imgs.length - 1,
+          Math.floor(progressRef.current * imgs.length)
+        );
+        const img = imgs[idx];
+        if (!img) return;
+        source = img;
+        sw = img.naturalWidth;
+        sh = img.naturalHeight;
+      } else {
+        if (!video.videoWidth || !video.videoHeight) return;
+        source = video;
+        sw = video.videoWidth;
+        sh = video.videoHeight;
+      }
+
+      const vRatio = sw / sh;
       const cRatio = cw / ch;
       let dw, dh, dx, dy;
       if (vRatio > cRatio) {
@@ -869,7 +957,7 @@ export const ScrollVideo: React.FC = () => {
         dy = (ch - dh) / 2;
       }
       ctx2d.clearRect(0, 0, cw, ch);
-      ctx2d.drawImage(video, dx, dy, dw, dh);
+      ctx2d.drawImage(source as CanvasImageSource, dx, dy, dw, dh);
     };
 
     const gsapCtx = gsap.context(() => {
@@ -879,12 +967,16 @@ export const ScrollVideo: React.FC = () => {
         end: "bottom bottom",
         onUpdate: (self) => {
           const p = self.progress;
+          progressRef.current = p;
           setProgress(p);
-          if (video.duration) {
+          if (!useFallback && video.duration) {
             video.currentTime = Math.min(
               video.duration - 0.01,
               p * video.duration
             );
+          } else if (useFallback && fallbackImagesRef.current.length > 0) {
+            // Draw synchronously when fallback is active
+            drawFrame();
           }
           const idx = Math.min(
             TOTAL_SERVICES - 1,
@@ -905,7 +997,7 @@ export const ScrollVideo: React.FC = () => {
       video.removeEventListener("loadeddata", drawFrame);
       window.removeEventListener("resize", resize);
     };
-  }, [videoReady, prefersReduced]);
+  }, [videoReady, prefersReduced, useFallback, fallbackLoaded]);
 
   const scrollToService = useCallback((idx: number) => {
     const c = containerRef.current;
