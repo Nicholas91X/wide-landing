@@ -10,33 +10,255 @@ gsap.registerPlugin(ScrollTrigger);
 const TEAM = [
   {
     name: "Alessia Amoruso",
+    nameFirst: "Alessia",
+    nameLast: "Amoruso",
     role: "Co-Founder & Strategist – Area Sviluppo e Pubblicità",
+    roleShort: "Sviluppo & Pubblicità",
     description:
       "Traduco la strategia in risultati misurabili. Ingegnerizzo le tue infrastrutture web (siti e applicativi) e gestisco in prima persona i budget delle tue campagne sponsorizzate, ottimizzando ogni investimento per generare contatti e vendite reali.",
+    quote: "Traduco la strategia in risultati misurabili.",
     image: "/founders/Alessia_Amoruso.jpeg",
   },
   {
     name: "Asia Franceschi",
+    nameFirst: "Asia",
+    nameLast: "Franceschi",
     role: "Co-Founder & Strategist – Area Immagine e Contenuti",
+    roleShort: "Immagine & Contenuti",
     description:
       "Studio il posizionamento della tua azienda e ne curo l'intera veste comunicativa. Dalla linea editoriale fino alla produzione reale di foto e video sul set, mi assicuro che ogni materiale trasmetta l'autorevolezza del tuo brand senza filtri o finzioni.",
+    quote: "Ogni materiale trasmette l'autorevolezza del tuo brand.",
     image: "/founders/Asia_Franceschi.jpeg",
   },
 ];
+
+// ─── FounderScene sub-component ──────────────────────────────────────────────
+interface FounderSceneProps {
+  index: 0 | 1;
+  romanNum: "I" | "II";
+  isMobile: boolean;
+  reverseDesktop?: boolean;
+}
+
+const FounderScene = React.forwardRef<HTMLDivElement, FounderSceneProps>(
+  ({ index, romanNum, isMobile, reverseDesktop }, ref) => {
+    const person = TEAM[index];
+
+    return (
+      <div
+        ref={ref}
+        style={{
+          display: "grid",
+          gridTemplateColumns: isMobile
+            ? "1fr"
+            : reverseDesktop
+            ? "1fr 1.1fr"
+            : "1.1fr 1fr",
+          gap: 0,
+          alignItems: "stretch",
+          minHeight: isMobile ? "auto" : 500,
+          background: "#050505",
+          marginBottom: "clamp(40px, 6vw, 80px)",
+        }}
+      >
+        {/* Photo */}
+        <div
+          style={{
+            order: !isMobile && reverseDesktop ? 2 : 1,
+            position: "relative",
+            minHeight: isMobile ? 380 : 500,
+            overflow: "hidden",
+          }}
+        >
+          <img
+            src={person.image}
+            alt={person.name}
+            loading="lazy"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "center 20%",
+              filter: "grayscale(0.25) contrast(1.05)",
+              display: "block",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: isMobile
+                ? "linear-gradient(to bottom, transparent 40%, rgba(5,5,5,0.95))"
+                : "linear-gradient(135deg, transparent 40%, rgba(5,5,5,0.6))",
+              pointerEvents: "none",
+            }}
+          />
+          <span
+            style={{
+              position: "absolute",
+              top: 18,
+              left: 20,
+              fontFamily: "var(--font-title)",
+              fontSize: "0.55rem",
+              letterSpacing: "0.3em",
+              color: "var(--color-gold)",
+              fontWeight: 700,
+              textTransform: "uppercase",
+            }}
+          >
+            {romanNum} · Co-Founder
+          </span>
+          {isMobile && (
+            <div
+              style={{
+                position: "absolute",
+                left: 20,
+                right: 20,
+                bottom: 18,
+              }}
+            >
+              <h3
+                style={{
+                  fontFamily: "var(--font-title)",
+                  fontSize: "2rem",
+                  fontWeight: 800,
+                  lineHeight: 0.9,
+                  color: "#fff",
+                  letterSpacing: "-0.02em",
+                  margin: "0 0 8px",
+                  textTransform: "uppercase",
+                }}
+              >
+                {person.nameFirst}
+                <br />
+                {person.nameLast}
+              </h3>
+              <span
+                style={{
+                  fontFamily: "var(--font-title)",
+                  fontSize: "0.55rem",
+                  color: "rgba(255,255,255,0.75)",
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                  fontWeight: 600,
+                  paddingBottom: 8,
+                  borderBottom: "1px solid rgba(197,165,90,0.4)",
+                  display: "inline-block",
+                }}
+              >
+                {person.roleShort}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Text block */}
+        <div
+          style={{
+            order: !isMobile && reverseDesktop ? 1 : 2,
+            padding: isMobile ? "22px 24px 28px" : "50px 44px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            background: "#080808",
+          }}
+        >
+          {!isMobile && (
+            <>
+              <p
+                style={{
+                  fontFamily: "var(--font-title)",
+                  fontSize: "0.6rem",
+                  color: "var(--color-gold)",
+                  letterSpacing: "0.3em",
+                  textTransform: "uppercase",
+                  margin: "0 0 12px",
+                  fontWeight: 700,
+                }}
+              >
+                {romanNum} · Co-Founder
+              </p>
+              <h4
+                style={{
+                  fontFamily: "var(--font-title)",
+                  fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)",
+                  fontWeight: 800,
+                  lineHeight: 0.95,
+                  margin: "0 0 10px",
+                  letterSpacing: "-0.02em",
+                  color: "#fff",
+                }}
+              >
+                {person.nameFirst}
+                <br />
+                {person.nameLast}
+              </h4>
+              <p
+                style={{
+                  fontFamily: "var(--font-title)",
+                  fontSize: "0.68rem",
+                  color: "rgba(255,255,255,0.65)",
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                  fontWeight: 600,
+                  margin: "0 0 28px",
+                  paddingBottom: 18,
+                  borderBottom: "1px solid rgba(197,165,90,0.3)",
+                  width: "fit-content",
+                }}
+              >
+                {person.roleShort}
+              </p>
+            </>
+          )}
+
+          <p
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: isMobile ? "0.78rem" : "0.92rem",
+              lineHeight: isMobile ? 1.6 : 1.65,
+              color: "rgba(255,255,255,0.82)",
+              margin: "0 0 20px",
+              maxWidth: "46ch",
+            }}
+          >
+            {person.description}
+          </p>
+
+          <p
+            style={{
+              fontFamily: "var(--font-serif)",
+              fontStyle: "italic",
+              fontSize: isMobile ? "1rem" : "clamp(1.1rem, 2.2vw, 1.5rem)",
+              lineHeight: 1.35,
+              color: "var(--color-gold)",
+              margin: 0,
+              paddingLeft: isMobile ? 14 : 20,
+              borderLeft: "2px solid rgba(197,165,90,0.5)",
+              maxWidth: "40ch",
+            }}
+          >
+            "{person.quote}"
+          </p>
+        </div>
+      </div>
+    );
+  }
+);
+FounderScene.displayName = "FounderScene";
 
 // ─── Component ───────────────────────────────────────────────────────────────
 export const ChiSiamo: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const entryLineRef = useRef<HTMLDivElement>(null);
-  const pinWrapRef = useRef<HTMLDivElement>(null);
-  const cardLeftRef = useRef<HTMLDivElement>(null);
-  const cardRightRef = useRef<HTMLDivElement>(null);
   const visionRef = useRef<HTMLDivElement>(null);
 
+  const sceneARef = useRef<HTMLDivElement>(null);
+  const sceneBRef = useRef<HTMLDivElement>(null);
+  const dividerRef = useRef<HTMLDivElement>(null);
+
   const [isMobile, setIsMobile] = useState(false);
-  const [focusedCard, setFocusedCard] = useState<-1 | 0 | 1>(-1);
-  const focusedCardRef = useRef<-1 | 0 | 1>(-1);
 
   const prefersReduced = useReducedMotion();
 
@@ -59,51 +281,38 @@ export const ChiSiamo: React.FC = () => {
     const el = sectionRef.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { trackSectionView('chi-siamo'); obs.disconnect(); } },
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          trackSectionView("chi-siamo");
+          obs.disconnect();
+        }
+      },
       { threshold: 0.2 },
     );
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
 
-  // ── Card dimensions — sized to fit longer descriptions ────────────────
-  const cardW = isMobile ? 200 : 300;
-  const cardH = isMobile ? 430 : 560;
-  // Mobile: square photo (200×200). Desktop/tablet: 3:2 landscape (300×200)
-  // so name + role + description + pull quote have enough breathing room.
-  const photoH = isMobile ? cardW : 200;
-
-  // ── GSAP Scroll Animations ──────────────────────────────────────────────
+  // ── GSAP fade-in entry (no pin, no scrub) ─────────────────────────────
   useEffect(() => {
-    const section = sectionRef.current;
     const header = headerRef.current;
     const entryLine = entryLineRef.current;
-    const pinWrap = pinWrapRef.current;
-    const cardLeft = cardLeftRef.current;
-    const cardRight = cardRightRef.current;
+    const sceneA = sceneARef.current;
+    const divider = dividerRef.current;
+    const sceneB = sceneBRef.current;
     const vision = visionRef.current;
-    if (
-      !section ||
-      !header ||
-      !entryLine ||
-      !pinWrap ||
-      !cardLeft ||
-      !cardRight ||
-      !vision
-    )
-      return;
 
-    const rotAmt = isMobile ? 12 : 20;
-    const fgScale = isMobile ? 1.18 : 1.22;
-    const bgScale = 0.88;
-    const fgX = isMobile ? 20 : 40;
-    const scrubVal = prefersReduced ? true : isMobile ? 0.6 : 0.8;
+    if (prefersReduced) {
+      gsap.set(
+        [header, entryLine, sceneA, divider, sceneB, vision].filter(Boolean),
+        { opacity: 1, y: 0, scaleX: 1 }
+      );
+      return;
+    }
 
     const ctx = gsap.context(() => {
       // Header fade-in
-      if (prefersReduced) {
-        gsap.set(header, { opacity: 1, y: 0 });
-      } else {
+      if (header) {
         gsap.fromTo(
           header,
           { opacity: 0, y: 40 },
@@ -115,177 +324,52 @@ export const ChiSiamo: React.FC = () => {
             scrollTrigger: {
               trigger: header,
               start: "top 85%",
-              end: "top 55%",
-              scrub: 1,
+              once: true,
             },
-          },
+          }
         );
       }
 
       // Entry line scaleX reveal
-      gsap.fromTo(
-        entryLine,
-        { scaleX: 0, transformOrigin: "left center" },
-        {
-          scaleX: 1,
-          duration: 1,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: header,
-            start: "top 80%",
-            end: "top 50%",
-            scrub: 1,
-          },
-        },
-      );
+      if (entryLine) {
+        gsap.fromTo(
+          entryLine,
+          { scaleX: 0, transformOrigin: "left center" },
+          {
+            scaleX: 1,
+            duration: 1,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: header,
+              start: "top 80%",
+              once: true,
+            },
+          }
+        );
+      }
 
-      // ── Set initial GSAP state (no CSS transform conflicts) ──
-      gsap.set(cardLeft, { rotation: 0, scale: 0.85, opacity: 0, x: 40 });
-      gsap.set(cardRight, { rotation: 0, scale: 0.85, opacity: 0, x: -40 });
-
-      // ── Build timeline sequentially with .add() ──
-      const chiSiamoEnd = isMobile ? "+=200%" : "+=400%";
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: pinWrap,
-          start: "top 20%",
-          end: chiSiamoEnd,
-          pin: true,
-          scrub: scrubVal,
-          onUpdate: (self) => {
-            const p = self.progress;
-            // Thresholds derived from timeline durations (total ≈ 9.2 units)
-            // Left foreground: phases leftFwd + holdLeft (1/9.2 → 4/9.2)
-            // Right foreground: phases swap + holdRight (5.2/9.2 → 7.2/9.2)
-            const next: -1 | 0 | 1 =
-              p >= 0.11 && p <= 0.44 ? 0 : p >= 0.57 && p <= 0.78 ? 1 : -1;
-            if (focusedCardRef.current !== next) {
-              focusedCardRef.current = next;
-              setFocusedCard(next);
-            }
-          },
-        },
+      // Scenes + divider fade-in one-shot
+      [sceneA, divider, sceneB].forEach((el) => {
+        if (!el) return;
+        gsap.fromTo(
+          el,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.9,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: el,
+              start: "top 82%",
+              once: true,
+            },
+          }
+        );
       });
 
-      // Phase 1: Both cards enter (rotated, fanned out)
-      tl.addLabel("enter")
-        .to(
-          cardLeft,
-          {
-            rotation: -rotAmt,
-            x: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 1,
-            ease: "power2.out",
-          },
-          "enter",
-        )
-        .to(
-          cardRight,
-          {
-            rotation: rotAmt,
-            x: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 1,
-            ease: "power2.out",
-          },
-          "enter",
-        );
-
-      // Phase 2: Left card comes to foreground
-      tl.addLabel("leftFwd")
-        .to(
-          cardLeft,
-          {
-            rotation: 0,
-            scale: fgScale,
-            x: fgX,
-            zIndex: 10,
-            duration: 1,
-            ease: "power2.inOut",
-          },
-          "leftFwd",
-        )
-        .to(
-          cardRight,
-          { opacity: 0.35, scale: bgScale, duration: 1, ease: "power2.inOut" },
-          "leftFwd",
-        );
-
-      // Phase 3: Hold left in foreground (empty spacer tween)
-      tl.addLabel("holdLeft").to(pinWrap, { duration: 2 }, "holdLeft");
-
-      // Phase 4: Swap — left back, right forward
-      tl.addLabel("swap")
-        .to(
-          cardLeft,
-          {
-            rotation: -rotAmt,
-            scale: bgScale,
-            x: 0,
-            opacity: 0.35,
-            zIndex: 1,
-            duration: 1.2,
-            ease: "power2.inOut",
-          },
-          "swap",
-        )
-        .to(
-          cardRight,
-          {
-            rotation: 0,
-            scale: fgScale,
-            x: -fgX,
-            opacity: 1,
-            zIndex: 10,
-            duration: 1.2,
-            ease: "power2.inOut",
-          },
-          "swap",
-        );
-
-      // Phase 5: Hold right in foreground
-      tl.addLabel("holdRight").to(pinWrap, { duration: 2 }, "holdRight");
-
-      // Phase 6: Both return to resting
-      tl.addLabel("return")
-        .to(
-          cardLeft,
-          {
-            rotation: -rotAmt,
-            scale: 1,
-            opacity: 1,
-            x: 0,
-            zIndex: 1,
-            duration: 1,
-            ease: "power2.inOut",
-          },
-          "return",
-        )
-        .to(
-          cardRight,
-          {
-            rotation: rotAmt,
-            scale: 1,
-            opacity: 1,
-            x: 0,
-            zIndex: 2,
-            duration: 1,
-            ease: "power2.inOut",
-          },
-          "return",
-        );
-
-      // Phase 7: Breathing room
-      tl.to(pinWrap, { duration: 1 });
-
-      // ── Vision fade-in ──
-      if (prefersReduced) {
-        gsap.set(vision, { opacity: 1, y: 0 });
-      } else {
+      // Vision fade-in (preserved from original)
+      if (vision) {
         gsap.fromTo(
           vision,
           { opacity: 0, y: 50 },
@@ -297,120 +381,15 @@ export const ChiSiamo: React.FC = () => {
             scrollTrigger: {
               trigger: vision,
               start: "top 85%",
-              end: "top 55%",
-              scrub: 1,
+              once: true,
             },
-          },
+          }
         );
       }
-    }, section);
+    }, sectionRef);
 
     return () => ctx.revert();
-  }, [isMobile, cardH, prefersReduced]);
-
-  const renderCard = (index: number, quote: string, authorName: string) => (
-    <>
-      <img
-        src={TEAM[index].image}
-        alt={TEAM[index].name}
-        loading="lazy"
-        style={{
-          width: "100%",
-          height: photoH,
-          objectFit: "cover",
-          flexShrink: 0,
-          objectPosition: "center 20%", // Shift focus towards faces
-        }}
-      />
-      <div
-        style={{
-          padding: isMobile ? "14px 14px 10px" : "20px 20px 14px",
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <h4
-          style={{
-            color: "#fff",
-            fontSize: isMobile ? "0.9rem" : "1.05rem",
-            fontFamily: "var(--font-subtitle)",
-            fontWeight: 600,
-            margin: "8px 0 4px",
-            letterSpacing: "-0.01em",
-          }}
-        >
-          {TEAM[index].name}
-        </h4>
-        <p
-          style={{
-            color: "rgba(255,255,255,0.45)",
-            fontSize: "0.65rem",
-            fontFamily: "var(--font-subtitle)",
-            fontWeight: 600,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            margin: "0 0 10px",
-          }}
-        >
-          {TEAM[index].role}
-        </p>
-        <p
-          style={{
-            color: "rgba(255,255,255,0.55)",
-            fontSize: isMobile ? "0.65rem" : "0.75rem",
-            fontFamily: "var(--font-body)",
-            fontWeight: 400,
-            lineHeight: 1.45,
-            margin: 0,
-            whiteSpace: "pre-line" as const,
-          }}
-        >
-          {TEAM[index].description}
-        </p>
-        {/* Pull quote */}
-        <div style={{
-          padding: isMobile ? '12px 0 10px' : '16px 0 14px',
-          marginTop: 'auto',
-          borderTop: '1px solid rgba(255,255,255,0.06)',
-        }}>
-          <p style={{
-            fontFamily: 'var(--font-serif)',
-            fontStyle: 'italic',
-            fontSize: isMobile ? '0.75rem' : '0.85rem',
-            color: 'rgba(255,255,255,0.72)',
-            lineHeight: 1.45,
-            paddingLeft: 16,
-            position: 'relative',
-            margin: 0,
-          }}>
-            <span style={{
-              position: 'absolute',
-              left: 0,
-              top: -4,
-              color: 'var(--color-gold)',
-              fontFamily: 'var(--font-serif)',
-              fontSize: '1.4em',
-              lineHeight: 1,
-            }}>&ldquo;</span>
-            {quote}
-          </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10 }}>
-            <div style={{ width: 16, height: 1, background: 'rgba(197,165,90,0.5)' }} />
-            <span style={{
-              fontSize: '0.6rem',
-              fontWeight: 700,
-              letterSpacing: '0.2em',
-              textTransform: 'uppercase',
-              color: 'var(--color-gold)',
-            }}>
-              {authorName}
-            </span>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+  }, [prefersReduced]);
 
   return (
     <div
@@ -418,8 +397,6 @@ export const ChiSiamo: React.FC = () => {
       style={{
         backgroundColor: "#000",
         padding: `clamp(60px, 10vw, 120px) clamp(24px, 5vw, 80px)`,
-        overflowX: "hidden",
-        /* NO overflow:hidden — it breaks GSAP pin */
       }}
     >
       {/* ── Partnership CTA ────────────────────────────────────────── */}
@@ -491,28 +468,32 @@ export const ChiSiamo: React.FC = () => {
         </p>
         <button
           data-cursor="ring"
-          onClick={() => document.getElementById('contatti')?.scrollIntoView({ behavior: 'instant' })}
+          onClick={() =>
+            document
+              .getElementById("contatti")
+              ?.scrollIntoView({ behavior: "instant" })
+          }
           style={{
-            padding: '12px 22px',
-            backgroundColor: 'transparent',
-            color: '#fff',
-            border: '1px solid rgba(255,255,255,0.22)',
-            borderRadius: '0',
-            fontSize: '0.75rem',
-            fontFamily: 'var(--font-subtitle)',
+            padding: "12px 22px",
+            backgroundColor: "transparent",
+            color: "#fff",
+            border: "1px solid rgba(255,255,255,0.22)",
+            borderRadius: "0",
+            fontSize: "0.75rem",
+            fontFamily: "var(--font-subtitle)",
             fontWeight: 600,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
-            whiteSpace: 'nowrap',
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            transition: "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
+            whiteSpace: "nowrap",
           }}
           onMouseOver={(e) => {
-            e.currentTarget.style.borderColor = 'rgba(197,165,90,0.5)';
-            e.currentTarget.style.color = 'var(--color-gold)';
+            e.currentTarget.style.borderColor = "rgba(197,165,90,0.5)";
+            e.currentTarget.style.color = "var(--color-gold)";
           }}
           onMouseOut={(e) => {
-            e.currentTarget.style.borderColor = 'rgba(255,255,255,0.22)';
-            e.currentTarget.style.color = '#fff';
+            e.currentTarget.style.borderColor = "rgba(255,255,255,0.22)";
+            e.currentTarget.style.color = "#fff";
           }}
         >
           Verifica la nostra disponibilità
@@ -522,23 +503,28 @@ export const ChiSiamo: React.FC = () => {
       {/* ── Header ──────────────────────────────────────────────────── */}
       <div
         ref={headerRef}
-        style={{ marginBottom: "clamp(24px, 4vw, 40px)", textAlign: "left", position: 'relative', overflow: 'hidden' }}
+        style={{
+          marginBottom: "clamp(24px, 4vw, 40px)",
+          textAlign: "left",
+          position: "relative",
+          overflow: "hidden",
+        }}
       >
         {/* Numero decorativo editoriale */}
         <div
           aria-hidden={true}
           style={{
-            position: 'absolute',
+            position: "absolute",
             right: 0,
-            top: '50%',
-            transform: 'translateY(-50%)',
-            fontFamily: 'var(--font-title)',
+            top: "50%",
+            transform: "translateY(-50%)",
+            fontFamily: "var(--font-title)",
             fontWeight: 900,
-            fontSize: 'clamp(80px, 20vw, 140px)',
-            color: 'rgba(255,255,255,0.025)',
+            fontSize: "clamp(80px, 20vw, 140px)",
+            color: "rgba(255,255,255,0.025)",
             lineHeight: 1,
-            pointerEvents: 'none',
-            userSelect: 'none',
+            pointerEvents: "none",
+            userSelect: "none",
           }}
         >
           02
@@ -585,113 +571,73 @@ export const ChiSiamo: React.FC = () => {
         />
       </div>
 
-      {/* ── Pinned cards area ───────────────────────────────────────── */}
+      {/* ── Scene I — Alessia ─────────────────────────────── */}
+      <FounderScene
+        ref={sceneARef}
+        index={0}
+        romanNum="I"
+        isMobile={isMobile}
+      />
+
+      {/* ── Divider II — ASIA ────────────────────────────── */}
       <div
-        ref={pinWrapRef}
+        ref={dividerRef}
         style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "flex-start",
-          position: "relative",
-          minHeight: cardH + 60,
-          marginBottom: "clamp(60px, 10vw, 120px)",
+          padding: isMobile ? "28px 24px" : "36px 40px",
+          background:
+            "linear-gradient(90deg, rgba(197,165,90,0.04), rgba(197,165,90,0.1), rgba(197,165,90,0.04))",
+          borderTop: "1px solid rgba(197,165,90,0.2)",
+          borderBottom: "1px solid rgba(197,165,90,0.2)",
+          textAlign: "center",
+          margin: "clamp(24px, 4vw, 48px) 0",
         }}
+        aria-hidden="true"
       >
-        {/* Left card — NO CSS transform, GSAP controls everything */}
         <div
-          ref={cardLeftRef}
           style={{
-            position: "relative",
-            width: cardW,
-            height: cardH,
-            border: "1px solid rgba(255,255,255,0.15)",
-            backgroundColor: "rgba(255,255,255,0.06)",
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)",
-            borderRadius: 16,
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "column",
-            transformOrigin: "bottom center",
-            flexShrink: 0,
-            willChange: "transform, opacity",
-            marginRight: isMobile ? -30 : -40,
+            fontFamily: "var(--font-serif)",
+            fontStyle: "italic",
+            fontSize: isMobile ? "1.4rem" : "1.8rem",
+            color: "var(--color-gold)",
+            lineHeight: 1,
+            marginBottom: 6,
           }}
         >
-          {renderCard(0, 'Traduco la strategia in risultati misurabili.', 'Alessia Amoruso')}
+          ·  ·  ·
         </div>
-
-        {/* Right card */}
         <div
-          ref={cardRightRef}
           style={{
-            position: "relative",
-            width: cardW,
-            height: cardH,
-            border: "1px solid rgba(255,255,255,0.15)",
-            backgroundColor: "rgba(255,255,255,0.06)",
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)",
-            borderRadius: 16,
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "column",
-            transformOrigin: "bottom center",
-            flexShrink: 0,
-            willChange: "transform, opacity",
-            marginLeft: isMobile ? -30 : -40,
-            marginTop: isMobile ? 0 : 48,
+            fontFamily: "var(--font-title)",
+            fontSize: isMobile ? "0.58rem" : "0.68rem",
+            letterSpacing: "0.25em",
+            textTransform: "uppercase",
+            color: "rgba(255,255,255,0.65)",
+            fontWeight: 600,
+            marginBottom: 6,
           }}
         >
-          {renderCard(1, 'Ogni materiale trasmette l\'autorevolezza del tuo brand.', 'Asia Franceschi')}
+          II — ASIA
         </div>
-
-        {/* ── Founder indicator dots ─────────────────────────────── */}
         <div
           style={{
-            position: "absolute",
-            bottom: -44,
-            left: "50%",
-            transform: "translateX(-50%)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 8,
-            pointerEvents: "none",
-            zIndex: 20,
+            fontSize: "0.62rem",
+            color: "var(--color-gold)",
+            opacity: 0.7,
+            letterSpacing: "0.15em",
           }}
         >
-          <div style={{ display: "flex", gap: 6 }}>
-            {[0, 1].map((i) => (
-              <div
-                key={i}
-                style={{
-                  height: 5,
-                  width: focusedCard === i ? 18 : 5,
-                  borderRadius: 3,
-                  backgroundColor:
-                    focusedCard === i ? "#fff" : "rgba(255,255,255,0.3)",
-                  transition: "all 0.35s cubic-bezier(0.4,0,0.2,1)",
-                }}
-              />
-            ))}
-          </div>
-          {focusedCard >= 0 && (
-            <span
-              style={{
-                color: "rgba(255,255,255,0.5)",
-                fontSize: "0.58rem",
-                fontFamily: "var(--font-subtitle)",
-                fontWeight: 600,
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-              }}
-            >
-              {TEAM[focusedCard].name.split(" ")[0]}
-            </span>
-          )}
+          ↓ continua
         </div>
       </div>
+
+      {/* ── Scene II — Asia ─────────────────────────────── */}
+      <FounderScene
+        ref={sceneBRef}
+        index={1}
+        romanNum="II"
+        isMobile={isMobile}
+        reverseDesktop
+      />
 
       {/* ── Vision ──────────────────────────────────────────────────────── */}
       <div
