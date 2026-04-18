@@ -491,6 +491,16 @@ export const Portfolio: React.FC = () => {
                                         .swipe-icon {
                                             animation: swipeHand 3s infinite ease-in-out;
                                         }
+                                        @keyframes swipeHintShimmer {
+                                            0%, 100% {
+                                                filter: brightness(1);
+                                                text-shadow: 0 2px 8px rgba(0,0,0,0.75);
+                                            }
+                                            50% {
+                                                filter: brightness(1.4);
+                                                text-shadow: 0 0 12px rgba(255,255,255,0.6), 0 2px 8px rgba(0,0,0,0.75);
+                                            }
+                                        }
                                     `,
                     }}
                   />
@@ -521,12 +531,13 @@ export const Portfolio: React.FC = () => {
               )}
             </div>
 
-            {/* Dark overlay */}
+            {/* Dark overlay — concentrated in bottom third where info sits,
+                lighter above so the video reads clearly */}
             <div
               style={{
                 position: "absolute",
                 inset: 0,
-                background: `linear-gradient(to top, rgba(0,0,0,0.85) 0%, ${CARD_OVERLAYS[i % CARD_OVERLAYS.length]} 50%, transparent 100%)`,
+                background: `linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.55) 30%, ${CARD_OVERLAYS[i % CARD_OVERLAYS.length]} 55%, transparent 75%)`,
                 pointerEvents: "none",
                 zIndex: 1,
               }}
@@ -633,13 +644,15 @@ export const Portfolio: React.FC = () => {
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: "6px",
-                      color: "rgba(255,255,255,0.75)",
-                      fontSize: "0.75rem",
+                      gap: "8px",
+                      color: "#fff",
+                      fontSize: "0.8rem",
                       fontFamily: "var(--font-subtitle)",
-                      fontWeight: 600,
-                      letterSpacing: "0.05em",
+                      fontWeight: 700,
+                      letterSpacing: "0.1em",
                       textTransform: "uppercase",
+                      textShadow: "0 2px 8px rgba(0,0,0,0.75)",
+                      animation: "swipeHintShimmer 2.5s ease-in-out infinite",
                     }}
                   >
                     <svg

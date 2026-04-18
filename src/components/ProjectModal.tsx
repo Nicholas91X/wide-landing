@@ -26,6 +26,12 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
     const sheetRef = useRef<HTMLDivElement>(null);
     const isVisible = project !== null;
 
+    // ── Swipe-down-to-dismiss state (mobile) ──────────────────────────────────
+    const dragStartY = useRef<number | null>(null);
+    const dragDeltaY = useRef(0);
+    const dragActive = useRef(false);
+    const CLOSE_THRESHOLD_PX = 120;
+
     // ── Gallery state ─────────────────────────────────────────────────────────
     const [galleryIdx, setGalleryIdx] = useState(0);
     const galleryRef = useRef<HTMLDivElement>(null);
@@ -78,6 +84,73 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
             onComplete: onClose
         });
     };
+
+    // ── Swipe-down gesture handlers ──────────────────────────────────────────
+    // Activates only when the sheet's scroll is at the top AND the user drags
+    // downward, so native scroll is preserved when scrolled into the content.
+    const handleTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+        const sheet = sheetRef.current;
+        if (!sheet) return;
+        // Only arm gesture when already at the top of the scroll container.
+        if (sheet.scrollTop > 0) {
+            dragActive.current = false;
+            dragStartY.current = null;
+            return;
+        }
+        dragStartY.current = e.touches[0].clientY;
+        dragDeltaY.current = 0;
+        dragActive.current = true;
+    }, []);
+
+    const handleTouchMove = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+        const sheet = sheetRef.current;
+        if (!sheet || !dragActive.current || dragStartY.current == null) return;
+        const dy = e.touches[0].clientY - dragStartY.current;
+        if (dy <= 0) {
+            // Dragging up again — reset transform, let native scroll handle it
+            dragDeltaY.current = 0;
+            sheet.style.transform = '';
+            sheet.style.transition = '';
+            return;
+        }
+        dragDeltaY.current = dy;
+        // Apply a damped translate so the drag feels tactile without
+        // runaway movement. Overlay fades in proportion to progress.
+        sheet.style.transform = `translateY(${dy}px)`;
+        sheet.style.transition = 'none';
+        if (overlayRef.current) {
+            const progress = Math.min(1, dy / 400);
+            overlayRef.current.style.opacity = String(1 - progress * 0.7);
+        }
+    }, []);
+
+    const handleTouchEnd = useCallback(() => {
+        const sheet = sheetRef.current;
+        if (!sheet || !dragActive.current) return;
+        dragActive.current = false;
+        const dy = dragDeltaY.current;
+        dragStartY.current = null;
+        dragDeltaY.current = 0;
+
+        if (dy > CLOSE_THRESHOLD_PX) {
+            // Commit the close: continue sliding out from the current position
+            sheet.style.transform = '';
+            sheet.style.transition = '';
+            handleClose();
+        } else {
+            // Snap back to rest position
+            sheet.style.transition = 'transform 0.28s cubic-bezier(0.4,0,0.2,1)';
+            sheet.style.transform = 'translateY(0px)';
+            if (overlayRef.current) {
+                overlayRef.current.style.opacity = '1';
+            }
+            // Clear inline transition after the snap to avoid interfering
+            // with future GSAP tweens on handleClose.
+            setTimeout(() => {
+                if (sheet) sheet.style.transition = '';
+            }, 300);
+        }
+    }, []);
 
     // ── Focus trap + ESC ──────────────────────────────────────────────────────
     useEffect(() => {
@@ -154,6 +227,10 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
             <div
                 ref={sheetRef}
                 onClick={(e) => e.stopPropagation()}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onTouchCancel={handleTouchEnd}
                 style={{
                     width: '100%',
                     maxHeight: '90vh',
@@ -163,6 +240,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                     borderBottom: 'none',
                     overflowY: 'auto',
                     WebkitOverflowScrolling: 'touch',
+                    touchAction: 'pan-y',
                 }}
             >
                 {/* Handle */}
