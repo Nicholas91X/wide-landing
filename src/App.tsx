@@ -38,7 +38,9 @@ function App() {
   const [legalPage, setLegalPage] = useState<LegalRoute>(getRouteFromPath);
   const [hasScrolled, setHasScrolled] = useState(false);
   const [showIntro, setShowIntro] = useState(
-    () => !localStorage.getItem('wide_intro_seen')
+    // IntroOverlay sempre visibile a ogni page load (non più gated da localStorage)
+    () => true
+    // Precedente: () => !localStorage.getItem('wide_intro_seen')
   );
 
   useEffect(() => {
@@ -62,7 +64,7 @@ function App() {
   }, []);
 
   const handleIntroDismiss = useCallback(() => {
-    localStorage.setItem('wide_intro_seen', '1');
+    // Non più localStorage — l'intro si mostra a ogni refresh
     setShowIntro(false);
   }, []);
 

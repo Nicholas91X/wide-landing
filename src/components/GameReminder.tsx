@@ -108,6 +108,33 @@ export const GameReminder: React.FC = () => {
     return () => ctx.revert();
   }, [prefersReduced]);
 
+  // GameReminder viene lazy-loaded DOPO che Portfolio monta. Se non refreshiamo
+  // ScrollTrigger, le misure del pin di Portfolio rimangono stale (calcolate
+  // senza contare l'altezza di GameReminder) → cards 2 e 3 si sovrappongono
+  // perché il pin non scrolla. Refresh su mount + quando il video carica.
+  useEffect(() => {
+    const refresh = () => {
+      try {
+        ScrollTrigger.refresh();
+      } catch {
+        /* ignore */
+      }
+    };
+    // Doppio refresh: subito dopo mount (layout base) + dopo 300ms (ascolta
+    // video metadata/layout settle).
+    const t1 = setTimeout(refresh, 50);
+    const t2 = setTimeout(refresh, 350);
+
+    const video = videoRef.current;
+    if (video) video.addEventListener("loadedmetadata", refresh);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      if (video) video.removeEventListener("loadedmetadata", refresh);
+    };
+  }, []);
+
   const handleCtaClick = () => {
     trackCTAClick("game_play");
   };
