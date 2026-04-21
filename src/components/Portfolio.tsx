@@ -95,15 +95,6 @@ const PROJECTS: PortfolioProject[] = [
   },
 ];
 
-// ─── Palette for numbered indicator ──────────────────────────────────────────
-const CARD_OVERLAYS = [
-  "rgba(0,0,0,0.45)",
-  "rgba(0,0,0,0.50)",
-  "rgba(0,0,0,0.45)",
-  "rgba(0,0,0,0.55)",
-  "rgba(0,0,0,0.45)",
-  "rgba(0,0,0,0.50)",
-];
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export const Portfolio: React.FC = () => {

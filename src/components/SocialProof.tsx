@@ -13,9 +13,32 @@ const METRICS = [
 ];
 
 // ─── MediaSlot helper (video-ready) ─────────────────────────────────────────
-/** Renders <video> if src is a video file, otherwise <img> */
+/** Renders Bunny <iframe> if src is an embed URL, <video> if direct file, else <img> */
 function MediaSlot({ src, alt, style }: { src: string; alt: string; style?: React.CSSProperties }) {
+  const isBunnyEmbed = /iframe\.mediadelivery\.net\/embed\//.test(src);
   const isVideo = /\.(mp4|webm|mov)$/i.test(src);
+
+  if (isBunnyEmbed) {
+    return (
+      <iframe
+        src={src}
+        title={alt}
+        loading="lazy"
+        allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+        allowFullScreen
+        style={{
+          border: 0,
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          ...style,
+        }}
+      />
+    );
+  }
   if (isVideo) {
     return (
       <video
@@ -338,9 +361,9 @@ export const SocialProof: React.FC = () => {
             justifyContent: "center",
           }}
         >
-          {/* Background Image - Real zoom out via contain and scale */}
+          {/* Background Media — Bunny embed (case study video) */}
           <MediaSlot
-            src="/assets/mustang_mach_1.jpg"
+            src="https://iframe.mediadelivery.net/embed/604848/c8c05822-75f8-4385-8642-45da605b08dd?autoplay=true&loop=true&muted=true&preload=true&responsive=true"
             alt="Automotive Client 2025"
           />
 
