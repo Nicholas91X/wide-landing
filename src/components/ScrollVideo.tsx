@@ -164,7 +164,7 @@ const ROMAN_NUMERALS = ["I", "II", "III", "IV", "V", "VI"];
 const toRoman = (n: number): string => ROMAN_NUMERALS[n - 1] ?? String(n);
 
 const BUNNY_VIDEO_URL =
-  "https://iframe.mediadelivery.net/embed/604848/957685f8-3d38-442b-9bb1-7dea192d1c1e?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=true";
+  "https://iframe.mediadelivery.net/embed/604848/957685f8-3d38-442b-9bb1-7dea192d1c1e?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=false";
 
 // ═══════ Sub-components ═══════
 
