@@ -366,7 +366,7 @@ export const SocialProof: React.FC = () => {
         >
           {/* Background Media — Bunny embed (case study video) */}
           <MediaSlot
-            src="https://iframe.mediadelivery.net/embed/604848/c8c05822-75f8-4385-8642-45da605b08dd?autoplay=true&loop=true&muted=true&preload=true&responsive=true"
+            src="https://iframe.mediadelivery.net/embed/604848/c8c05822-75f8-4385-8642-45da605b08dd?autoplay=true&loop=true&muted=true&preload=true&responsive=true&controls=true"
             alt="Automotive Client 2025"
           />
 
