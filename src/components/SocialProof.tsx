@@ -340,20 +340,20 @@ export const SocialProof: React.FC = () => {
           display: "flex",
           flexDirection: isMobile ? "column" : "row",
           gap: 0,
-          maxWidth: 1200,
+          maxWidth: 1360,
           margin: "0 auto",
           padding: isMobile
             ? "0 0 clamp(60px, 14vw, 120px)"
             : "0 clamp(40px, 5vw, 80px) clamp(80px, 12vw, 160px)",
         }}
       >
-        {/* Left — Image placeholder */}
+        {/* Left — Bunny case study video (più protagonista: 60% desktop) */}
         <div
           className="sp-anim"
           style={{
-            flex: isMobile ? "none" : "1 1 45%",
+            flex: isMobile ? "none" : "1 1 60%",
             position: "relative",
-            aspectRatio: "16 / 9", // Cinematic format for the car
+            aspectRatio: "16 / 9",
             overflow: "hidden",
             backgroundColor: "#000",
             display: "flex",
@@ -398,7 +398,7 @@ export const SocialProof: React.FC = () => {
         {/* Right — Text content */}
         <div
           style={{
-            flex: isMobile ? "none" : "1 1 55%",
+            flex: isMobile ? "none" : "1 1 40%",
             padding: isMobile
               ? "32px 24px 0"
               : "clamp(24px, 4vw, 48px) clamp(32px, 5vw, 60px)",
