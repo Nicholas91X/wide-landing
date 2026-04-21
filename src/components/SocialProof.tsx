@@ -347,18 +347,21 @@ export const SocialProof: React.FC = () => {
             : "0 clamp(40px, 5vw, 80px) clamp(80px, 12vw, 160px)",
         }}
       >
-        {/* Left — Bunny case study video (più protagonista: 60% desktop) */}
+        {/* Left — Bunny case study video
+            Mobile: aspect 9/16 (video portrait), full viewport width, no letterbox.
+            Desktop: 16/9 cinematic per mantenere il layout 60/40 side-by-side. */}
         <div
           className="sp-anim"
           style={{
             flex: isMobile ? "none" : "1 1 60%",
             position: "relative",
-            aspectRatio: "16 / 9",
+            aspectRatio: isMobile ? "9 / 16" : "16 / 9",
             overflow: "hidden",
-            backgroundColor: "#000",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            width: isMobile ? "100vw" : undefined,
+            marginLeft: isMobile ? "calc(50% - 50vw)" : undefined,
           }}
         >
           {/* Background Media — Bunny embed (case study video) */}
