@@ -339,7 +339,7 @@ export const Portfolio: React.FC = () => {
                 top: 16,
                 left: 20,
                 fontFamily: 'var(--font-title)',
-                fontWeight: 900,
+                fontWeight: 700,
                 fontSize: 'clamp(48px, 10vw, 80px)',
                 color: 'rgba(255,255,255,0.04)',
                 lineHeight: 1,
@@ -553,7 +553,7 @@ export const Portfolio: React.FC = () => {
               style={{
                 position: "absolute",
                 inset: 0,
-                background: `linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.55) 30%, ${CARD_OVERLAYS[i % CARD_OVERLAYS.length]} 55%, transparent 75%)`,
+                background: `linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 40%, transparent 85%)`,
                 pointerEvents: "none",
                 zIndex: 1,
               }}
@@ -567,6 +567,7 @@ export const Portfolio: React.FC = () => {
                 left: 0,
                 right: 0,
                 padding: "clamp(24px, 5vw, 60px)",
+                zIndex: 2,
               }}
             >
               {/* Category + year */}
@@ -579,6 +580,7 @@ export const Portfolio: React.FC = () => {
                   letterSpacing: "0.15em",
                   textTransform: "uppercase",
                   marginBottom: "10px",
+                  textShadow: "0 1px 4px rgba(0,0,0,0.8)",
                 }}
               >
                 {project.category}
@@ -590,10 +592,11 @@ export const Portfolio: React.FC = () => {
                   color: "#fff",
                   fontSize: "clamp(1.6rem, 6vw, 3.5rem)",
                   fontFamily: "var(--font-title)",
-                  fontWeight: 800,
+                  fontWeight: 700,
                   letterSpacing: "-0.03em",
                   lineHeight: 1.05,
                   margin: "0 0 20px",
+                  textShadow: "0 2px 10px rgba(0,0,0,0.8)",
                 }}
               >
                 {project.title}
@@ -607,14 +610,16 @@ export const Portfolio: React.FC = () => {
                       key={tag}
                       style={{
                         display: 'inline-block',
-                        padding: '3px 8px',
-                        border: '1px solid rgba(197,165,90,0.4)',
-                        color: 'var(--color-gold)',
-                        fontSize: '0.65rem',
+                        padding: '4px 10px',
+                        backgroundColor: 'rgba(0,0,0,0.6)',
+                        border: '1px solid var(--color-gold)',
+                        color: '#fff',
+                        fontSize: '0.62rem',
                         fontFamily: 'var(--font-subtitle)',
                         fontWeight: 700,
-                        letterSpacing: '0.18em',
+                        letterSpacing: '0.12em',
                         textTransform: 'uppercase',
+                        borderRadius: '2px',
                       }}
                     >{tag}</span>
                   ))}
@@ -661,16 +666,17 @@ export const Portfolio: React.FC = () => {
                       display: "inline-flex",
                       alignItems: "center",
                       gap: "10px",
-                      color: "#0a0a0a",
+                      color: "#fff",
                       fontSize: "0.82rem",
                       fontFamily: "var(--font-subtitle)",
-                      fontWeight: 800,
+                      fontWeight: 600,
                       letterSpacing: "0.14em",
                       textTransform: "uppercase",
                       padding: "10px 18px",
-                      background: "var(--color-gold)",
+                      background: "rgba(10, 10, 10, 0.85)",
+                      border: "1px solid var(--color-gold)",
                       borderRadius: "999px",
-                      boxShadow: "0 4px 16px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.4)",
+                      boxShadow: "0 8px 32px rgba(0,0,0,0.8)",
                       animation: "swipeHintShimmer 2.2s ease-in-out infinite",
                       alignSelf: "flex-start",
                     }}

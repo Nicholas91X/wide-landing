@@ -276,7 +276,7 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onDismiss }) => {
         <p
           ref={kickerRef}
           style={{
-            color: "var(--color-gold)",
+            color: "#fff",
             fontSize: "0.68rem",
             fontWeight: 600,
             letterSpacing: "0.30em",
@@ -291,15 +291,11 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onDismiss }) => {
           style={{
             display: "flex",
             gap: "clamp(0.01em, 0.5vw, 0.05em)",
-            color: "transparent",
-            WebkitTextStroke: "1.5px rgba(255,255,255,0.85)",
-            textShadow: [
-              "-2px 0 rgba(255,70,70,0.08)",
-              "2px 0 rgba(70,70,255,0.08)",
-            ].join(","),
+            color: "#fff",
             fontSize: "clamp(5rem, 22vw, 18rem)",
-            fontWeight: 900,
-            letterSpacing: "-0.04em",
+            fontFamily: "'TAN Aegean', sans-serif",
+            fontWeight: 400,
+            letterSpacing: "-0.02em",
             lineHeight: 0.9,
             margin: 0,
           }}
@@ -405,7 +401,7 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onDismiss }) => {
             color: "rgba(255,255,255,0.6)",
             fontSize: "0.62rem",
             fontFamily: "var(--font-body)",
-            fontWeight: 500,
+            fontWeight: 400,
             letterSpacing: "0.1em",
             marginTop: -6,
           }}

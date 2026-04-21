@@ -216,21 +216,22 @@ export const GameReminder: React.FC = () => {
           <h3
             ref={titleRef}
             style={{
-              fontFamily: "var(--font-serif)",
-              fontStyle: "italic",
+              fontFamily: "var(--font-title)",
+              fontStyle: "normal",
               fontSize: isMobile
-                ? "2.2rem"
-                : "clamp(2.6rem, 5.5vw, 4.4rem)",
-              fontWeight: 400,
-              lineHeight: 1.02,
-              letterSpacing: "-0.01em",
+                ? "2.4rem"
+                : "clamp(2.8rem, 6vw, 4.8rem)",
+              fontWeight: 700,
+              lineHeight: 0.95,
+              letterSpacing: "-0.03em",
               color: "#fff",
               margin: "0 0 24px",
+              textTransform: "uppercase",
             }}
           >
             Imprenditore
             <br />
-            per un giorno.
+            per un giorno
           </h3>
 
           <p

@@ -128,7 +128,7 @@ export const Footer: React.FC = () => {
                         style={{
                             display: 'inline-block',
                             fontSize: 'clamp(4.5rem, 22vw, 18rem)',
-                            fontWeight: 900,
+                            fontWeight: 700,
                             letterSpacing: '-0.04em',
                             lineHeight: 0.85,
                             // Hollow — stroke only, no fill

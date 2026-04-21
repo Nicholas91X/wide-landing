@@ -232,34 +232,35 @@ export const SocialProof: React.FC = () => {
           style={{
             fontSize: isMobile
               ? "clamp(1.8rem, 8vw, 2.6rem)"
-              : "clamp(2.4rem, 5vw, 3.6rem)",
+              : "clamp(2.4rem, 5.5vw, 3.8rem)",
             fontFamily: "var(--font-title)",
-            fontWeight: 800,
+            fontWeight: 700,
             lineHeight: 1.05,
             letterSpacing: "-0.03em",
             textTransform: "uppercase",
             margin: "0 0 24px",
+            color: "#fff",
           }}
         >
-          Portiamo la tua azienda dove i tuoi clienti ti cercano già.
+          Siamo il ponte tra te e la comunicazione moderna
         </h2>
 
         {/* Subtitle */}
         <p
           className="sp-anim"
           style={{
-            color: "var(--color-text-secondary)",
-            fontSize: "clamp(0.92rem, 2vw, 1.1rem)",
+            color: "rgba(255,255,255,0.9)",
+            fontSize: "clamp(1.1rem, 2.2vw, 1.4rem)",
             fontFamily: "var(--font-body)",
             fontWeight: 400,
-            lineHeight: 1.7,
-            maxWidth: 600,
-            margin: "0 0 36px",
+            lineHeight: 1.6,
+            maxWidth: 700,
+            margin: "0 0 40px",
           }}
         >
-          Lavoriamo con imprenditori che vogliono smettere di perdere terreno
-          online. Niente agenzie generaliste, niente promesse vuote — solo
-          risultati misurabili.
+          Non lasciare che la tua azienda <br />
+          rimanga indietro! <br />
+          Siamo lo strumento di traduzione del tuo lavoro sui canali digitali.
         </p>
 
         {/* CTA */}
@@ -421,7 +422,7 @@ export const SocialProof: React.FC = () => {
             className="sp-anim"
             style={{
               color: "rgba(255,255,255,0.72)",
-              fontSize: "clamp(0.88rem, 2vw, 1rem)",
+              fontSize: "clamp(0.95rem, 2.2vw, 1.1rem)",
               fontFamily: "var(--font-body)",
               fontWeight: 400,
               lineHeight: 1.7,
@@ -458,98 +459,98 @@ export const SocialProof: React.FC = () => {
                 : "clamp(1.8rem, 3vw, 2.4rem)";
 
               return (
-              <div
-                key={i}
-                style={{
-                  padding: isMobile ? '20px 20px' : '24px 28px',
-                  borderRight: !isMobile && i < METRICS.length - 1
-                    ? "1px solid var(--color-border)"
-                    : "none",
-                  borderTop: isMobile && i === 2 ? "1px solid var(--color-border)" : "none",
-                  borderBottom: isMobile && i < 2 ? "1px solid var(--color-border)" : "none",
-                  gridColumn: isMobile && i === 2 ? '1 / -1' : undefined,
-                  position: "relative",
-                }}
-              >
-                {/* Accent line top */}
-                {i === 0 && (
-                  <div style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: isMobile ? 0 : "auto",
-                    bottom: isMobile ? "auto" : 0,
-                    width: isMobile ? "100%" : 2,
-                    height: isMobile ? 2 : "100%",
-                    background: "rgba(255,255,255,0.5)",
-                  }} />
-                )}
+                <div
+                  key={i}
+                  style={{
+                    padding: isMobile ? '20px 20px' : '24px 28px',
+                    borderRight: !isMobile && i < METRICS.length - 1
+                      ? "1px solid var(--color-border)"
+                      : "none",
+                    borderTop: isMobile && i === 2 ? "1px solid var(--color-border)" : "none",
+                    borderBottom: isMobile && i < 2 ? "1px solid var(--color-border)" : "none",
+                    gridColumn: isMobile && i === 2 ? '1 / -1' : undefined,
+                    position: "relative",
+                  }}
+                >
+                  {/* Accent line top */}
+                  {i === 0 && (
+                    <div style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: isMobile ? 0 : "auto",
+                      bottom: isMobile ? "auto" : 0,
+                      width: isMobile ? "100%" : 2,
+                      height: isMobile ? 2 : "100%",
+                      background: "rgba(255,255,255,0.5)",
+                    }} />
+                  )}
 
-                {/*
+                  {/*
                   Ghost + counter wrapper.
                   The ghost (visibility:hidden) reserves the exact space for
                   the final value, so the container never resizes during
                   the count-up animation.
                 */}
-                <div
-                  style={{
-                    position: "relative",
-                    marginBottom: 8,
-                    lineHeight: 1,
-                  }}
-                >
-                  {/* Ghost: determines container dimensions */}
-                  <span
-                    style={{
-                      display: "block",
-                      visibility: "hidden",
-                      fontSize: counterFontSize,
-                      fontFamily: "var(--font-title)",
-                      fontWeight: 700,
-                      lineHeight: 1,
-                      letterSpacing: "-0.02em",
-                      whiteSpace: "nowrap",
-                      fontVariantNumeric: "tabular-nums",
-                    }}
-                    aria-hidden
-                  >
-                    {finalDisplay}
-                  </span>
-
-                  {/* Live counter — absolutely positioned over the ghost */}
                   <div
-                    ref={(el) => { metricRefs.current[i] = el; }}
                     style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      fontSize: counterFontSize,
-                      fontFamily: "var(--font-title)",
-                      fontWeight: 700,
+                      position: "relative",
+                      marginBottom: 8,
                       lineHeight: 1,
-                      letterSpacing: "-0.02em",
-                      whiteSpace: "nowrap",
-                      fontVariantNumeric: "tabular-nums",
                     }}
                   >
-                    0{m.suffix}
+                    {/* Ghost: determines container dimensions */}
+                    <span
+                      style={{
+                        display: "block",
+                        visibility: "hidden",
+                        fontSize: counterFontSize,
+                        fontFamily: "var(--font-title)",
+                        fontWeight: 700,
+                        lineHeight: 1,
+                        letterSpacing: "-0.02em",
+                        whiteSpace: "nowrap",
+                        fontVariantNumeric: "tabular-nums",
+                      }}
+                      aria-hidden
+                    >
+                      {finalDisplay}
+                    </span>
+
+                    {/* Live counter — absolutely positioned over the ghost */}
+                    <div
+                      ref={(el) => { metricRefs.current[i] = el; }}
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        fontSize: counterFontSize,
+                        fontFamily: "var(--font-title)",
+                        fontWeight: 700,
+                        lineHeight: 1,
+                        letterSpacing: "-0.02em",
+                        whiteSpace: "nowrap",
+                        fontVariantNumeric: "tabular-nums",
+                      }}
+                    >
+                      0{m.suffix}
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      color: "rgba(255,255,255,0.38)",
+                      fontSize: "0.7rem",
+                      fontFamily: "var(--font-subtitle)",
+                      fontWeight: 600,
+                      lineHeight: 1.4,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {m.label}
                   </div>
                 </div>
-
-                <div
-                  style={{
-                    color: "rgba(255,255,255,0.38)",
-                    fontSize: "0.7rem",
-                    fontFamily: "var(--font-subtitle)",
-                    fontWeight: 600,
-                    lineHeight: 1.4,
-                    letterSpacing: "0.08em",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  {m.label}
-                </div>
-              </div>
               );
             })}
           </div>

@@ -263,7 +263,7 @@ const CardsLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = Re
           <p
             style={{
               fontFamily: "var(--font-body)",
-              fontSize: isMobile ? "0.78rem" : "0.85rem",
+              fontSize: isMobile ? "0.85rem" : "0.95rem",
               lineHeight: 1.6,
               color: "rgba(255,255,255,0.88)",
               margin: 0,
@@ -308,7 +308,7 @@ const StatsLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = Re
           style={{
             fontFamily: "var(--font-title)",
             fontSize: isMobile ? "2.4rem" : "clamp(2.6rem, 5vw, 4.2rem)",
-            fontWeight: 900,
+            fontWeight: 700,
             lineHeight: 1,
             color: "var(--color-gold)",
             letterSpacing: "-0.03em",
@@ -393,7 +393,7 @@ const GalleryLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }> = 
           <p
             style={{
               fontFamily: "var(--font-body)",
-              fontSize: isMobile ? "0.75rem" : "0.82rem",
+              fontSize: isMobile ? "0.82rem" : "0.92rem",
               lineHeight: 1.55,
               color: "rgba(255,255,255,0.88)",
               margin: 0,
@@ -428,9 +428,10 @@ const TestimonialLayout: React.FC<{ items: ServiceContent[]; isMobile: boolean }
           style={{
             fontFamily: "var(--font-serif)",
             fontStyle: "italic",
-            fontSize: isMobile ? "1.15rem" : "clamp(1.4rem, 2.5vw, 1.8rem)",
-            lineHeight: 1.35,
-            color: "var(--color-gold)",
+            fontSize: isMobile ? "1.25rem" : "clamp(1.6rem, 3vw, 2.2rem)",
+            lineHeight: 1.4,
+            color: "#FFFFFF",
+            textShadow: "0 2px 15px rgba(0,0,0,0.6), 0 1px 3px rgba(0,0,0,0.4)",
             margin: "0 0 24px",
           }}
         >
@@ -584,24 +585,25 @@ const ServiceBlock: React.FC<ServiceBlockProps> = React.memo(({
       >
         <div
           style={{
-            fontFamily: "var(--font-serif)",
-            fontStyle: "italic",
+            fontFamily: "var(--font-subtitle)",
+            fontStyle: "normal",
             fontSize: isMobile ? "0.95rem" : "1.2rem",
             color: "var(--color-gold)",
             lineHeight: 1,
             marginBottom: isMobile ? 10 : 14,
             letterSpacing: "0.05em",
+            fontWeight: 600,
           }}
           aria-hidden="true"
         >
           — {toRoman(index + 1)}
         </div>
-        <h3
-          style={{
-            fontFamily: "var(--font-serif)",
-            fontStyle: "italic",
-            fontSize: isMobile ? "2rem" : "clamp(2.4rem, 5vw, 4rem)",
-            fontWeight: 400,
+          <h3
+            style={{
+              fontFamily: "var(--font-title)",
+              fontStyle: "normal",
+              fontSize: isMobile ? "2rem" : "clamp(2.4rem, 5vw, 4rem)",
+              fontWeight: 700,
             lineHeight: 1.02,
             letterSpacing: "-0.01em",
             color: "#fff",

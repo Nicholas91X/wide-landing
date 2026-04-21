@@ -632,7 +632,7 @@ export const NavBubble: React.FC = () => {
           style={{
             color: "rgba(255,255,255,0.92)",
             fontSize: isOpen ? "1rem" : "0.65rem",
-            fontWeight: 700,
+            fontWeight: 600,
             letterSpacing: "0.1em",
             textTransform: "uppercase",
             pointerEvents: "none",
@@ -691,7 +691,7 @@ export const NavBubble: React.FC = () => {
                 style={{
                   color: "#fff",
                   fontSize: "0.72rem",
-                  fontWeight: isActive ? 800 : 700,
+                  fontWeight: isActive ? 700 : 600,
                   letterSpacing: "0.1em",
                   textTransform: "uppercase",
                   textAlign: "center",

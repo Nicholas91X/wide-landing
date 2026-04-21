@@ -428,7 +428,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                             <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: '0.75rem', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '6px' }}>
                                 {project?.category}
                             </div>
-                            <h2 style={{ color: '#fff', fontSize: 'clamp(1.5rem, 5vw, 2.2rem)', fontWeight: 800, margin: 0, lineHeight: 1.1, letterSpacing: '-0.03em' }}>
+                            <h2 style={{ color: '#fff', fontSize: 'clamp(1.5rem, 5vw, 2.2rem)', fontWeight: 700, margin: 0, lineHeight: 1.1, letterSpacing: '-0.03em' }}>
                                 {project?.title}
                             </h2>
                         </div>
@@ -490,7 +490,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                                 color: 'var(--color-gold)',
                                 fontSize: '0.68rem',
                                 fontFamily: 'var(--font-title)',
-                                fontWeight: 700,
+                                fontWeight: 600,
                                 letterSpacing: '0.25em',
                                 textTransform: 'uppercase',
                             }}>
@@ -501,7 +501,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                                     color: 'rgba(255,255,255,0.88)',
                                     fontSize: '0.75rem',
                                     fontFamily: 'var(--font-title)',
-                                    fontWeight: 700,
+                                    fontWeight: 600,
                                     letterSpacing: '0.15em',
                                 }}>
                                     {project.year}
@@ -517,7 +517,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                                     borderRadius: '0',
                                     color: '#000',
                                     fontSize: '0.78rem',
-                                    fontWeight: 700,
+                                    fontWeight: 600,
                                     letterSpacing: '0.08em',
                                     lineHeight: 1.2,
                                 }}>

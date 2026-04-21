@@ -16,8 +16,7 @@ const TEAM = [
     roleShort: "Sviluppo & Pubblicità",
     description:
       "Traduco la strategia in risultati misurabili. Ingegnerizzo le tue infrastrutture web (siti e applicativi) e gestisco in prima persona i budget delle tue campagne sponsorizzate, ottimizzando ogni investimento per generare contatti e vendite reali.",
-    quote: "Traduco la strategia in risultati misurabili.",
-    image: "/founders/Alessia_Amoruso.jpeg",
+    image: "/founders/Alessia_Amoruso_v2.png",
   },
   {
     name: "Asia Franceschi",
@@ -27,8 +26,7 @@ const TEAM = [
     roleShort: "Immagine & Contenuti",
     description:
       "Studio il posizionamento della tua azienda e ne curo l'intera veste comunicativa. Dalla linea editoriale fino alla produzione reale di foto e video sul set, mi assicuro che ogni materiale trasmetta l'autorevolezza del tuo brand senza filtri o finzioni.",
-    quote: "Ogni materiale trasmette l'autorevolezza del tuo brand.",
-    image: "/founders/Asia_Franceschi.jpeg",
+    image: "/founders/Asia_Franceschi_v2.jpg",
   },
 ];
 
@@ -102,7 +100,7 @@ const FounderScene = React.forwardRef<HTMLDivElement, FounderSceneProps>(
               fontSize: "0.55rem",
               letterSpacing: "0.3em",
               color: "var(--color-gold)",
-              fontWeight: 700,
+              fontWeight: 600,
               textTransform: "uppercase",
             }}
           >
@@ -121,7 +119,7 @@ const FounderScene = React.forwardRef<HTMLDivElement, FounderSceneProps>(
                 style={{
                   fontFamily: "var(--font-title)",
                   fontSize: "2rem",
-                  fontWeight: 800,
+                  fontWeight: 700,
                   lineHeight: 0.9,
                   color: "#fff",
                   letterSpacing: "-0.02em",
@@ -137,7 +135,7 @@ const FounderScene = React.forwardRef<HTMLDivElement, FounderSceneProps>(
                 style={{
                   fontFamily: "var(--font-title)",
                   fontSize: "0.55rem",
-                  color: "rgba(255,255,255,0.75)",
+                  color: "rgba(255,255,255,0.9)",
                   letterSpacing: "0.18em",
                   textTransform: "uppercase",
                   fontWeight: 600,
@@ -173,7 +171,7 @@ const FounderScene = React.forwardRef<HTMLDivElement, FounderSceneProps>(
                   letterSpacing: "0.3em",
                   textTransform: "uppercase",
                   margin: "0 0 12px",
-                  fontWeight: 700,
+                  fontWeight: 600,
                 }}
               >
                 {romanNum} · Co-Founder
@@ -182,7 +180,7 @@ const FounderScene = React.forwardRef<HTMLDivElement, FounderSceneProps>(
                 style={{
                   fontFamily: "var(--font-title)",
                   fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)",
-                  fontWeight: 800,
+                  fontWeight: 700,
                   lineHeight: 0.95,
                   margin: "0 0 10px",
                   letterSpacing: "-0.02em",
@@ -217,7 +215,7 @@ const FounderScene = React.forwardRef<HTMLDivElement, FounderSceneProps>(
               fontFamily: "var(--font-body)",
               fontSize: isMobile ? "0.78rem" : "0.92rem",
               lineHeight: isMobile ? 1.6 : 1.65,
-              color: "rgba(255,255,255,0.82)",
+              color: "rgba(255,255,255,0.9)",
               margin: "0 0 20px",
               maxWidth: "46ch",
             }}
@@ -225,21 +223,7 @@ const FounderScene = React.forwardRef<HTMLDivElement, FounderSceneProps>(
             {person.description}
           </p>
 
-          <p
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontStyle: "italic",
-              fontSize: isMobile ? "1rem" : "clamp(1.1rem, 2.2vw, 1.5rem)",
-              lineHeight: 1.35,
-              color: "var(--color-gold)",
-              margin: 0,
-              paddingLeft: isMobile ? 14 : 20,
-              borderLeft: "2px solid rgba(197,165,90,0.5)",
-              maxWidth: "40ch",
-            }}
-          >
-            "{person.quote}"
-          </p>
+
         </div>
       </div>
     );
@@ -413,7 +397,7 @@ export const ChiSiamo: React.FC = () => {
             color: "#fff",
             fontSize: "clamp(1.8rem, 5vw, 3.5rem)",
             fontFamily: "var(--font-title)",
-            fontWeight: 800,
+            fontWeight: 700,
             textTransform: "uppercase",
             letterSpacing: "0.05em",
             lineHeight: 1.1,
@@ -425,7 +409,7 @@ export const ChiSiamo: React.FC = () => {
         </h2>
         <p
           style={{
-            color: "rgba(255,255,255,0.75)",
+            color: "rgba(255,255,255,0.9)",
             fontSize: "clamp(0.85rem, 2vw, 1.1rem)",
             fontFamily: "var(--font-body)",
             fontWeight: 400,
@@ -433,13 +417,13 @@ export const ChiSiamo: React.FC = () => {
             margin: "0 0 20px",
           }}
         >
-          Non siamo un'agenzia tradizionale, ma un gruppo di liberi
+          Non siamo un&apos;agenzia, ma un gruppo di liberi
           professionisti che ha scelto di collaborare in un contesto di piena
           responsabilità individuale e reputazione personale.
         </p>
         <p
           style={{
-            color: "rgba(255,255,255,0.72)",
+            color: "rgba(255,255,255,0.9)",
             fontSize: "clamp(0.82rem, 1.8vw, 1rem)",
             fontFamily: "var(--font-body)",
             fontWeight: 400,
@@ -454,7 +438,7 @@ export const ChiSiamo: React.FC = () => {
         </p>
         <p
           style={{
-            color: "rgba(255,255,255,0.72)",
+            color: "rgba(255,255,255,0.9)",
             fontSize: "clamp(0.82rem, 1.8vw, 1rem)",
             fontFamily: "var(--font-body)",
             fontWeight: 400,
@@ -519,7 +503,7 @@ export const ChiSiamo: React.FC = () => {
             top: "50%",
             transform: "translateY(-50%)",
             fontFamily: "var(--font-title)",
-            fontWeight: 900,
+            fontWeight: 700,
             fontSize: "clamp(80px, 20vw, 140px)",
             color: "rgba(255,255,255,0.025)",
             lineHeight: 1,
@@ -663,7 +647,7 @@ export const ChiSiamo: React.FC = () => {
         </h3>
         <p
           style={{
-            color: "rgba(255,255,255,0.75)",
+            color: "rgba(255,255,255,0.9)",
             fontSize: "clamp(0.9rem, 2vw, 1.1rem)",
             fontFamily: "var(--font-body)",
             fontWeight: 400,
@@ -678,7 +662,7 @@ export const ChiSiamo: React.FC = () => {
         </p>
         <p
           style={{
-            color: "rgba(255,255,255,0.75)",
+            color: "rgba(255,255,255,0.9)",
             fontSize: "clamp(0.9rem, 2vw, 1.1rem)",
             fontFamily: "var(--font-body)",
             fontWeight: 400,
