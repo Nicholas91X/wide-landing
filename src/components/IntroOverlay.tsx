@@ -219,8 +219,6 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onDismiss }) => {
         transition: "opacity 0.8s ease, background-color 0.8s ease",
         backdropFilter: "blur(2px)",
         WebkitBackdropFilter: "blur(2px)",
-        backgroundImage:
-          "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E\")",
       }}
     >
       {/* Visually-hidden dismiss button — reachable via Tab for keyboard/AT users */}
@@ -278,7 +276,7 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onDismiss }) => {
         <p
           ref={kickerRef}
           style={{
-            color: "var(--color-gold)",
+            color: "#fff",
             fontSize: "0.68rem",
             fontWeight: 600,
             letterSpacing: "0.30em",
@@ -293,15 +291,11 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onDismiss }) => {
           style={{
             display: "flex",
             gap: "clamp(0.01em, 0.5vw, 0.05em)",
-            color: "transparent",
-            WebkitTextStroke: "1.5px rgba(255,255,255,0.85)",
-            textShadow: [
-              "-2px 0 rgba(255,70,70,0.08)",
-              "2px 0 rgba(70,70,255,0.08)",
-            ].join(","),
+            color: "#fff",
             fontSize: "clamp(5rem, 22vw, 18rem)",
-            fontWeight: 900,
-            letterSpacing: "-0.04em",
+            fontFamily: "'TAN Aegean', sans-serif",
+            fontWeight: 400,
+            letterSpacing: "-0.02em",
             lineHeight: 0.9,
             margin: 0,
           }}
@@ -331,72 +325,88 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onDismiss }) => {
         />
       </div>
 
-      {/* Dismiss hint — bottom center, fades in after the logo animation */}
+      {/* Dismiss hint — chevron cascata + label ingrandita */}
       <div
         ref={swipeRef}
         style={{
           position: "absolute",
-          bottom: "clamp(28px, 5vw, 48px)",
+          bottom: "clamp(34px, 5vw, 52px)",
           left: "50%",
           transform: "translateX(-50%)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: 12,
+          gap: 14,
           opacity: 0,
           cursor: "pointer",
         }}
       >
         <style>{`
-          @keyframes introScrollDrop {
-            0%   { opacity: 0;   transform: translateY(-4px); }
-            40%  { opacity: 0.8; transform: translateY(0);    }
-            100% { opacity: 0;   transform: translateY(7px);  }
-          }
-          @keyframes introPulse {
-            0%, 100% { opacity: 0.55; }
-            50%      { opacity: 1; }
+          @keyframes introChevCascade {
+            0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+            30%           { opacity: 1;   transform: translateY(2px); }
           }
         `}</style>
 
-        {/* Animated vertical line + arrow */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-          <div
-            style={{
-              width: 1,
-              height: 28,
-              background: "linear-gradient(to bottom, rgba(197,165,90,0.6), rgba(197,165,90,0.05))",
-              animation: "introScrollDrop 2s ease-in-out infinite",
-            }}
-          />
-          <svg
-            width="12"
-            height="7"
-            viewBox="0 0 12 7"
-            fill="none"
-            stroke="rgba(255,255,255,0.5)"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="1,1 6,6 11,1" />
-          </svg>
+        {/* Cluster 3 chevron stacked — decorative */}
+        <div
+          aria-hidden="true"
+          style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+        >
+          {[0, 1, 2].map((i) => (
+            <svg
+              key={i}
+              aria-hidden="true"
+              focusable="false"
+              width="28"
+              height="14"
+              viewBox="0 0 28 14"
+              fill="none"
+              stroke="var(--color-gold)"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{
+                opacity: prefersReduced ? 0.8 : 0.3,
+                marginTop: i === 0 ? 0 : -6,
+                animation: prefersReduced
+                  ? "none"
+                  : "introChevCascade 1.6s ease-in-out infinite",
+                animationDelay: `${i * 0.2}s`,
+              }}
+            >
+              <polyline points="2,2 14,12 26,2" />
+            </svg>
+          ))}
         </div>
 
-        {/* Label — explicit and actionable */}
+        {/* Label primario bianco pieno */}
         <span
           style={{
-            color: "rgba(197,165,90,0.55)",
-            fontSize: "0.65rem",
-            fontFamily: "var(--font-subtitle)",
-            fontWeight: 600,
+            color: "#fff",
+            fontSize: "0.82rem",
+            fontFamily: "var(--font-title)",
+            fontWeight: 700,
             letterSpacing: "0.22em",
             textTransform: "uppercase",
-            animation: "introPulse 3s ease-in-out infinite",
-            whiteSpace: "nowrap",
+            lineHeight: 1,
           }}
         >
-          Scorri o tocca per iniziare
+          Scorri
+        </span>
+
+        {/* Sub-label */}
+        <span
+          style={{
+            color: "rgba(255,255,255,0.6)",
+            fontSize: "0.62rem",
+            fontFamily: "var(--font-body)",
+            fontWeight: 400,
+            letterSpacing: "0.1em",
+            marginTop: -6,
+          }}
+        >
+          o tocca per iniziare
         </span>
       </div>
     </div>

@@ -14,6 +14,7 @@ const ScrollVideo = lazy(() =>
 );
 const Portfolio = lazy(() => import("./components/Portfolio"));
 const ChiSiamo = lazy(() => import("./components/ChiSiamo"));
+const GameReminder = lazy(() => import("./components/GameReminder"));
 const Contatti = lazy(() => import("./components/Contatti"));
 const Footer = lazy(() => import("./components/Footer"));
 
@@ -37,7 +38,9 @@ function App() {
   const [legalPage, setLegalPage] = useState<LegalRoute>(getRouteFromPath);
   const [hasScrolled, setHasScrolled] = useState(false);
   const [showIntro, setShowIntro] = useState(
-    () => !localStorage.getItem('wide_intro_seen')
+    // IntroOverlay sempre visibile a ogni page load (non più gated da localStorage)
+    () => true
+    // Precedente: () => !localStorage.getItem('wide_intro_seen')
   );
 
   useEffect(() => {
@@ -61,7 +64,7 @@ function App() {
   }, []);
 
   const handleIntroDismiss = useCallback(() => {
-    localStorage.setItem('wide_intro_seen', '1');
+    // Non più localStorage — l'intro si mostra a ogni refresh
     setShowIntro(false);
   }, []);
 
@@ -103,7 +106,7 @@ function App() {
         }}
         alt=""
       />
-      <main style={{ overflowX: "hidden" }}>
+      <main>
         <SocialProof />
         <Suspense
           fallback={<div style={{ background: "#000", minHeight: "100vh" }} />}
@@ -130,6 +133,15 @@ function App() {
             <section id="chi-siamo">
               <ChiSiamo />
             </section>
+            {/* Gradient fade divider */}
+            <div
+              style={{
+                height: "clamp(80px, 12vw, 160px)",
+                background:
+                  "linear-gradient(to bottom, #000 0%, #0a0a0a 30%, #111 50%, #0a0a0a 70%, #000 100%)",
+              }}
+            />
+            <GameReminder />
             {/* Gradient fade divider */}
             <div
               style={{
@@ -269,7 +281,7 @@ function FloatingCTA() {
             boxShadow: "0 6px 24px rgba(0,0,0,0.4)",
           }}
         >
-          Prenota una call gratuita
+          Contattaci senza impegno
           <span style={{ fontSize: "0.9rem" }}>→</span>
         </button>
       </div>
@@ -313,7 +325,7 @@ function FloatingCTA() {
         e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.4)";
       }}
     >
-      Prenota una call gratuita
+      Contattaci senza impegno
     </button>
   );
 }

@@ -30,7 +30,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Home", sectionId: "home", angle: -90 }, // 12 o'clock
   { label: "Servizi", sectionId: "servizi", angle: -18 }, // 1-2 o'clock
   { label: "Chi Siamo", sectionId: "chi-siamo", angle: 54 }, // 4-5 o'clock
-  { label: "Portfolio", sectionId: "portfolio", angle: 126 }, // 7-8 o'clock
+  { label: "Progetti", sectionId: "portfolio", angle: 126 }, // 7-8 o'clock
   { label: "Contatti", sectionId: "contatti", angle: 198 }, // 9-10 o'clock
 ];
 
@@ -443,47 +443,52 @@ export const NavBubble: React.FC = () => {
   }, [isOpen]);
 
   // ── Nav click ─────────────────────────────────────────────────────────────
+  // Teleporta istantaneamente alla sezione (no smooth scroll attraverso
+  // tutto il contenuto intermedio), poi chiude il menu. Le sezioni sotto
+  // SocialProof sono lazy-loaded dietro hasScrolled in App.tsx: se non sono
+  // ancora in DOM, nudge di 40px per forzare mount e poi polling.
   const handleNavClick = (sectionId: string) => {
-    closeMenu();
-    setTimeout(() => {
+    const doScrollInstant = (): boolean => {
       if (sectionId === "home") {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      } else if (sectionId === "servizi") {
-        // The services section is pinned by ScrollTrigger (800vh scroll range).
-        // The first service appears after the intro fast-segment (~7% progress).
-        // Scroll to sectionTop + offset so the first service card is visible.
-        const el = document.getElementById("servizi");
-        if (el) {
-          const sectionTop = el.getBoundingClientRect().top + window.scrollY;
-          const offset = window.innerHeight * 0.55;
-          window.scrollTo({ top: sectionTop + offset, behavior: "instant" });
-        }
-      } else {
-        // chi-siamo / portfolio / contatti sono lazy-loaded dietro
-        // `hasScrolled` in App.tsx + Suspense fallback. Se l'utente clicca dal
-        // hero potrebbero non esistere in DOM → nudge di scroll per triggerare
-        // il mount, poi polling finché appaiono. Lo scroll animato via GSAP
-        // (ScrollToPlugin) è ScrollTrigger-aware e gestisce correttamente i
-        // pin-spacer che si aggiornano mentre attraversiamo le sezioni pinned.
-        if (!document.getElementById(sectionId) && window.scrollY < 30) {
-          window.scrollTo(0, 40);
-        }
-        let attempts = 60;
-        const tryScroll = () => {
-          const el = document.getElementById(sectionId);
-          if (!el) {
-            if (--attempts > 0) requestAnimationFrame(tryScroll);
-            return;
-          }
-          gsap.to(window, {
-            duration: 0.9,
-            scrollTo: `#${sectionId}`,
-            ease: "power2.inOut",
-          });
-        };
-        tryScroll();
+        window.scrollTo({ top: 0, behavior: "instant" });
+        return true;
       }
-    }, 700);
+      if (sectionId === "servizi") {
+        const el = document.getElementById("servizi");
+        if (!el) return false;
+        const sectionTop = el.getBoundingClientRect().top + window.scrollY;
+        // Servizi è una sticky canvas lunga ~800vh: atterriamo dopo l'intro
+        // fast-segment (0.55vh) per mostrare subito il primo servizio.
+        const offset = window.innerHeight * 0.55;
+        window.scrollTo({ top: sectionTop + offset, behavior: "instant" });
+        return true;
+      }
+      const el = document.getElementById(sectionId);
+      if (!el) return false;
+      const sectionTop = el.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: sectionTop, behavior: "instant" });
+      return true;
+    };
+
+    // Se la sezione è già montata, jump immediato + chiudi menu.
+    if (doScrollInstant()) {
+      closeMenu();
+      return;
+    }
+
+    // Sezione non in DOM (lazy) — trigger mount via nudge, poi polling.
+    if (window.scrollY < 30) {
+      window.scrollTo(0, 40);
+    }
+    let attempts = 60;
+    const tryScroll = () => {
+      if (doScrollInstant()) {
+        closeMenu();
+        return;
+      }
+      if (--attempts > 0) requestAnimationFrame(tryScroll);
+    };
+    tryScroll();
   };
 
   return (
@@ -627,7 +632,7 @@ export const NavBubble: React.FC = () => {
           style={{
             color: "rgba(255,255,255,0.92)",
             fontSize: isOpen ? "1rem" : "0.65rem",
-            fontWeight: 700,
+            fontWeight: 600,
             letterSpacing: "0.1em",
             textTransform: "uppercase",
             pointerEvents: "none",
@@ -684,14 +689,15 @@ export const NavBubble: React.FC = () => {
             >
               <span
                 style={{
-                  color: isActive ? "#fff" : "rgba(255,255,255,0.75)",
-                  fontSize: "0.6rem",
-                  fontWeight: isActive ? 800 : 600,
+                  color: "#fff",
+                  fontSize: "0.72rem",
+                  fontWeight: isActive ? 700 : 600,
                   letterSpacing: "0.1em",
                   textTransform: "uppercase",
                   textAlign: "center",
                   pointerEvents: "none",
                   lineHeight: 1.2,
+                  textShadow: "0 1px 3px rgba(0,0,0,0.85), 0 0 10px rgba(0,0,0,0.6)",
                 }}
               >
                 {item.label}

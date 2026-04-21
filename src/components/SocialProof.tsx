@@ -13,9 +13,32 @@ const METRICS = [
 ];
 
 // ─── MediaSlot helper (video-ready) ─────────────────────────────────────────
-/** Renders <video> if src is a video file, otherwise <img> */
+/** Renders Bunny <iframe> if src is an embed URL, <video> if direct file, else <img> */
 function MediaSlot({ src, alt, style }: { src: string; alt: string; style?: React.CSSProperties }) {
+  const isBunnyEmbed = /iframe\.mediadelivery\.net\/embed\//.test(src);
   const isVideo = /\.(mp4|webm|mov)$/i.test(src);
+
+  if (isBunnyEmbed) {
+    return (
+      <iframe
+        src={src}
+        title={alt}
+        loading="lazy"
+        allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+        allowFullScreen
+        style={{
+          border: 0,
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          ...style,
+        }}
+      />
+    );
+  }
   if (isVideo) {
     return (
       <video
@@ -232,34 +255,35 @@ export const SocialProof: React.FC = () => {
           style={{
             fontSize: isMobile
               ? "clamp(1.8rem, 8vw, 2.6rem)"
-              : "clamp(2.4rem, 5vw, 3.6rem)",
+              : "clamp(2.4rem, 5.5vw, 3.8rem)",
             fontFamily: "var(--font-title)",
-            fontWeight: 800,
+            fontWeight: 700,
             lineHeight: 1.05,
             letterSpacing: "-0.03em",
             textTransform: "uppercase",
             margin: "0 0 24px",
+            color: "#fff",
           }}
         >
-          Portiamo la tua azienda dove i tuoi clienti ti cercano già.
+          Siamo il ponte tra te e la comunicazione moderna
         </h2>
 
         {/* Subtitle */}
         <p
           className="sp-anim"
           style={{
-            color: "var(--color-text-secondary)",
-            fontSize: "clamp(0.92rem, 2vw, 1.1rem)",
+            color: "rgba(255,255,255,0.9)",
+            fontSize: "clamp(1.1rem, 2.2vw, 1.4rem)",
             fontFamily: "var(--font-body)",
             fontWeight: 400,
-            lineHeight: 1.7,
-            maxWidth: 600,
-            margin: "0 0 36px",
+            lineHeight: 1.6,
+            maxWidth: 700,
+            margin: "0 0 40px",
           }}
         >
-          Lavoriamo con imprenditori che vogliono smettere di perdere terreno
-          online. Niente agenzie generaliste, niente promesse vuote — solo
-          risultati misurabili.
+          Non lasciare che la tua azienda <br />
+          rimanga indietro! <br />
+          Siamo lo strumento di traduzione del tuo lavoro sui canali digitali.
         </p>
 
         {/* CTA */}
@@ -301,7 +325,7 @@ export const SocialProof: React.FC = () => {
             e.currentTarget.style.boxShadow = "none";
           }}
         >
-          Prenota una call gratuita
+          Contattaci senza impegno
           <span style={{ fontSize: "0.9rem" }}>→</span>
         </button>
       </div>
@@ -316,30 +340,33 @@ export const SocialProof: React.FC = () => {
           display: "flex",
           flexDirection: isMobile ? "column" : "row",
           gap: 0,
-          maxWidth: 1200,
+          maxWidth: 1360,
           margin: "0 auto",
           padding: isMobile
             ? "0 0 clamp(60px, 14vw, 120px)"
             : "0 clamp(40px, 5vw, 80px) clamp(80px, 12vw, 160px)",
         }}
       >
-        {/* Left — Image placeholder */}
+        {/* Left — Bunny case study video
+            Mobile: aspect 9/16 (video portrait), full viewport width, no letterbox.
+            Desktop: 16/9 cinematic per mantenere il layout 60/40 side-by-side. */}
         <div
           className="sp-anim"
           style={{
-            flex: isMobile ? "none" : "1 1 45%",
+            flex: isMobile ? "none" : "1 1 60%",
             position: "relative",
-            aspectRatio: "16 / 9", // Cinematic format for the car
+            aspectRatio: isMobile ? "9 / 16" : "16 / 9",
             overflow: "hidden",
-            backgroundColor: "#000",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            width: isMobile ? "100vw" : undefined,
+            marginLeft: isMobile ? "calc(50% - 50vw)" : undefined,
           }}
         >
-          {/* Background Image - Real zoom out via contain and scale */}
+          {/* Background Media — Bunny embed (case study video) */}
           <MediaSlot
-            src="/assets/mustang_mach_1.jpg"
+            src="https://iframe.mediadelivery.net/embed/604848/c8c05822-75f8-4385-8642-45da605b08dd?autoplay=true&loop=true&muted=true&preload=true&responsive=true"
             alt="Automotive Client 2025"
           />
 
@@ -374,7 +401,7 @@ export const SocialProof: React.FC = () => {
         {/* Right — Text content */}
         <div
           style={{
-            flex: isMobile ? "none" : "1 1 55%",
+            flex: isMobile ? "none" : "1 1 40%",
             padding: isMobile
               ? "32px 24px 0"
               : "clamp(24px, 4vw, 48px) clamp(32px, 5vw, 60px)",
@@ -420,8 +447,8 @@ export const SocialProof: React.FC = () => {
           <p
             className="sp-anim"
             style={{
-              color: "rgba(255,255,255,0.5)",
-              fontSize: "clamp(0.88rem, 2vw, 1rem)",
+              color: "rgba(255,255,255,0.72)",
+              fontSize: "clamp(0.95rem, 2.2vw, 1.1rem)",
               fontFamily: "var(--font-body)",
               fontWeight: 400,
               lineHeight: 1.7,
@@ -458,98 +485,98 @@ export const SocialProof: React.FC = () => {
                 : "clamp(1.8rem, 3vw, 2.4rem)";
 
               return (
-              <div
-                key={i}
-                style={{
-                  padding: isMobile ? '20px 20px' : '24px 28px',
-                  borderRight: !isMobile && i < METRICS.length - 1
-                    ? "1px solid var(--color-border)"
-                    : "none",
-                  borderTop: isMobile && i === 2 ? "1px solid var(--color-border)" : "none",
-                  borderBottom: isMobile && i < 2 ? "1px solid var(--color-border)" : "none",
-                  gridColumn: isMobile && i === 2 ? '1 / -1' : undefined,
-                  position: "relative",
-                }}
-              >
-                {/* Accent line top */}
-                {i === 0 && (
-                  <div style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: isMobile ? 0 : "auto",
-                    bottom: isMobile ? "auto" : 0,
-                    width: isMobile ? "100%" : 2,
-                    height: isMobile ? 2 : "100%",
-                    background: "rgba(255,255,255,0.5)",
-                  }} />
-                )}
+                <div
+                  key={i}
+                  style={{
+                    padding: isMobile ? '20px 20px' : '24px 28px',
+                    borderRight: !isMobile && i < METRICS.length - 1
+                      ? "1px solid var(--color-border)"
+                      : "none",
+                    borderTop: isMobile && i === 2 ? "1px solid var(--color-border)" : "none",
+                    borderBottom: isMobile && i < 2 ? "1px solid var(--color-border)" : "none",
+                    gridColumn: isMobile && i === 2 ? '1 / -1' : undefined,
+                    position: "relative",
+                  }}
+                >
+                  {/* Accent line top */}
+                  {i === 0 && (
+                    <div style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: isMobile ? 0 : "auto",
+                      bottom: isMobile ? "auto" : 0,
+                      width: isMobile ? "100%" : 2,
+                      height: isMobile ? 2 : "100%",
+                      background: "rgba(255,255,255,0.5)",
+                    }} />
+                  )}
 
-                {/*
+                  {/*
                   Ghost + counter wrapper.
                   The ghost (visibility:hidden) reserves the exact space for
                   the final value, so the container never resizes during
                   the count-up animation.
                 */}
-                <div
-                  style={{
-                    position: "relative",
-                    marginBottom: 8,
-                    lineHeight: 1,
-                  }}
-                >
-                  {/* Ghost: determines container dimensions */}
-                  <span
-                    style={{
-                      display: "block",
-                      visibility: "hidden",
-                      fontSize: counterFontSize,
-                      fontFamily: "var(--font-title)",
-                      fontWeight: 700,
-                      lineHeight: 1,
-                      letterSpacing: "-0.02em",
-                      whiteSpace: "nowrap",
-                      fontVariantNumeric: "tabular-nums",
-                    }}
-                    aria-hidden
-                  >
-                    {finalDisplay}
-                  </span>
-
-                  {/* Live counter — absolutely positioned over the ghost */}
                   <div
-                    ref={(el) => { metricRefs.current[i] = el; }}
                     style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      fontSize: counterFontSize,
-                      fontFamily: "var(--font-title)",
-                      fontWeight: 700,
+                      position: "relative",
+                      marginBottom: 8,
                       lineHeight: 1,
-                      letterSpacing: "-0.02em",
-                      whiteSpace: "nowrap",
-                      fontVariantNumeric: "tabular-nums",
                     }}
                   >
-                    0{m.suffix}
+                    {/* Ghost: determines container dimensions */}
+                    <span
+                      style={{
+                        display: "block",
+                        visibility: "hidden",
+                        fontSize: counterFontSize,
+                        fontFamily: "var(--font-title)",
+                        fontWeight: 700,
+                        lineHeight: 1,
+                        letterSpacing: "-0.02em",
+                        whiteSpace: "nowrap",
+                        fontVariantNumeric: "tabular-nums",
+                      }}
+                      aria-hidden
+                    >
+                      {finalDisplay}
+                    </span>
+
+                    {/* Live counter — absolutely positioned over the ghost */}
+                    <div
+                      ref={(el) => { metricRefs.current[i] = el; }}
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        fontSize: counterFontSize,
+                        fontFamily: "var(--font-title)",
+                        fontWeight: 700,
+                        lineHeight: 1,
+                        letterSpacing: "-0.02em",
+                        whiteSpace: "nowrap",
+                        fontVariantNumeric: "tabular-nums",
+                      }}
+                    >
+                      0{m.suffix}
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      color: "rgba(255,255,255,0.38)",
+                      fontSize: "0.7rem",
+                      fontFamily: "var(--font-subtitle)",
+                      fontWeight: 600,
+                      lineHeight: 1.4,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {m.label}
                   </div>
                 </div>
-
-                <div
-                  style={{
-                    color: "rgba(255,255,255,0.38)",
-                    fontSize: "0.7rem",
-                    fontFamily: "var(--font-subtitle)",
-                    fontWeight: 600,
-                    lineHeight: 1.4,
-                    letterSpacing: "0.08em",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  {m.label}
-                </div>
-              </div>
               );
             })}
           </div>
@@ -566,7 +593,7 @@ export const SocialProof: React.FC = () => {
                 ?.scrollIntoView({ behavior: "instant" });
             }}
             style={{
-              color: "rgba(255,255,255,0.6)",
+              color: "rgba(255,255,255,0.75)",
               fontSize: "0.82rem",
               fontFamily: "var(--font-subtitle)",
               fontWeight: 600,
@@ -581,7 +608,7 @@ export const SocialProof: React.FC = () => {
               e.currentTarget.style.color = "var(--color-gold)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = "rgba(255,255,255,0.6)";
+              e.currentTarget.style.color = "rgba(255,255,255,0.75)";
             }}
           >
             Scopri come <span>→</span>

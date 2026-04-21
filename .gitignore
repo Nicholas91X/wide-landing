@@ -55,4 +55,7 @@ ffmpeg-*.log
 .stylelintcache
 *.tsbuildinfo
 
-.claude/settings.local.json
+.claude/settings*.json
+.superpowers/
+.worktrees/
+.playwright-mcp/

@@ -706,7 +706,7 @@ export const Contatti: React.FC = () => {
 
     /* ── Styles (light-theme palette) ───────────────────────────────────── */
     const labelStyle: React.CSSProperties = {
-        color: 'rgba(0,0,0,0.42)', fontSize: '0.7rem', fontFamily: 'var(--font-subtitle)', fontWeight: 600,
+        color: 'rgba(0,0,0,0.65)', fontSize: '0.7rem', fontFamily: 'var(--font-subtitle)', fontWeight: 600,
         letterSpacing: '0.15em', textTransform: 'uppercase', margin: '0 0 8px',
     };
 
@@ -765,7 +765,7 @@ export const Contatti: React.FC = () => {
                 </h2>
                 <div style={{ width: 30, height: 2, backgroundColor: 'rgba(0,0,0,0.18)', marginBottom: 24 }} />
                 <p style={{
-                    color: 'rgba(0,0,0,0.6)',
+                    color: 'rgba(0,0,0,0.82)',
                     fontSize: 'clamp(0.88rem, 2vw, 1.05rem)',
                     fontFamily: 'var(--font-body)',
                     fontWeight: 400,
@@ -773,7 +773,7 @@ export const Contatti: React.FC = () => {
                     margin: 0,
                     maxWidth: 520,
                 }}>
-                    Se vuoi scoprire come possiamo aiutarti, scrivici o prenota una consulenza gratuita:
+                    Se vuoi scoprire come possiamo aiutarti, compila il form {isMobile ? 'qui sotto' : 'qui a fianco'} senza impegno:
                     insieme costruiremo una strategia efficace per la tua crescita.
                     Il tuo lavoro merita di essere conosciuto, e noi siamo qui per farlo arrivare
                     alle persone giuste.
@@ -951,7 +951,7 @@ export const Contatti: React.FC = () => {
                                 color: 'var(--color-gold)',
                                 fontSize: '0.68rem',
                                 fontFamily: 'var(--font-subtitle)',
-                                fontWeight: 700,
+                                fontWeight: 600,
                                 letterSpacing: '0.3em',
                                 textTransform: 'uppercase',
                                 margin: '0 0 20px',

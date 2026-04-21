@@ -26,6 +26,12 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
     const sheetRef = useRef<HTMLDivElement>(null);
     const isVisible = project !== null;
 
+    // ── Swipe-down-to-dismiss state (mobile) ──────────────────────────────────
+    const dragStartY = useRef<number | null>(null);
+    const dragDeltaY = useRef(0);
+    const dragActive = useRef(false);
+    const CLOSE_THRESHOLD_PX = 120;
+
     // ── Gallery state ─────────────────────────────────────────────────────────
     const [galleryIdx, setGalleryIdx] = useState(0);
     const galleryRef = useRef<HTMLDivElement>(null);
@@ -78,6 +84,73 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
             onComplete: onClose
         });
     };
+
+    // ── Swipe-down gesture handlers ──────────────────────────────────────────
+    // Activates only when the sheet's scroll is at the top AND the user drags
+    // downward, so native scroll is preserved when scrolled into the content.
+    const handleTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+        const sheet = sheetRef.current;
+        if (!sheet) return;
+        // Only arm gesture when already at the top of the scroll container.
+        if (sheet.scrollTop > 0) {
+            dragActive.current = false;
+            dragStartY.current = null;
+            return;
+        }
+        dragStartY.current = e.touches[0].clientY;
+        dragDeltaY.current = 0;
+        dragActive.current = true;
+    }, []);
+
+    const handleTouchMove = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+        const sheet = sheetRef.current;
+        if (!sheet || !dragActive.current || dragStartY.current == null) return;
+        const dy = e.touches[0].clientY - dragStartY.current;
+        if (dy <= 0) {
+            // Dragging up again — reset transform, let native scroll handle it
+            dragDeltaY.current = 0;
+            sheet.style.transform = '';
+            sheet.style.transition = '';
+            return;
+        }
+        dragDeltaY.current = dy;
+        // Apply a damped translate so the drag feels tactile without
+        // runaway movement. Overlay fades in proportion to progress.
+        sheet.style.transform = `translateY(${dy}px)`;
+        sheet.style.transition = 'none';
+        if (overlayRef.current) {
+            const progress = Math.min(1, dy / 400);
+            overlayRef.current.style.opacity = String(1 - progress * 0.7);
+        }
+    }, []);
+
+    const handleTouchEnd = useCallback(() => {
+        const sheet = sheetRef.current;
+        if (!sheet || !dragActive.current) return;
+        dragActive.current = false;
+        const dy = dragDeltaY.current;
+        dragStartY.current = null;
+        dragDeltaY.current = 0;
+
+        if (dy > CLOSE_THRESHOLD_PX) {
+            // Commit the close: continue sliding out from the current position
+            sheet.style.transform = '';
+            sheet.style.transition = '';
+            handleClose();
+        } else {
+            // Snap back to rest position
+            sheet.style.transition = 'transform 0.28s cubic-bezier(0.4,0,0.2,1)';
+            sheet.style.transform = 'translateY(0px)';
+            if (overlayRef.current) {
+                overlayRef.current.style.opacity = '1';
+            }
+            // Clear inline transition after the snap to avoid interfering
+            // with future GSAP tweens on handleClose.
+            setTimeout(() => {
+                if (sheet) sheet.style.transition = '';
+            }, 300);
+        }
+    }, []);
 
     // ── Focus trap + ESC ──────────────────────────────────────────────────────
     useEffect(() => {
@@ -154,6 +227,10 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
             <div
                 ref={sheetRef}
                 onClick={(e) => e.stopPropagation()}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onTouchCancel={handleTouchEnd}
                 style={{
                     width: '100%',
                     maxHeight: '90vh',
@@ -163,6 +240,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                     borderBottom: 'none',
                     overflowY: 'auto',
                     WebkitOverflowScrolling: 'touch',
+                    touchAction: 'pan-y',
                 }}
             >
                 {/* Handle */}
@@ -347,10 +425,10 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                     {/* Header */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                         <div>
-                            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '6px' }}>
+                            <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: '0.75rem', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '6px' }}>
                                 {project?.category}
                             </div>
-                            <h2 style={{ color: '#fff', fontSize: 'clamp(1.5rem, 5vw, 2.2rem)', fontWeight: 800, margin: 0, lineHeight: 1.1, letterSpacing: '-0.03em' }}>
+                            <h2 style={{ color: '#fff', fontSize: 'clamp(1.5rem, 5vw, 2.2rem)', fontWeight: 700, margin: 0, lineHeight: 1.1, letterSpacing: '-0.03em' }}>
                                 {project?.title}
                             </h2>
                         </div>
@@ -396,22 +474,57 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                         dangerouslySetInnerHTML={{ __html: project?.description || '' }}
                     />
 
-                    {/* Tags */}
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                        {project?.tags.map((tag, i) => (
-                            <span key={i} style={{
-                                padding: '6px 14px',
-                                backgroundColor: '#fff',
-                                border: '1px solid #fff',
-                                borderRadius: '0',
-                                color: '#000',
-                                fontSize: '0.8rem',
+                    {/* Specifiche — label + year + tags con contrasto pieno */}
+                    <div style={{
+                        marginTop: 32,
+                        paddingTop: 24,
+                        borderTop: '1px solid rgba(197,165,90,0.25)',
+                    }}>
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: 14,
+                        }}>
+                            <span style={{
+                                color: 'var(--color-gold)',
+                                fontSize: '0.68rem',
+                                fontFamily: 'var(--font-title)',
                                 fontWeight: 600,
-                                letterSpacing: '0.05em',
+                                letterSpacing: '0.25em',
+                                textTransform: 'uppercase',
                             }}>
-                                {tag}
+                                Specifiche
                             </span>
-                        ))}
+                            {project?.year && (
+                                <span style={{
+                                    color: 'rgba(255,255,255,0.88)',
+                                    fontSize: '0.75rem',
+                                    fontFamily: 'var(--font-title)',
+                                    fontWeight: 600,
+                                    letterSpacing: '0.15em',
+                                }}>
+                                    {project.year}
+                                </span>
+                            )}
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                            {project?.tags.map((tag, i) => (
+                                <span key={i} style={{
+                                    padding: '7px 14px',
+                                    backgroundColor: '#fff',
+                                    border: '1px solid #fff',
+                                    borderRadius: '0',
+                                    color: '#000',
+                                    fontSize: '0.78rem',
+                                    fontWeight: 600,
+                                    letterSpacing: '0.08em',
+                                    lineHeight: 1.2,
+                                }}>
+                                    {tag}
+                                </span>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -128,7 +128,7 @@ export const Footer: React.FC = () => {
                         style={{
                             display: 'inline-block',
                             fontSize: 'clamp(4.5rem, 22vw, 18rem)',
-                            fontWeight: 900,
+                            fontWeight: 700,
                             letterSpacing: '-0.04em',
                             lineHeight: 0.85,
                             // Hollow — stroke only, no fill
@@ -178,7 +178,7 @@ export const Footer: React.FC = () => {
                             <span style={{ color: '#fff', fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.02em' }}>
                                 Alessia Amoruso - WIDE
                             </span>
-                            <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.65rem', letterSpacing: '0.05em' }}>
+                            <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.65rem', letterSpacing: '0.05em' }}>
                                 P.IVA 13486160966
                             </span>
                         </div>
@@ -194,7 +194,7 @@ export const Footer: React.FC = () => {
                             <span style={{ color: '#fff', fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.02em' }}>
                                 Asia Franceschi - WIDE
                             </span>
-                            <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.65rem', letterSpacing: '0.05em' }}>
+                            <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.65rem', letterSpacing: '0.05em' }}>
                                 P.IVA 01566890115
                             </span>
                         </div>
@@ -216,7 +216,7 @@ export const Footer: React.FC = () => {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'center' }}>
                     <div style={{ width: 24, height: 1, background: 'rgba(197,165,90,0.3)' }} />
                     <p style={{
-                      color: 'rgba(197,165,90,0.6)',
+                      color: '#c5a55a',
                       fontSize: isMobile ? '0.58rem' : '0.65rem',
                       fontFamily: 'var(--font-serif)',
                       fontStyle: 'italic',
