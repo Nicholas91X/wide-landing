@@ -185,25 +185,40 @@ export const Portfolio: React.FC = () => {
       );
     }
 
-    // Refresh after a short delay to let all other ScrollTriggers (ScrollVideo)
-    // register their spacers first
-    const rafId = setTimeout(() => {
+    // ── Refresh strategy bulletproof per pin + lazy-loaded content ──
+    // Il pin di Portfolio dipende dall'altezza finale del documento. Sections
+    // sopra (GameReminder, SocialProof con iframe Bunny) caricano async e
+    // cambiano altezza dopo il mount → pin si invalida → cards 2 e 3 si
+    // sovrappongono + 3° card si ripete. Multi-trigger defensive:
+    //  1. Timeout iniziale 200ms (refresh base dopo layout first paint)
+    //  2. window 'load' event (attende iframe Bunny + tutti gli asset)
+    //  3. ResizeObserver su body con debounce 150ms (cattura relayout tardivi)
+    let refreshTimer: ReturnType<typeof setTimeout> | null = null;
+    const safeRefresh = () => {
       try {
         ScrollTrigger.refresh();
       } catch (_e) {
-        // Strict Mode may cause transient DOM issues; retry next frame
         requestAnimationFrame(() => {
-          try {
-            ScrollTrigger.refresh();
-          } catch (_) {
-            /* ignore */
-          }
+          try { ScrollTrigger.refresh(); } catch { /* ignore */ }
         });
       }
-    }, 200);
+    };
+    const debouncedRefresh = () => {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(safeRefresh, 150);
+    };
+
+    const initialTimeout = setTimeout(safeRefresh, 200);
+    window.addEventListener("load", safeRefresh);
+
+    const resizeObs = new ResizeObserver(debouncedRefresh);
+    resizeObs.observe(document.body);
 
     return () => {
-      clearTimeout(rafId);
+      clearTimeout(initialTimeout);
+      if (refreshTimer) clearTimeout(refreshTimer);
+      window.removeEventListener("load", safeRefresh);
+      resizeObs.disconnect();
       ScrollTrigger.getAll().forEach((st) => {
         if (st.vars.trigger === container) st.kill();
       });
