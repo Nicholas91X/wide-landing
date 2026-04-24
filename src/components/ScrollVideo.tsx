@@ -1030,6 +1030,30 @@ export const ScrollVideo: React.FC = () => {
       ctx2d.drawImage(source as CanvasImageSource, dx, dy, dw, dh);
     };
 
+    // ── rAF draw loop per fluidità 60fps ────────────────────────────────
+    // Prima: drawFrame chiamato solo su 'seeked' event (async, 50-200ms latency
+    // su mobile) → canvas sempre in ritardo sullo scroll. Ora: rAF continuo
+    // disegna il CURRENT video frame ad ogni paint cycle. Il decoder video
+    // macina i seek in background, il canvas mostra sempre ciò che è pronto
+    // senza aspettare eventi. Scroll perceptibilmente istantaneo.
+    let rafId = 0;
+    const tickDraw = () => {
+      drawFrame();
+      rafId = requestAnimationFrame(tickDraw);
+    };
+    rafId = requestAnimationFrame(tickDraw);
+
+    // ── Throttle state updates per evitare re-render React ad ogni tick
+    // scroll (React memo ServiceBlock/ProgressOverlay aiuta, ma il tree
+    // reconciliation stesso costa). Progress e service-index aggiornati
+    // via rAF-coalesce + guard su idx invariato.
+    let pendingProgress = false;
+    let lastIdx = -1;
+    const updateStateThrottled = () => {
+      pendingProgress = false;
+      setProgress(progressRef.current);
+    };
+
     const gsapCtx = gsap.context(() => {
       ScrollTrigger.create({
         trigger: container,
@@ -1038,27 +1062,32 @@ export const ScrollVideo: React.FC = () => {
         onUpdate: (self) => {
           const p = self.progress;
           progressRef.current = p;
-          setProgress(p);
+
+          // Video seek: skip micro-delta (< 30ms of video) per ridurre carico
+          // decoder su scroll continuo e prevenire pile-up di seek requests.
           if (!useFallback && video.duration) {
-            video.currentTime = Math.min(
-              video.duration - 0.01,
-              p * video.duration
-            );
-          } else if (useFallback && fallbackImagesRef.current.length > 0) {
-            // Draw synchronously when fallback is active
-            drawFrame();
+            const target = p * video.duration;
+            if (Math.abs(video.currentTime - target) > 0.03) {
+              video.currentTime = Math.min(video.duration - 0.01, target);
+            }
           }
-          const idx = Math.min(
-            TOTAL_SERVICES - 1,
-            Math.floor(p * TOTAL_SERVICES)
-          );
-          setCurrentServiceIndex(idx);
+
+          // Service index: guard per setState solo su cambio effettivo.
+          const idx = Math.min(TOTAL_SERVICES - 1, Math.floor(p * TOTAL_SERVICES));
+          if (idx !== lastIdx) {
+            lastIdx = idx;
+            setCurrentServiceIndex(idx);
+          }
+
+          // Progress UI: 1 setState per frame max (rAF coalesce).
+          if (!pendingProgress) {
+            pendingProgress = true;
+            requestAnimationFrame(updateStateThrottled);
+          }
         },
       });
 
-      video.addEventListener("seeked", drawFrame);
-      video.addEventListener("loadeddata", drawFrame);
-      video.addEventListener("canplay", drawFrame);
+      // Draw iniziale immediato (rAF partirà al prossimo frame).
       drawFrame();
     }, container);
 
@@ -1079,10 +1108,8 @@ export const ScrollVideo: React.FC = () => {
     resizeObs.observe(document.body);
 
     return () => {
+      cancelAnimationFrame(rafId);
       gsapCtx.revert();
-      video.removeEventListener("seeked", drawFrame);
-      video.removeEventListener("loadeddata", drawFrame);
-      video.removeEventListener("canplay", drawFrame);
       window.removeEventListener("resize", resize);
       clearTimeout(initialRefresh);
       if (refreshTimer) clearTimeout(refreshTimer);
