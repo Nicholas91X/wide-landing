@@ -558,7 +558,23 @@ const ServiceBlock: React.FC<ServiceBlockProps> = React.memo(({
         }
       );
     });
-    return () => ctx.revert();
+
+    // ── SAFETY NET: se ScrollTrigger non arma entro 2.5s (bug lazy-load,
+    // programmatic scroll che salta il trigger, layout shift race), forza
+    // visibilità del blocco. Meglio text visibile senza animation che text
+    // invisibile forever.
+    const safetyTimer = setTimeout(() => {
+      if (!el) return;
+      const currentOpacity = parseFloat(getComputedStyle(el).opacity);
+      if (currentOpacity < 0.9) {
+        gsap.set(el, { opacity: 1, y: 0 });
+      }
+    }, 2500);
+
+    return () => {
+      clearTimeout(safetyTimer);
+      ctx.revert();
+    };
   }, [prefersReduced]);
 
   return (
@@ -878,6 +894,41 @@ export const ScrollVideo: React.FC = () => {
     ScrollTrigger.refresh();
   }, [isMobile]);
 
+  // ── WATCHDOG video: se dopo 4s il video non ha fatto 'loadeddata',
+  // attiva fallback WEBP. Copre: network lento, codec incompatibile,
+  // Bunny CDN degraded. Senza questo, canvas resta nero infinitamente.
+  useEffect(() => {
+    if (videoReady || useFallback) return;
+    const timer = setTimeout(() => {
+      if (!videoReady) {
+        setUseFallback(true);
+        if (typeof window !== "undefined" && (window as unknown as { dataLayer?: unknown[] }).dataLayer) {
+          (window as unknown as { dataLayer: unknown[] }).dataLayer.push({
+            event: "scrollvideo_fallback_activated",
+            reason: "video_load_timeout_4s",
+          });
+        }
+        // Mark videoReady anche nel branch fallback per far partire lo scrub
+        // effect (che userà fallbackImagesRef invece di video).
+        setVideoReady(true);
+      }
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, [videoReady, useFallback]);
+
+  // ── Error handler video: attiva fallback immediato su failure (decode
+  // error, 404, cors, ecc.) — niente timeout necessario.
+  const onVideoError = useCallback(() => {
+    setUseFallback(true);
+    setVideoReady(true);
+    if (typeof window !== "undefined" && (window as unknown as { dataLayer?: unknown[] }).dataLayer) {
+      (window as unknown as { dataLayer: unknown[] }).dataLayer.push({
+        event: "scrollvideo_fallback_activated",
+        reason: "video_error",
+      });
+    }
+  }, []);
+
   // Preload WEBP keyframes when fallback activates
   useEffect(() => {
     if (!useFallback) return;
@@ -1007,14 +1058,36 @@ export const ScrollVideo: React.FC = () => {
 
       video.addEventListener("seeked", drawFrame);
       video.addEventListener("loadeddata", drawFrame);
+      video.addEventListener("canplay", drawFrame);
       drawFrame();
     }, container);
+
+    // ── ScrollTrigger refresh bulletproof (stesso pattern Portfolio):
+    // cattura qualsiasi layout shift futuro (iframe Bunny, media async,
+    // font swap) che altrimenti invaliderebbe start/end del trigger.
+    let refreshTimer: ReturnType<typeof setTimeout> | null = null;
+    const safeRefresh = () => {
+      try { ScrollTrigger.refresh(); } catch { /* ignore */ }
+    };
+    const debouncedRefresh = () => {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(safeRefresh, 150);
+    };
+    const initialRefresh = setTimeout(safeRefresh, 300);
+    window.addEventListener("load", safeRefresh);
+    const resizeObs = new ResizeObserver(debouncedRefresh);
+    resizeObs.observe(document.body);
 
     return () => {
       gsapCtx.revert();
       video.removeEventListener("seeked", drawFrame);
       video.removeEventListener("loadeddata", drawFrame);
+      video.removeEventListener("canplay", drawFrame);
       window.removeEventListener("resize", resize);
+      clearTimeout(initialRefresh);
+      if (refreshTimer) clearTimeout(refreshTimer);
+      window.removeEventListener("load", safeRefresh);
+      resizeObs.disconnect();
     };
   }, [videoReady, prefersReduced, useFallback, fallbackLoaded]);
 
@@ -1067,6 +1140,7 @@ export const ScrollVideo: React.FC = () => {
           height: "100vh",
           width: "100%",
           zIndex: 0,
+          backgroundColor: "#050505", // fallback se canvas non ha ancora disegnato
         }}
       >
         <canvas
@@ -1085,6 +1159,7 @@ export const ScrollVideo: React.FC = () => {
           playsInline
           muted
           onLoadedData={onVideoLoaded}
+          onError={onVideoError}
           style={{
             position: "absolute",
             width: 1,
