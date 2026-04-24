@@ -177,7 +177,10 @@ interface ChapterStripProps {
 const ChapterStrip: React.FC<ChapterStripProps> = React.memo(({ number, title, isMobile }) => (
   <div
     style={{
-      padding: isMobile ? "28px 20px" : "40px 40px",
+      // Mobile: strip alzato a ~42vh (era ~10vh) per chiudere gap con video
+      // lungo 889 frame. Desktop: ~20vh (era ~12vh) per allineare a container 700vh.
+      minHeight: isMobile ? "42vh" : "20vh",
+      padding: isMobile ? "20px" : "40px",
       background:
         "linear-gradient(90deg, transparent, rgba(197,165,90,0.08), transparent)",
       borderTop: "1px solid rgba(197,165,90,0.2)",
@@ -185,6 +188,10 @@ const ChapterStrip: React.FC<ChapterStripProps> = React.memo(({ number, title, i
       textAlign: "center",
       position: "relative",
       zIndex: 2,
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
     }}
     aria-hidden="true"
   >
@@ -192,10 +199,10 @@ const ChapterStrip: React.FC<ChapterStripProps> = React.memo(({ number, title, i
       style={{
         fontFamily: "var(--font-serif)",
         fontStyle: "italic",
-        fontSize: isMobile ? "1.4rem" : "1.8rem",
+        fontSize: isMobile ? "2rem" : "2.4rem",
         color: "var(--color-gold)",
         lineHeight: 1,
-        marginBottom: 4,
+        marginBottom: 8,
       }}
     >
       {number}
@@ -203,10 +210,10 @@ const ChapterStrip: React.FC<ChapterStripProps> = React.memo(({ number, title, i
     <div
       style={{
         fontFamily: "var(--font-title)",
-        fontSize: isMobile ? "0.58rem" : "0.7rem",
-        letterSpacing: "0.25em",
+        fontSize: isMobile ? "0.62rem" : "0.75rem",
+        letterSpacing: "0.28em",
         textTransform: "uppercase",
-        color: "rgba(255,255,255,0.75)",
+        color: "rgba(255,255,255,0.8)",
         fontWeight: 600,
       }}
     >
