@@ -402,7 +402,7 @@ export const ChiSiamo: React.FC = () => {
             letterSpacing: "0.05em",
             lineHeight: 1.1,
             margin: "0 0 24px",
-            whiteSpace: isMobile ? "normal" : "nowrap",
+            textAlign: "center",
           }}
         >
           Partner,{isMobile && <br />} non semplici fornitori.
@@ -450,38 +450,6 @@ export const ChiSiamo: React.FC = () => {
           profonda del contesto locale siano elementi imprescindibili per
           realizzare lavori di eccellenza.
         </p>
-        <button
-          data-cursor="ring"
-          onClick={() =>
-            document
-              .getElementById("contatti")
-              ?.scrollIntoView({ behavior: "instant" })
-          }
-          style={{
-            padding: "12px 22px",
-            backgroundColor: "transparent",
-            color: "#fff",
-            border: "1px solid rgba(255,255,255,0.22)",
-            borderRadius: "0",
-            fontSize: "0.75rem",
-            fontFamily: "var(--font-subtitle)",
-            fontWeight: 600,
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            transition: "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
-            whiteSpace: "nowrap",
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.borderColor = "rgba(197,165,90,0.5)";
-            e.currentTarget.style.color = "var(--color-gold)";
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.borderColor = "rgba(255,255,255,0.22)";
-            e.currentTarget.style.color = "#fff";
-          }}
-        >
-          Verifica la nostra disponibilità
-        </button>
       </div>
 
       {/* ── Header ──────────────────────────────────────────────────── */}
@@ -687,6 +655,45 @@ export const ChiSiamo: React.FC = () => {
         >
           Tu concentrati sulla tua attività. Al resto pensiamo noi.
         </p>
+        <div style={{ marginTop: 40 }}>
+          <button
+            data-cursor="ring"
+            onClick={() =>
+              document
+                .getElementById("contatti")
+                ?.scrollIntoView({ behavior: "instant" })
+            }
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "14px 32px",
+              backgroundColor: "#fff",
+              color: "#000",
+              border: "none",
+              borderRadius: 0,
+              fontSize: "0.8rem",
+              fontFamily: "var(--font-subtitle)",
+              fontWeight: 600,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              cursor: "pointer",
+              transition: "transform 0.3s ease, box-shadow 0.3s ease",
+              whiteSpace: "nowrap",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = "0 8px 30px rgba(255,255,255,0.15)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "none";
+            }}
+          >
+            Contattaci senza impegno
+            <span style={{ fontSize: "0.9rem" }}>→</span>
+          </button>
+        </div>
       </div>
     </div>
   );

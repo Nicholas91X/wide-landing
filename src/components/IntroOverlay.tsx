@@ -123,14 +123,13 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onDismiss }) => {
   }, [prefersReduced]);
 
   // ── Gesture-triggered dismissal ────────────────────────────────────────────
-  // Lock scroll on mount. On first wheel/touch, animate overlay out,
-  // then unlock scroll and reset scrollY to 0 so SocialProof is fully visible.
+  // Non blocchiamo lo scroll: l'overlay è position:fixed con sfondo nero opaco,
+  // quindi la pagina può scorrere sotto senza che l'utente veda nulla.
+  // Al dismiss: reset immediato di scrollY → poi fade overlay.
+  // Il scrollbar non scompare mai → nessun layout shift su Windows.
   useEffect(() => {
     const overlay = overlayRef.current;
     if (!overlay) return;
-
-    // Lock scroll immediately
-    document.body.style.overflow = "hidden";
 
     let dismissed = false;
 
@@ -143,29 +142,25 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onDismiss }) => {
       window.removeEventListener("touchstart", dismiss);
       window.removeEventListener("keydown", onKey);
 
+      // Porta la pagina a top prima che l'overlay svanisca:
+      // il contenuto sotto è già in posizione mentre l'overlay è ancora visibile.
+      window.scrollTo({ top: 0, behavior: "instant" });
+
       if (prefersReduced) {
-        // Skip animation for reduced-motion users
         overlay.style.opacity = "0";
         overlay.style.pointerEvents = "none";
         overlayShownRef.current = false;
-        document.body.style.overflow = "";
-        window.scrollTo({ top: 0, behavior: "instant" });
         onDismiss();
         return;
       }
 
-      // Animate overlay out
       gsap.to(overlay, {
         opacity: 0,
-        scale: 1.02,
         duration: 0.7,
         ease: "power2.inOut",
         onComplete: () => {
           overlay.style.pointerEvents = "none";
           overlayShownRef.current = false;
-          // Unlock scroll and reset to top
-          document.body.style.overflow = "";
-          window.scrollTo({ top: 0, behavior: "instant" });
           onDismiss();
         },
       });
@@ -195,7 +190,6 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onDismiss }) => {
       window.removeEventListener("touchstart", dismiss);
       window.removeEventListener("keydown", onKey);
       overlay.removeEventListener("click", dismiss);
-      document.body.style.overflow = "";
     };
   }, [prefersReduced, onDismiss]);
 
@@ -226,23 +220,19 @@ export const IntroOverlay: React.FC<IntroOverlayProps> = ({ onDismiss }) => {
         onClick={() => {
           const overlay = overlayRef.current;
           if (!overlay) return;
+          window.scrollTo({ top: 0, behavior: "instant" });
           if (prefersReduced) {
             overlay.style.opacity = "0";
             overlay.style.pointerEvents = "none";
-            document.body.style.overflow = "";
-            window.scrollTo({ top: 0, behavior: "instant" });
             onDismiss();
           } else {
             import("gsap").then(({ gsap }) => {
               gsap.to(overlay, {
                 opacity: 0,
-                scale: 1.02,
                 duration: 0.7,
                 ease: "power2.inOut",
                 onComplete: () => {
                   overlay.style.pointerEvents = "none";
-                  document.body.style.overflow = "";
-                  window.scrollTo({ top: 0, behavior: "instant" });
                   onDismiss();
                 },
               });

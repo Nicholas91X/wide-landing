@@ -47,10 +47,10 @@
     <link rel="preload" as="image" type="image/webp" href="/frames/section-2/frame_0001.webp" fetchpriority="high" />
     <link rel="preload" as="image" type="image/webp" href="/frames_9_16/section-2/frame_0001.webp" media="(max-width: 767px)" fetchpriority="high" />
 
-    <!-- Playfair Display — solo per pull quotes e tagline footer -->
+    <!-- Playfair Display — solo per pull quotes e tagline footer, Outfit 500/600 -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&family=Playfair+Display:ital,wght@1,400&display=swap" />
 
     <style>
       @font-face {
@@ -121,6 +121,7 @@
       /* Keep vertical scroll only on the page root — prevents accidental horizontal drift */
       html {
         touch-action: pan-y;
+        overflow-x: hidden;
       }
       /* Tactile feedback on tap */
       button:active, a:active, [role="button"]:active {

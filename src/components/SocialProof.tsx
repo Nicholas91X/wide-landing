@@ -7,9 +7,9 @@ gsap.registerPlugin(ScrollTrigger);
 
 // ─── Metrics Data ────────────────────────────────────────────────────────────
 const METRICS = [
-  { value: "520000", suffix: "", label: "Visualizzazioni dei post" },
-  { value: "100", suffix: "+", label: "Contatti generati in organico" },
-  { value: "1000", suffix: "+", label: "Condivisioni" },
+  { prefix: "+", value: "40", suffix: "%", label: "Aumento test drive prenotati" },
+  { prefix: "", value: "3", suffix: "× clienti nuovi", label: "Rispetto alla media pre-lancio" },
+  { prefix: "", value: "6", suffix: " mesi", label: "Per stabilire il brand sul territorio" },
 ];
 
 // ─── MediaSlot helper (video-ready) ─────────────────────────────────────────
@@ -160,6 +160,7 @@ export const SocialProof: React.FC = () => {
         refs.forEach((el, i) => {
           const target = counters[i].target;
           const suffix = METRICS[i].suffix;
+          const prefix = METRICS[i].prefix || "";
           const duration = 1.4;
           const obj = { val: 0 };
 
@@ -170,15 +171,15 @@ export const SocialProof: React.FC = () => {
             delay: i * 0.12,
             onUpdate() {
               const v = Math.round(obj.val);
-              el.textContent = v >= 1000
+              const formatted = v >= 1000
                 ? (v >= 10000 ? (v >= 100000 ? v.toLocaleString('it-IT') : v.toLocaleString('it-IT')) : v.toLocaleString('it-IT'))
                 : String(v);
-              el.textContent += suffix;
+              el.textContent = prefix + formatted + suffix;
             },
             onComplete() {
               // Ensure final value is exact
-              el.textContent = target >= 1000 ? target.toLocaleString('it-IT') : String(target);
-              el.textContent += suffix;
+              const formattedTarget = target >= 1000 ? target.toLocaleString('it-IT') : String(target);
+              el.textContent = prefix + formattedTarget + suffix;
             },
           });
         });
@@ -222,7 +223,7 @@ export const SocialProof: React.FC = () => {
           alignItems: "center",
           textAlign: "center",
           padding: isMobile
-            ? "clamp(80px, 15vw, 120px) 24px clamp(60px, 12vw, 100px)"
+            ? "clamp(130px, 30vw, 180px) 24px clamp(60px, 12vw, 100px)"
             : "clamp(100px, 14vw, 180px) clamp(40px, 8vw, 120px) clamp(80px, 12vw, 160px)",
           maxWidth: 900,
           margin: "0 auto",
@@ -239,11 +240,6 @@ export const SocialProof: React.FC = () => {
             letterSpacing: "0.22em",
             textTransform: "uppercase",
             margin: "0 0 20px",
-            // Snap anchor: forces fast scrolls from the IntroOverlay to stop here.
-            // This element sits at ~160-300px from the top (heroRef padding),
-            // which is safely past the IntroOverlay fade range (0-120px).
-            scrollSnapAlign: "start",
-            scrollSnapStop: "always",
           }}
         >
           Wide Studio Digitale
@@ -256,7 +252,7 @@ export const SocialProof: React.FC = () => {
             fontSize: isMobile
               ? "clamp(1.8rem, 8vw, 2.6rem)"
               : "clamp(2.4rem, 5.5vw, 3.8rem)",
-            fontFamily: "var(--font-title)",
+            fontFamily: "'Gordita', sans-serif",
             fontWeight: 700,
             lineHeight: 1.05,
             letterSpacing: "-0.03em",
@@ -265,7 +261,7 @@ export const SocialProof: React.FC = () => {
             color: "#fff",
           }}
         >
-          Siamo il ponte tra te e la comunicazione moderna
+          Hai costruito qualcosa di solido
         </h2>
 
         {/* Subtitle */}
@@ -273,7 +269,23 @@ export const SocialProof: React.FC = () => {
           className="sp-anim"
           style={{
             color: "rgba(255,255,255,0.9)",
-            fontSize: "clamp(1.1rem, 2.2vw, 1.4rem)",
+            fontSize: "clamp(1.4rem, 3vw, 1.8rem)",
+            fontFamily: "var(--font-body)",
+            fontWeight: 400,
+            lineHeight: 1.6,
+            maxWidth: 700,
+            margin: "0 0 16px",
+          }}
+        >
+          Facciamolo vedere.
+        </p>
+
+        {/* Description */}
+        <p
+          className="sp-anim"
+          style={{
+            color: "rgba(255,255,255,0.7)",
+            fontSize: "clamp(1rem, 2vw, 1.15rem)",
             fontFamily: "var(--font-body)",
             fontWeight: 400,
             lineHeight: 1.6,
@@ -281,9 +293,7 @@ export const SocialProof: React.FC = () => {
             margin: "0 0 40px",
           }}
         >
-          Non lasciare che la tua azienda <br />
-          rimanga indietro! <br />
-          Siamo lo strumento di traduzione del tuo lavoro sui canali digitali.
+          Affianchiamo imprenditori del Nord Italia per aiutarli a pubblicizzarsi online e attrarre nuovi clienti
         </p>
 
         {/* CTA */}
@@ -328,6 +338,50 @@ export const SocialProof: React.FC = () => {
           Contattaci senza impegno
           <span style={{ fontSize: "0.9rem" }}>→</span>
         </button>
+
+        {/* Secondary CTA */}
+        <button
+          className="sp-anim"
+          data-cursor="ring"
+          onClick={() => {
+            document
+              .getElementById("portfolio")
+              ?.scrollIntoView({ behavior: "smooth" });
+          }}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "14px 32px",
+            backgroundColor: "transparent",
+            color: "#fff",
+            border: "1px solid rgba(255,255,255,0.3)",
+            borderRadius: 0,
+            fontSize: "0.8rem",
+            fontFamily: "var(--font-subtitle)",
+            fontWeight: 600,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            cursor: "pointer",
+            transition: "all 0.3s ease",
+            width: isMobile ? '100%' : 'auto',
+            justifyContent: 'center',
+            marginTop: 16,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "translateY(-2px)";
+            e.currentTarget.style.borderColor = "var(--color-gold)";
+            e.currentTarget.style.color = "var(--color-gold)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)";
+            e.currentTarget.style.color = "#fff";
+          }}
+        >
+          Guarda i nostri risultati
+          <span style={{ fontSize: "0.9rem" }}>↓</span>
+        </button>
       </div>
 
       {/* Hairline oro */}
@@ -360,8 +414,7 @@ export const SocialProof: React.FC = () => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            width: isMobile ? "100vw" : undefined,
-            marginLeft: isMobile ? "calc(50% - 50vw)" : undefined,
+            width: "100%",
           }}
         >
           {/* Background Media — Bunny embed (case study video) */}
@@ -393,7 +446,7 @@ export const SocialProof: React.FC = () => {
                 textTransform: "uppercase",
               }}
             >
-              Automotive Client — 2025
+              Auto2g S.P.A
             </span>
           </div>
         </div>
@@ -414,7 +467,7 @@ export const SocialProof: React.FC = () => {
           <p
             className="sp-anim"
             style={{
-              color: "rgba(255,255,255,0.35)",
+              color: "var(--color-gold)",
               fontSize: "0.7rem",
               fontFamily: "var(--font-subtitle)",
               fontWeight: 600,
@@ -423,7 +476,7 @@ export const SocialProof: React.FC = () => {
               margin: "0 0 14px",
             }}
           >
-            Caso Studio
+            Caso Studio — Settore Automotive
           </p>
 
           {/* Title */}
@@ -440,7 +493,7 @@ export const SocialProof: React.FC = () => {
               margin: "0 0 16px",
             }}
           >
-            Da zero presenza online a brand riconoscibile sul territorio.
+            Cambio di marchio, zero perdita di clienti. Anzi.
           </h3>
 
           {/* Description */}
@@ -456,9 +509,19 @@ export const SocialProof: React.FC = () => {
               maxWidth: 480,
             }}
           >
-            Abbiamo seguito l&apos;intero percorso: strategia, contenuti,
-            campagne e produzione video. In sei mesi il cliente ha più che
-            triplicato la sua presenza digitale.
+            Il cliente gestiva una concessionaria Ford da anni.
+            <br />
+            <br />
+            Con l&apos;ingresso del marchio MG nel suo portafoglio, aveva un problema concreto:{" "}
+            <strong style={{ color: "#fff", fontWeight: 700 }}>
+              far conoscere un brand sconosciuto al suo territorio senza
+              disperdere la clientela esistente.
+            </strong>
+            <br />
+            <br />
+            Abbiamo costruito la comunicazione della transizione da zero —
+            posizionamento, contenuti, campagne locali — portando MG a essere
+            percepita come una scelta credibile nel giro di sei mesi.
           </p>
 
           {/* Metrics */}
@@ -466,7 +529,7 @@ export const SocialProof: React.FC = () => {
             className="sp-anim"
             style={{
               display: "grid",
-              gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(3, 1fr)',
+              gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
               marginBottom: 28,
               border: "1px solid var(--color-border)",
             }}
@@ -478,7 +541,8 @@ export const SocialProof: React.FC = () => {
               const target = parseInt(m.value.replace(/\D/g, ""), 10);
               const formattedFinal =
                 target >= 1000 ? target.toLocaleString("it-IT") : String(target);
-              const finalDisplay = formattedFinal + m.suffix;
+              const prefix = m.prefix || "";
+              const finalDisplay = prefix + formattedFinal + m.suffix;
 
               const counterFontSize = isMobile
                 ? "clamp(2rem, 9vw, 2.6rem)"
@@ -492,9 +556,9 @@ export const SocialProof: React.FC = () => {
                     borderRight: !isMobile && i < METRICS.length - 1
                       ? "1px solid var(--color-border)"
                       : "none",
-                    borderTop: isMobile && i === 2 ? "1px solid var(--color-border)" : "none",
-                    borderBottom: isMobile && i < 2 ? "1px solid var(--color-border)" : "none",
-                    gridColumn: isMobile && i === 2 ? '1 / -1' : undefined,
+                    borderBottom: isMobile && i < METRICS.length - 1
+                      ? "1px solid var(--color-border)"
+                      : "none",
                     position: "relative",
                   }}
                 >
@@ -537,6 +601,7 @@ export const SocialProof: React.FC = () => {
                         letterSpacing: "-0.02em",
                         whiteSpace: "nowrap",
                         fontVariantNumeric: "tabular-nums",
+                        color: "var(--color-gold)",
                       }}
                       aria-hidden
                     >
@@ -557,9 +622,10 @@ export const SocialProof: React.FC = () => {
                         letterSpacing: "-0.02em",
                         whiteSpace: "nowrap",
                         fontVariantNumeric: "tabular-nums",
+                        color: "var(--color-gold)",
                       }}
                     >
-                      0{m.suffix}
+                      {m.prefix || ""}0{m.suffix}
                     </div>
                   </div>
 
@@ -611,7 +677,7 @@ export const SocialProof: React.FC = () => {
               e.currentTarget.style.color = "rgba(255,255,255,0.75)";
             }}
           >
-            Scopri come <span>→</span>
+            Leggi il caso completo <span>→</span>
           </a>
         </div>
       </div>
