@@ -4,8 +4,8 @@ import { NavBubble } from "./components/NavBubble";
 import { IntroOverlay } from "./components/IntroOverlay";
 import { LegalPage } from "./components/LegalPage";
 import { SocialProof } from "./components/SocialProof";
+import { ServicesHeader } from "./components/ServicesHeader";
 import { Analytics } from "@vercel/analytics/react";
-import { trackCTAClick } from "./utils/analytics";
 import { CookieBanner } from "./components/CookieBanner";
 
 // Lazy-load all sections below SocialProof to reduce initial JS payload
@@ -14,7 +14,6 @@ const ScrollVideo = lazy(() =>
 );
 const Portfolio = lazy(() => import("./components/Portfolio"));
 const ChiSiamo = lazy(() => import("./components/ChiSiamo"));
-const GameReminder = lazy(() => import("./components/GameReminder"));
 const Contatti = lazy(() => import("./components/Contatti"));
 const Footer = lazy(() => import("./components/Footer"));
 
@@ -37,11 +36,7 @@ function getRouteFromPath(): LegalRoute {
 function App() {
   const [legalPage, setLegalPage] = useState<LegalRoute>(getRouteFromPath);
   const [hasScrolled, setHasScrolled] = useState(false);
-  const [showIntro, setShowIntro] = useState(
-    // IntroOverlay sempre visibile a ogni page load (non più gated da localStorage)
-    () => true
-    // Precedente: () => !localStorage.getItem('wide_intro_seen')
-  );
+  const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
     const onScroll = () => setHasScrolled(true);
@@ -108,6 +103,7 @@ function App() {
       />
       <main>
         <SocialProof />
+        <ServicesHeader />
         <Suspense
           fallback={<div style={{ background: "#000", minHeight: "100vh" }} />}
         >
@@ -133,15 +129,6 @@ function App() {
             <section id="chi-siamo">
               <ChiSiamo />
             </section>
-            {/* Gradient fade divider */}
-            <div
-              style={{
-                height: "clamp(80px, 12vw, 160px)",
-                background:
-                  "linear-gradient(to bottom, #000 0%, #0a0a0a 30%, #111 50%, #0a0a0a 70%, #000 100%)",
-              }}
-            />
-            <GameReminder />
             {/* Gradient fade divider */}
             <div
               style={{
@@ -178,155 +165,8 @@ function App() {
         <Analytics />
       </main>
 
-      {/* ── Floating CTA — appears after scrolling past the intro ──── */}
-      <FloatingCTA />
       <CookieBanner />
     </>
-  );
-}
-
-function FloatingCTA() {
-  const [visible, setVisible] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const onChange = (e: MediaQueryListEvent | MediaQueryList) =>
-      setIsMobile(e.matches);
-    onChange(mq);
-    mq.addEventListener("change", onChange as (e: MediaQueryListEvent) => void);
-    return () =>
-      mq.removeEventListener(
-        "change",
-        onChange as (e: MediaQueryListEvent) => void,
-      );
-  }, []);
-
-  useEffect(() => {
-    const onScroll = () => {
-      // Show only after ScrollVideo ends — "chi-siamo" entering viewport
-      // confirms the user has cleared the entire pinned scroll section.
-      const chiSiamo = document.getElementById("chi-siamo");
-      const pastScrollVideo = chiSiamo
-        ? chiSiamo.getBoundingClientRect().top <= window.innerHeight * 0.7
-        : false;
-
-      // Hide while Portfolio section is pinned — its own "Scopri il progetto"
-      // CTA is visible and the floating button would overlap it on mobile.
-      const portfolio = document.getElementById("portfolio");
-      const portfolioActive = portfolio
-        ? portfolio.getBoundingClientRect().top < window.innerHeight * 0.8 &&
-          portfolio.getBoundingClientRect().bottom > window.innerHeight * 0.2
-        : false;
-
-      // Hide as soon as Contatti section starts entering the viewport
-      // so the CTA never obscures the booking form.
-      const contatti = document.getElementById("contatti");
-      const contattiApproaching = contatti
-        ? contatti.getBoundingClientRect().top < window.innerHeight * 1.1
-        : false;
-
-      // Also hide when near the very bottom (footer area).
-      const nearBottom =
-        window.scrollY + window.innerHeight >=
-        document.documentElement.scrollHeight - 120;
-
-      setVisible(pastScrollVideo && !portfolioActive && !contattiApproaching && !nearBottom);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const goToContatti = () => {
-    trackCTAClick('floating-cta');
-    document.getElementById("contatti")?.scrollIntoView({ behavior: "instant" });
-  };
-
-  if (isMobile) {
-    // Mobile: bottom pill — single tap, thumb-reachable zone.
-    // Slides up from below rather than dropping from the top.
-    return (
-      <div
-        style={{
-          position: "fixed",
-          bottom: "clamp(16px, 5vw, 28px)",
-          left: "50%",
-          transform: `translateX(-50%) translateY(${visible ? "0" : "100px"})`,
-          zIndex: 2000,
-          opacity: visible ? 1 : 0,
-          pointerEvents: visible ? "auto" : "none",
-          transition:
-            "transform 0.45s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease",
-        }}
-      >
-        <button
-          data-cursor="ring"
-          onClick={goToContatti}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "15px 32px",
-            backgroundColor: "#fff",
-            color: "#000",
-            border: "none",
-            borderRadius: "0",
-            fontSize: "0.72rem",
-            fontFamily: "var(--font-subtitle)",
-            fontWeight: 600,
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            cursor: "pointer",
-            whiteSpace: "nowrap",
-            boxShadow: "0 6px 24px rgba(0,0,0,0.4)",
-          }}
-        >
-          Contattaci senza impegno
-          <span style={{ fontSize: "0.9rem" }}>→</span>
-        </button>
-      </div>
-    );
-  }
-
-  // Desktop: bottom center button
-  return (
-    <button
-      data-cursor="ring"
-      onClick={goToContatti}
-      style={{
-        position: "fixed",
-        bottom: "clamp(20px, 4vw, 32px)",
-        left: "50%",
-        transform: `translateX(-50%) translateY(${visible ? "0" : "80px"})`,
-        zIndex: 2000,
-        padding: "12px 28px",
-        backgroundColor: "#fff",
-        color: "#000",
-        border: "none",
-        borderRadius: "0",
-        fontSize: "0.7rem",
-        fontFamily: "var(--font-subtitle)",
-        fontWeight: 600,
-        letterSpacing: "0.12em",
-        textTransform: "uppercase",
-        cursor: "pointer",
-        opacity: visible ? 1 : 0,
-        pointerEvents: visible ? "auto" : "none",
-        transition: "all 0.5s cubic-bezier(0.4,0,0.2,1)",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
-        whiteSpace: "nowrap",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateX(-50%) translateY(-2px)";
-        e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.5)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "translateX(-50%) translateY(0)";
-        e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.4)";
-      }}
-    >
-      Contattaci senza impegno
-    </button>
   );
 }
 
